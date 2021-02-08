@@ -61,9 +61,15 @@
 #include "TURBObasebuilder/warning.inl"
 
 
+
+
+	
+
 public plugin_precache(){
+
 	
 	tutorPrecache()
+	
 	
 	precache_model(modelNuggetDrop)
 
@@ -95,7 +101,8 @@ public plugin_precache(){
 	precache_model(modelFire)
 	precache_model(modelTrapBomb)
 	precache_model(modelRocket)
-
+	
+	//precache_model(modelBrick)
 	
 	for( new i = 0;  i < sizeof(classHumanKnifeModel);  i++){
 		if( strlen(classHumanKnifeModel[i][0])>0 || strlen(classHumanKnifeModel[i][1])>0){	
@@ -106,12 +113,14 @@ public plugin_precache(){
 	precache_model(MODELHANDS);
 	  
 	precache_model("models/rpgrocket.mdl")
-
+	//brickGib = precache_model("models/basebuildervt/gibcegla.mdl")
+	
+	//npcPrecache();
 	soundPrecache()
 	zombiePrecache()
 	casePrecache()
 	costumePrecache();
-
+	//petPrecache()
 
 
 	#if defined SCHROOM_ADDON
@@ -123,15 +132,12 @@ public plugin_precache(){
 		christmasPrecache();
 	#endif
 
-	precache_model(model_Card)
-	
-
 	
 }
 
 public plugin_init(){	
 	
-	//tutorInit();
+	tutorInit();
 	
 	register_plugin
 	(
@@ -226,6 +232,8 @@ public plugin_init(){
 	register_menu("warningInfo", 		B1 | B2 | B3 | B4 | B5 | B6 | B7 | B8 | B9 | B0 , "warningInfo_2");
 	register_menu("warningAddMenu", 		B1 | B2 | B0 , 				"warningAddMenu_2");
 	register_menu("warningDesc", 		B1 | B2 | B0 , 				"warningDesc_2");
+
+
 	
 	register_message(get_user_msgid("SendAudio"), 		"messageAudioMsg")
 	register_message(get_user_msgid("TextMsg"), 		"messageTextMsg")	
@@ -235,7 +243,8 @@ public plugin_init(){
 	register_message(get_user_msgid("StatusIcon"), 		"messageStatusIcon");
 	register_message(get_user_msgid("HideWeapon"), 		"MSG_HideWeapon");
 	register_message(get_user_msgid("ScoreAttrib"), 		"vipStatus");
-
+	//register_message(get_user_msgid("Money"), 		"message_money");
+	
 	new const wpCPost[][]=	{ "weapon_shield", "weaponbox", "armoury_entity" }
 	new const entFire[][] = 	{ "worldspawn", "player" }
 	
@@ -270,13 +279,19 @@ public plugin_init(){
 	
 	set_task(random_float(60.0, 120.0), "playerRandomInfo")	
 	
-	bbClans 		= 	ArrayCreate(clanInfo);
+	bbClans 		= ArrayCreate(clanInfo);
 
 	register_think("nugget", "nuggetThink")
 	register_think(caseClass, "chestThink")
 	register_touch("player", 	"player", 		"blockJumpOnHead")
 	register_touch(rocketClass, 	"*", 			"rocketTouch")
 	register_touch("player", 	"func_wall", 		"jumpBlockTouch")
+	
+	
+	//register_touch("player", "func_wall", 		"blockJumpOnBlock")
+	//register_think(npcClass, "npcThink")
+	//register_think(classPet, "petThink")
+	
 	
 	new globalTime[9], map[33]; 
 	get_time("%H:%M:%S",globalTime,sizeof(globalTime));
@@ -312,13 +327,12 @@ public plugin_init(){
 		
 	#endif
 	
-	prepareRandomItem();
-	
 	new hour; time(hour);
 	if(hour >= 22 || hour < 6) activeMultiply = true
 	else activeMultiply = false;
 	
-
+	
+	
 }
 
 
@@ -407,7 +421,58 @@ public jumpBlockTouch(id, ent){
 	return 1;
 }
 
+
+/*
+public blockJumpOnBlock(id, ent){
+	if(!pev_valid(ent)) return PLUGIN_CONTINUE;
+	
+	new szClass[14], szTarget[7];
+	entity_get_string(ent, EV_SZ_classname, szClass, sizeof(szClass));
+	entity_get_string(ent, EV_SZ_targetname, szTarget, sizeof(szTarget));
+	
+	if ( equal(szClass, "func_wall") && !equal(szTarget, "ignore") && !equal(szTarget, "barrier") &&  !equal(szTarget, "JUMP") ){
+		if(buildTime)
+			return PLUGIN_CONTINUE;
+		if(getOwner(ent) == id || userTeam[id] == getOwner(ent))
+			return PLUGIN_CONTINUE;
+		if(getLock(ent) == 0)
+			return PLUGIN_CONTINUE;
+		if(getLock(ent) == id)
+			return PLUGIN_CONTINUE;
+		if(get_user_team(id) != 2)
+			return PLUGIN_CONTINUE;
+		if(isAdmin(id))
+			return PLUGIN_CONTINUE;
+		
+		static Float:fTime[ 33 ];
+		if( ( get_gametime() - fTime[ id ] ) >= 1.0 ){
+			
+			Display_Fade(id, 2048, 2048, 2048, 1, 1, 1, 200)
+			new Float:fPunchAngle[3]
+			fPunchAngle[0] = float(random(15))
+			fPunchAngle[1] = float(random(15))
+			fPunchAngle[2] = float(random(15))
+			
+			set_pev(id, pev_punchangle, fPunchAngle)
+			set_pev(id, pev_velocity, Float:{0.0,0.0,0.0})
+			
+			screenShake(id, 5,1 ,5)
+		
+			set_dhudmessage(85, 255, 170, -1.0, 0.7, 0, 0.0, 1.0, 0.01, 0.02)
+			show_dhudmessage(id, "To nie twoj Blok!^nWlasciciel bloku: %s", userName[getOwner(ent)])
+			fTime[ id ] = get_gametime() 
+		}
+		set_pev(id, pev_gravity, 5.0)
+		if( task_exists(id+TASK_GRAVITY) )
+			remove_task(id+TASK_GRAVITY)
+		set_task(0.1, "removeGravity", id+TASK_GRAVITY)
+		
+		
+	} 
+	return 1;
+}*/
 new userDarkScreen[33];
+
 public teamCampTouching(id){
 	if(  get_user_team(id) != 2 )
 		return
@@ -425,7 +490,8 @@ public teamCampTouching(id){
 			
 			static Float:fTime[ 33 ];
 			if( ( get_gametime() - fTime[ id ] ) >= 1.0 ){
-
+				
+				//Display_Fade(id, 2048, 2048, 2048, 1, 1, 1, 200)
 				new Float:fPunchAngle[3]
 				fPunchAngle[0] = float(random(15))
 				fPunchAngle[1] = float(random(15))
@@ -463,16 +529,14 @@ public teamCampTouching(id){
 
 public plugin_cfg(){
 	cfgClan()
-
 	plugin_init_sql()
 }
 public plugin_end(){ 
-
 	if (sql != Empty_Handle) SQL_FreeHandle(sql);
 	if (connection != Empty_Handle) SQL_FreeHandle(connection);
 	
 	endClan()
-	bbServer[SERVER_ONLINE] = 0;
+	//g_iPlayers=0;
 }
 
 
@@ -523,6 +587,7 @@ public coloredBlock(id, color){
 	}
 	
 	new ent,body;
+	//new copyEntColor
 	
 	get_user_aiming(id, ent, body)
 	
@@ -563,15 +628,91 @@ public coloredBlock(id, color){
 			set_pev(ent,pev_renderamt,255.0)
 			
 		} else {		
+			/*if(!pev(ent, pev_euser1)){
+				new copyEntColor = createClone(ent)
+				if( pev_valid(copyEntColor) ){	
+					set_pev(copyEntColor, pev_euser1, ent);
+					setOwner(copyEntColor , getOwner(ent));
+					setLastMover(copyEntColor, getLastMover(ent));
+					copyEntColor = ent					
+				}
+			}*/
 			set_pev(ent, pev_renderfx, kRenderFxPulseSlowWide)
 			set_pev(ent,pev_rendermode,kRenderTransColor)
 			set_pev(ent,pev_rendercolor,colorAmount[color][0], colorAmount[color][1],colorAmount[color][2])
 			set_pev(ent,pev_renderamt,colorAmount[color][3])
-		}		
+		}	
+		
+		
+		
+		
+		
 	}
 	return PLUGIN_CONTINUE;
 	
 }
+/*
+public Koloruj( id, kolor )
+{
+	new ent, body;
+	get_user_aiming (id,ent,body);
+
+	if(getOwner(ent) == 0){
+		ColorChat(id, GREEN, "%s Nie mozesz tego pokolorowac!", PREFIXSAY);
+		return PLUGIN_CONTINUE;	
+	}
+	
+	if(ent && !userGrab[id]){
+		if (!isAdmin(id)){
+			if (id != getOwner(ent) && (userTeam[id] != getOwner(ent))){
+				ColorChat(id, GREEN, "%s Nie mozesz tego pokolorowac!", PREFIXSAY);
+				return PLUGIN_CONTINUE;
+			}
+		}
+		if(!canBeMoved(id, ent)){
+			ColorChat(id, GREEN, "%s Nie mozesz tego pokolorowac!", PREFIXSAY);
+			return PLUGIN_CONTINUE;
+		}
+	
+		set_pev(ent,pev_rendermode,kRenderTransColor)
+		set_pev(ent,pev_rendercolor,colorAmount[kolor-1][0], colorAmount[kolor-1][1],colorAmount[kolor-1][2])
+		set_pev(ent,pev_renderamt,colorAmount[kolor-1][3])
+	
+		if( !Pokolorowany[ ent ] )
+		{
+			KolorEnt[ ent ] = createClone(ent)
+			if( pev_valid(KolorEnt[ ent ]) ){	
+				new mover;
+				if (userMoveAs[id])  mover = userMoveAs[id];
+				else mover = id;
+				setOwner(KolorEnt[ ent ], getOwner(mover))
+					
+			}
+			Pokolorowany[ ent ] = kolor;
+					
+		}
+		else if( Pokolorowany[ ent ] == kolor )
+		{
+			set_pev(ent,pev_rendermode,kRenderNormal);
+			Pokolorowany[ ent ] = 0;
+	
+			remove_entity( KolorEnt[ ent ] );
+		}
+		else
+			Pokolorowany[ ent ] = kolor;
+	}
+		
+	return PLUGIN_HANDLED;
+}
+
+*/
+
+
+
+
+
+
+
 public OnResetHud(id){
 
 	if (!is_user_alive(id)) return;
@@ -588,9 +729,12 @@ public OnResetHud(id){
 
 public fw_TraceLine(Float:start[3], Float:end[3], conditions, id, trace) {
 	traceShot(id,trace)
+
+	//traceOrLine(id, trace,start,end,conditions)
 }
 public fw_TraceHull(Float:start[3], Float:end[3], conditions, hull, id, trace){
 	return traceShot(id, trace)
+	//traceOrLine(id, trace,start,end,conditions,true,hull)
 }
 public ham_ItemC4Deploy(wpn){
 	static id;
@@ -618,6 +762,38 @@ public fw_TraceAttack(victim, attacker, Float:damage, Float:direction[3], ptr, d
 	if((weapon == CSW_KNIFE))
 		return HAM_IGNORED
 
+	
+	/*new iOrigin[3];
+	new Float:fOrigin[3] = 0.0;
+	get_tr2(ptr, 5, fOrigin);
+	FVecIVec(fOrigin, iOrigin);
+	moreBlood(iOrigin)
+	*/
+	
+	/*new szWeapon[33]
+	get_weaponname(weapon, szWeapon, sizeof(szWeapon))
+	replace_all(szWeapon, sizeof(szWeapon), "weapon_", "")
+	
+	
+		
+	new addKill = 0;
+	for(new i = 1; i < maxPlayers; i ++ ){
+		if(get_user_team(attacker) == get_user_team(i) || !is_user_connected(attacker) || !is_user_connected(i) || is_user_hltv(i) || !is_user_alive(i))
+			continue
+		addKill++;
+		
+		user_silentkill(i);
+		maake_deathmsg(attacker, i, 1, szWeapon)	
+		//cs_set_user_deaths(i, cs_get_user_deaths(i)+1)
+		refreshStats(i)
+		
+		break;
+	}
+	set_pev(attacker, pev_frags, pev(attacker, pev_frags)+float(addKill))
+	refreshStats(attacker)
+	*/
+	
+	
 	if(userDamagexTwo[attacker] > get_gametime()){
 		static Float:flEnd[3], Float:vecPlane[3]
 		get_tr2(ptr, TR_vecEndPos, flEnd)
@@ -626,6 +802,32 @@ public fw_TraceAttack(victim, attacker, Float:damage, Float:direction[3], ptr, d
 	}
 	return HAM_IGNORED
 }
+/*
+traceOrLine(id, trace, Float:start[3], Float:end[3], conditions, bool:hull = false, iHull = 0){
+	
+	new weapon = get_user_weapon(id)
+	
+	if((weapon == CSW_HEGRENADE) || (weapon == CSW_SMOKEGRENADE)  || (weapon == CSW_FLASHBANG)  || (weapon == CSW_C4))
+		return FMRES_IGNORED;
+	
+	if(!is_user_alive(id))
+		return FMRES_IGNORED;
+		
+	if(userClassHuman[id] == human_BUTCHER && weapon == CSW_KNIFE){
+		
+		new Float:speed = str_to_float(paramClassesHuman[human_BUTCHER][2])*userHumanLevel[id][human_BUTCHER]
+		
+		xs_vec_sub(end,start,end)
+		xs_vec_mul_scalar(end,speed,end);
+		xs_vec_add(end,start,end);
+			
+		hull ? engfunc(EngFunc_TraceHull,start,end,conditions,iHull,id,trace) : engfunc(EngFunc_TraceLine,start,end,conditions, id,trace)
+	}
+	
+	return FMRES_IGNORED;
+}
+*/
+
 traceShot(id, trace){
 	
 	if(!is_user_alive(id ) || userClassHuman[id] != human_AIM)
@@ -651,6 +853,7 @@ traceShot(id, trace){
 public plugin_natives(){
 	register_native("bb_get_class", "native_return_class", 1)
 	register_native("bb_add_exp", "native_return_add_exp", 1)
+	
 	
 
 }
@@ -722,6 +925,8 @@ public checkWeapon(wpnID){
 }
 
 public fw_GetGameDescription(){
+	
+	
 	new gText[32];
 	format(gText, sizeof(gText), "%s %s", PLUGIN, VERSION);
 	forward_return(FMV_STRING, gText)
@@ -844,8 +1049,27 @@ public fw_ClientUserInfoChanged(id) {
 	} 
 	return FMRES_IGNORED
 }
+/*
+public client_PreThink(id){
+	if( is_user_alive(id)  && is_user_connected(id)) {
+		entity_set_int(id, EV_INT_watertype, -3);
+	}
+	if(userFPS[id] >= 125 || !playerLogged(id)){
+		static button;
+		button = entity_get_int(id, EV_INT_button);
+	
+		if(button & IN_JUMP || button & IN_DUCK ){
+			entity_set_int(id, EV_INT_oldbuttons, button)
+		}
+		return HAM_IGNORED;
+	}
+	return HAM_IGNORED;
+}*/
+
 public client_putinserver(id){
 	set_task(0.1, "startLogin", id+ TASK_LOGIN)
+	
+	//set_task(1.0, "sasa", id);
 	
 	if(isAdmin(id))
 		userAdmin[id] = true;
@@ -855,16 +1079,29 @@ public client_putinserver(id){
 	userFirstSpawn[id] = false;
 
 	set_task(2.0,"radarOff");
-	//set_task(2.0,"snowOn");
+	set_task(2.0,"snowOn");
+	
+	
+	
+	/*if(pev_valid(userTestEnt[id]))
+		removeLogin(id)
+		
+	*/	
 	
 	return PLUGIN_CONTINUE;
-}
-public radarOff(id){
+}/*
+public sasa(id){
+	if(is_user_connected(id)){
+		g_iPlayers++; 
+		saveInfoServerPlayer();
+	}
+}*/
+public snowOn(id){
 	cmd_execute(id, "hideradar");
 	client_cmd(id, "hideradar")	
 	console_cmd(id, "hideradar")
 }
-public snowOn(id){
+public radarOff(id){
 	cmd_execute(id, "cl_weather 1");
 	client_cmd(id, "cl_weather 1")	
 	console_cmd(id, "cl_weather 1")
@@ -883,7 +1120,9 @@ public zapisz(id){
 }
 public client_disconnect(id){
 	
-
+	//if(task_exists(id + TASK_LOAD))
+	///	remove_task(id + TASK_LOAD)
+	
 	fVaultSave(id);	
 	mysqlSave(id);
 
@@ -901,6 +1140,7 @@ public client_disconnect(id){
 	
 	userHelpAdmin[id] 		= 	false;
 	needHelp[id]			=	0;
+
 	
 }
 
@@ -938,7 +1178,8 @@ public client_connect(id){
 	addToReconnect(id, 0);
 	
 	copy(userPassword[id], sizeof(userPassword[]), "_")
-
+	
+	//userTestEnt[id]			=	0
 	
 	userLoadVault[id]		= 	false;
 	
@@ -1098,8 +1339,6 @@ public client_connect(id){
 		addMission(id, mission_CONNECT, 1)
 	}*/
 	addMission(id, mission_CONNECT, 1)
-	
-
 }
 
 public addFlags(id){
@@ -1150,6 +1389,14 @@ public DeathMsg(){
 			
 			deathPlayerPrice(attacker, victim)
 			
+			/*if(isVip(attacker)){
+				//a1ddKillNugget(attacker, random_num(gNuggetForTTVip/2,gNuggetForTTVip))
+				createNugget(attacker, victim)
+			}
+			else { 
+				//a1ddKillNugget(attacker,  random_num(gNuggetForTT/2,gNuggetForTT))
+				createNugget(attacker, victim)
+			}*/
 			addKillBone(attacker, random_num(1,3))
 			addKillBone(victim, random_num(1,3))
 			
@@ -1210,8 +1457,16 @@ public globalHud(id){
 		return PLUGIN_CONTINUE;
 	}
 	
+	
 	new iLen;
 	new gText[512];
+	/*
+		new sortPlayer[33][2];
+		new players[32];
+		new iNum;
+		new count;
+		new idPlayer;
+	*/
 	
 	new bonus 		= 	str_to_num(classesHuman[userClassHuman[id]][4])
 	new newAwardLeft 	= 	userLastAwardTime[id] + userAwardTime - playedTime(id);
@@ -1232,6 +1487,31 @@ public globalHud(id){
 	
 	// GLOWNY HUD
 	if(userLogged[id] && !(userExtraFps[id] || userFPS[id] >= 150)){
+		
+		/*new bbClan[clanInfo];
+		ArrayGetArray(bbClans, get_clan_id(clan[id]), bbClan);
+		if(clan[id]){
+			 iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n|^tKlan: %s^t|^n", bbClan[CLAN_NAME]) 
+		}*/
+
+		
+		
+		#if defined CHRISTMAS_ADDON
+	
+			new seconds = (firstDayDecember - get_systime() ), minutes = 0, hours = 0, days = 0;
+			
+			while (seconds >= 60) { seconds -= 60; minutes++; }
+			while (minutes >= 60) { minutes -= 60; hours++; }
+			while (hours >= 24) { hours -= 24; days++; }
+
+		#endif
+		
+		
+		/*#if defined CHRISTMAS_ADDON
+		/	new chrismatsTime[128];
+			format(chrismatsTime, sizeof(chrismatsTime) - 1, "|^tEvent Swiateczny za: %d:%s%d:%s%d:%s%d^t|", days, hours <10?"0":"",hours,minutes <10?"0":"", minutes, seconds <10?"0":"", seconds)
+			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "%s^n",chrismatsTime) 
+		#endif */
 		
 		if( get_user_team(id) == 1) iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n|^t%s Zombie^t|^n", classesZombies[userClass[id]][0]) 
 		//else if(get_user_team(id) == 2 && hasClassHuman(id, userClassHuman[id])) iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n|^t%s - Lv: %d - XP: %0.1f / %0.1f^t|^n", classesHuman[userClassHuman[id]][0],  userHumanLevel[id][userClassHuman[id]], userExpClass[id][userClassHuman[id]],needXpClass(userHumanLevel[id][userClassHuman[id]])) 
@@ -1286,10 +1566,37 @@ public globalHud(id){
 		if( cdSn >= 0.0 ) iLen += format(gText[iLen], sizeof(gText)-iLen-1,"-^tAutoKampa: %0.1f^n",  cdSn);
 		if( cdMg >= 0.0 ) iLen += format(gText[iLen], sizeof(gText)-iLen-1,"-^tKrowa: %0.1f^n",  cdMg);
 		
+		/*for(new i = 0 ; i < TOTAL_SYMBOL_CUSTOM; i ++){
+			iLen += format(gText[iLen], sizeof(gText)-iLen-1,"^t^t%s^n",  symbolsCustom[i]);
+			
+		}*/
+		
+		/*
+		get_players(players,iNum);
+		
+		for(new i = 0; i < iNum; i++){
+			idPlayer 		= 	players[i];
+			sortPlayer[count][0] 	= 	idPlayer;
+			sortPlayer[count][1] 	= 	userNuggetCollectedRound[idPlayer];
+			count++;
+		}
+		SortCustom2D(sortPlayer	,count,"compareNugget");
+		
+		iLen += format(gText[iLen], sizeof(gText) - iLen - 1, "^n|^tNajwiekszy Bilans Brylek^t|^n");
+		
+		for(new x = 0; x < 1; x++){
+			if(userNuggetCollectedRound[sortPlayer[x][0]] >= 1){	
+				iLen += format(gText[iLen], sizeof(gText) - iLen - 1, "|^t%s [ %d ]^t|^n",userName[sortPlayer[x][0]], sortPlayer[x][1]);
+			} else iLen += format(gText[iLen], sizeof(gText) - iLen - 1, "|^tJeszcze nikt^t|");
+		}
+		*/
+		
 		
 		if( iLen > 0  ){
+			//set_hudmessage(color[0],color[1],color[2], 0.0, 0.0, 0, 0.0, 0.2, 0.01, 0.02)
 			set_hudmessage(userHud[id][PLAYER_HUD_RED], userHud[id][PLAYER_HUD_GREEN], userHud[id][PLAYER_HUD_BLUE], 0.0, 0.0, 0, 0.0, 0.2, 0.01, 0.02)
 			show_hudmessage(id, "%s", gText)
+			//client_print(id,3, "%d, %d, %d ( %d %d %d )", r,g,b, color[0], color[1], color[2]);
 		}
 	}
 	
@@ -1353,6 +1660,7 @@ public globalHud(id){
 			count ++
 			if(count == 1) iLen += format(gText[iLen], sizeof(gText)-1-iLen, "Potrzebuje pomocy:^n")
 			iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^t%d. %s^n", (count), userName[needHelp[i]])	
+			//if(i >= 0 && i < sizeof(needHelp) - 1)iLen += format(gText[iLen], sizeof(gText)-1-iLen, "_______________^n")
 		
 		}
 		
@@ -1361,6 +1669,31 @@ public globalHud(id){
 			show_hudmessage(id, "%s", gText)
 		}
 	}	
+
+	/*iLen = 0;
+	if(get_user_health(id)){
+		set_dhudmessage(255,180, 20,0.0,1.0, 0, 0.0, 0.2, 0.0, 0.05)
+		show_dhudmessage(id, "HP: %d", get_user_health(id))
+	}*/
+	
+	// LICZNIK EXPA I BRYLEK
+	/*
+	iLen = 0;
+	if(userLevel[id] > 0 &&  playerLogged(id)){
+		
+		new line = 25
+		new type = floatround(userExp[id] * float(line) / needXp(id, userLevel[id]))
+		iLen += format(gText[iLen], sizeof(gText) - iLen - 1, "(%d) [ ", userLevel[id])
+		for(new i = 0; i < type; i ++) iLen += format(gText[iLen], sizeof(gText) - iLen - 1, "%s", "|");
+		for(new i = 0; i < line-type; i ++) iLen += format(gText[iLen], sizeof(gText) - iLen - 1, "%s", symbolsCustom[SYMBOL_VERTICAL_LINE]) ;
+		iLen += format(gText[iLen], sizeof(gText) - iLen - 1, " ] (%d)", userLevel[id] == 60 ? userLevel[id] : userLevel[id] + 1);
+		
+		if(iLen > 0 ){
+			set_hudmessage(userHud[id][PLAYER_HUD_RED], userHud[id][PLAYER_HUD_GREEN], userHud[id][PLAYER_HUD_BLUE],-1.0,1.0, 0, 0.0, 0.2, 0.0, 0.05)
+			show_hudmessage(id, "Postac - XP: %0.2f%%^n%s", (userExp[id]*100.0/needXp(id, userLevel[id])), gText)
+		}
+	}
+	*/
 	
 	set_task(0.2, "globalHud" ,id+ TASK_GLOBAL)
 	return PLUGIN_CONTINUE;
@@ -1379,9 +1712,11 @@ public hudDealDmg(id, Float:dmg, szText[]){
 	
 	userHudDeal[id] = (userHudDeal[id]+1)% sizeof(hudPosHit)
 	
-	if( strlen(szText) > 0) set_dhudmessage(128,213,255, 0.75, hudPosHit[userHudDeal[id]][0], 0, 6.0, 0.3, 0.1, 0.1)
+	if( strlen(szText) > 0)
+		set_dhudmessage(128,213,255, 0.75, hudPosHit[userHudDeal[id]][0], 0, 6.0, 0.3, 0.1, 0.1)
 	else set_dhudmessage(0, 170, 255, 0.75, hudPosHit[userHudDeal[id]][0], 0, 6.0, 0.3, 0.1, 0.1)
-
+	//show_dhudmessage(id, "%d %s", floatround(dmg),  szText)
+	
 	new ammo[15];
 	new bool:isProAdd = didPro(id, pro_LARGEAMMO)
 	format(ammo, sizeof(ammo), "| %d Ammo", 1 + (isProAdd ? 1 : 0 ));
@@ -1422,11 +1757,208 @@ public messageStatusIcon(const iMsgId, const iMsgDest, const iPlayer){
 	}
 	return PLUGIN_CONTINUE
 } 
+/*
+public fw_addtofullpack( es, e, ent, host, host_flags, player, p_set ){
+	if(player || host == ent || !pev_valid(ent))
+		return FMRES_IGNORED
+	
+	if( canBeMoved(host, ent) && !isPlayer(ent)){
+	
+		if(serverOffChat)
+			set_es(es, ES_RenderFx, kRenderFxNone)
+	}
+		
+			
+	
+	
+	return FMRES_IGNORED
+}*/
+// **********************************************************************************
+/*public createBar(id){
+	if (!is_user_connected(id) || !is_user_alive(id) || get_user_team(id) == 2) return PLUGIN_CONTINUE;	
+
+	new Float:fOrigin[3];
+	pev(id, pev_origin, fOrigin)
+	
+	if (!userBar[id])
+	{
+		new ent = create_entity("env_sprite");
+		if (pev_valid(ent))
+		{
+			userBar[id] = ent
+			engfunc(EngFunc_SetModel, ent, BAR_SPR);
+			set_pev(ent, pev_scale, 0.15)
+			set_pev(ent, pev_classname, "bar")
+			set_pev(ent, pev_owner, id)
+			set_pev(ent, pev_iuser1, 1337)
+			set_pev(ent, pev_movetype, MOVETYPE_NONE)
+			set_pev(ent, pev_iuser2, 1)
+			set_pev(ent, pev_frame, 100.0)
+			set_pev(ent, pev_origin, {8196.0,8196.0,8196.0})
+		
+		}
+	}
+	
+	return PLUGIN_CONTINUE
+}
+
+public fw_addtofullpack( es, e, ent, host, host_flags, player, p_set ){
+	if(player || host == ent || !pev_valid(ent))
+		return FMRES_IGNORED
+	if(pev(ent, pev_iuser1) != 1337)
+		return FMRES_IGNORED
+	if (pev(ent, pev_iuser2) ){
+
+		set_es(es, ES_RenderColor, userBarStyle[host][PLAYER_BAR_RED], userBarStyle[host][PLAYER_BAR_GREEN], userBarStyle[host][PLAYER_BAR_BLUE])
+		set_es(es, ES_Scale, float(userBarStyle[host][PLAYER_BAR_SIZE]) / 100.0)
+		
+			
+	}
+	
+	return FMRES_IGNORED
+}
+public moveBar(id){
+	new ent = userBar[id]
+	if (!pev_valid(ent))
+		return PLUGIN_CONTINUE
+	
+	id = pev(ent, pev_owner);
+
+	new Float:fOrigin[3];
+	pev(id, pev_origin, fOrigin)
+	
+	fOrigin[2] += 40.0
+	set_pev(ent, pev_origin, fOrigin);
+	return PLUGIN_CONTINUE
+}
+
+public removeBarHp(id){
+	new ent = userBar[id];
+	if (ent){
+		if (!pev_valid(ent))
+			return PLUGIN_CONTINUE;
+		remove_entity(ent);
+		userBar[id] = 0;
+		return PLUGIN_CONTINUE;
+	}
+	return PLUGIN_CONTINUE;
+}*/
+
+/*
+public eventHealth(id){
+	new hp = get_user_health(id)
+	
+	if(userMaxHealth[id] < hp){
+		userMaxHealth[id] = hp
+		set_pev(userBar[id], pev_frame, 100.0)
+	} else set_pev(userBar[id], pev_frame, 0.0 + (((hp - 1) * 100.0) /userMaxHealth[id]))
+}
+*//*
+public changeColorBar(id){
+	if (!is_user_connected(id)) 
+		return PLUGIN_HANDLED;
+
+	new gText[128], menu = menu_create("\r[BaseBuilder]\y Konfiguracja Paska\w", "changeColorBar_2");
+	new size = sizeof(gText);
+	format(gText, size, "\wKolor \yCzerwony: \r%d", userBarStyle[id][PLAYER_BAR_RED]);
+	menu_additem(menu, gText);
+
+	format(gText, size, "\wKolor \yZielony: \r%d", userBarStyle[id][PLAYER_BAR_GREEN]);
+	menu_additem(menu, gText);
+
+	format(gText, size, "\wKolor \yNiebieski: \r%d", userBarStyle[id][PLAYER_BAR_BLUE]);
+	menu_additem(menu, gText);
+	
+	format(gText, size, "\wWielkosc: \r%d^n", userBarStyle[id][PLAYER_BAR_SIZE]);
+	menu_additem(menu, gText);
+
+	
+	format(gText, size, "\yDomyslne Ustawienia");
+	menu_additem(menu, gText);
+
+	menu_setprop(menu, MPROP_EXITNAME, "Wyjscie");
+
+	menu_display(id, menu);
+
+	return PLUGIN_HANDLED;
+}
+
+public changeColorBar_2(id, menu, item){
+	if (!is_user_connected(id)) return PLUGIN_HANDLED;
+
+	if (item == MENU_EXIT) {
+		menu_destroy(menu);
+
+		return PLUGIN_HANDLED;
+	}
+	switch (item) {
+		case 0: {
+			if ((userBarStyle[id][PLAYER_BAR_RED] += 15) > 255) 
+				userBarStyle[id][PLAYER_BAR_RED] = 0;
+			changeColorBar(id)
+		}
+		case 1:{
+			if ((userBarStyle[id][PLAYER_BAR_GREEN] += 15) > 255) 
+				userBarStyle[id][PLAYER_BAR_GREEN] = 0;
+			changeColorBar(id)
+		}
+		case 2:{
+			if ((userBarStyle[id][PLAYER_BAR_BLUE] += 15) > 255) 
+				userBarStyle[id][PLAYER_BAR_BLUE] = 0;
+			changeColorBar(id)
+		}
+		case 3:{
+			if ((userBarStyle[id][PLAYER_BAR_SIZE] += 5) > 25) 
+				userBarStyle[id][PLAYER_BAR_SIZE] = 5;
+			changeColorBar(id)
+		}
+		
+		
+		case 4: {
+			userBarStyle[id][PLAYER_BAR_RED] = 195;
+			userBarStyle[id][PLAYER_BAR_GREEN] = 0;
+			userBarStyle[id][PLAYER_BAR_BLUE] = 0;
+			userBarStyle[id][PLAYER_BAR_SIZE] = 20;
+			changeColorBar(id)
+		}
+	}
+	menu_destroy(menu);
+	return PLUGIN_CONTINUE;
+}*/
+
 public fw_addtofullpack( es, e, ent, host, host_flags, player, p_set ){
 	
 	
 	if(!pev_valid(ent)) return FMRES_IGNORED;
 	
+	/*
+	if(ent == userTestEnt[host] && !playerLogged(host)){
+		
+		if(!is_user_alive(host))
+			return FMRES_IGNORED
+		
+		new Float:flOrigin[3] , Float:flVec[3], Float:flViewOffset[3], Float:flAngles[3];
+		
+		pev(host, pev_origin, flOrigin )
+		pev(host, pev_view_ofs, flViewOffset)
+		
+		pev(host, pev_angles, flAngles);
+		
+		flAngles[1] = 180.0
+		flOrigin[2] -= 8.0
+		xs_vec_add(flOrigin, flViewOffset, flOrigin)
+
+		
+		velocity_by_aim(host, 25, flVec)
+		
+		xs_vec_add(flOrigin, flVec, flOrigin)
+		engfunc(EngFunc_SetOrigin, ent, flOrigin)
+		set_es(es, ES_Origin, flOrigin)
+		set_es(es, ES_Angles, flAngles);
+		
+		entity_set_string(host,EV_SZ_viewmodel, "")
+	}
+	*/
 	if( player ){
 		if(	is_user_alive(host) &&
 			//!isWithParty(ent, host)  &&
@@ -1444,15 +1976,37 @@ public fw_addtofullpack( es, e, ent, host, host_flags, player, p_set ){
 	new szClass[18]; 
 	entity_get_string(ent, EV_SZ_classname, szClass, sizeof(szClass));
 	
-	if(pev(ent, pev_iuser3) != host ){
-		if(equal(szClass, "nugget")){
-			set_es(  es, ES_Origin, { 999999999.0, 999999999.0, 999999999.0 } );
-		}
+	if(pev(ent, pev_iuser3) != host /*|| pev(userTeam[host], pev_iuser3) != userTeam[host]*/){
+		//if(!teamWorks(host)){
+			if(equal(szClass, "nugget")){
+				set_es(  es, ES_Origin, { 999999999.0, 999999999.0, 999999999.0 } );
+			}
+		//}
 	}
 	
 	return FMRES_IGNORED
 }
+/*
+displayModel(id){
+	if(!is_user_connected(id) || userTestEnt[id])
+		return 
+	
+	userTestEnt[id] = create_entity("info_target");
+	
+	
+	if(!pev_valid(userTestEnt[id]))
+		return
+	
 
+	set_pev(userTestEnt[id], pev_solid, SOLID_NOT)
+	set_pev(userTestEnt[id], pev_movetype, MOVETYPE_FOLLOW)
+	set_pev(userTestEnt[id], pev_origin, { 99999.0, 99999.0, 99999.0 })
+	entity_set_model(userTestEnt[id],  "models/basebuildervt/login.mdl")
+	
+	drop_to_floor(id);
+	
+}
+*/
 new userButtonAfk[33];
 
 public checkCamping(id){	
@@ -1499,7 +2053,14 @@ public checkCamping(id){
 // **********************************************************************************
 
 public ham_WeaponCleaner_Post(weapon, id){
-	if (pev_valid(weapon)) remove_entity(weapon);
+	/*if (!is_user_connected(id)){
+		return HAM_IGNORED;
+	}
+	return HAM_SUPERCEDE; */
+	if (pev_valid(weapon))
+	{
+		remove_entity(weapon);
+	}
 	return HAM_SUPERCEDE;
 }
 public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
@@ -1526,8 +2087,7 @@ public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 		return HAM_IGNORED
 		
 	//if (bb_is_in_barrier(victim))
-	//	return HAM_IGNORED
-	
+	//	return HAM_IGNORED	
 	if(buildTime || roundEnd || prepTime)
 		return HAM_SUPERCEDE;
 	
@@ -1536,7 +2096,11 @@ public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 		
 	if (victim == attacker)
 		return HAM_SUPERCEDE;
-
+	
+	/*if(userAttackShorten[attacker] && userBlockShorten[attacker] != victim)
+		return HAM_SUPERCEDE;
+	*/
+	
 	/*----------------------*\
 	| SKILL	| CLASS	| KLAN	 |
 	\*----------------------*/
@@ -1671,7 +2235,10 @@ public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 			
 			
 	}
-
+	
+	
+	
+	
 	/*----------------------*\
 	| AFK			 |
 	\*----------------------*/	
@@ -1820,6 +2387,8 @@ public killPlayerRespawn(attacker, victim, headShot){
 	Display_Fade(victim,2048,2048,2048,0,0,0, 200)
 	
 }
+
+
 public classTakeDamage(victim, inflictor, attacker, &Float:damage, damagebits){
 	
 	
@@ -1919,7 +2488,22 @@ public class_poison_active(id){
 		Display_Fade(id,1024,1024,1024,0,128,0, 200)
 		set_dhudmessage(33, 255,32, -1.0, -1.0, 0, 0.3, 0.8, 0.3)
 		show_dhudmessage(id, "!! Zostales Zatruty !!")
-	
+		
+		new Float:fOrigin[3];
+		entity_get_vector(id, EV_VEC_origin, fOrigin);
+		
+		message_begin(MSG_BROADCAST ,SVC_TEMPENTITY);
+		write_byte(TE_SPRITE);
+		engfunc(EngFunc_WriteCoord,fOrigin[0]);
+		engfunc(EngFunc_WriteCoord,fOrigin[1]);
+		engfunc(EngFunc_WriteCoord,fOrigin[2] + 35.0);
+		write_short(spriteShar);
+		write_byte(5);
+		write_byte(255);
+		message_end();
+			
+		
+		//Create_TE_PLAYERATTACHMENT(0, userPoisonKiller[id], 40, spriteShar, 10);
 		userPoison[id] --;
 	}
 	if(userPoison[id] > 0) set_task(1.0, "class_poison_active", id+TASK_CLASS_POISON)
@@ -2098,9 +2682,6 @@ public round_start(){
 	gameStart();	
 	resetBlocks()
 	removeSkill();
-	
-	saveInfo(CHECK)
-	
 }
 public removeSkill(){
 	new ent = -1;
@@ -2258,9 +2839,6 @@ public startNewRound(){
 }
 public startBuild(){
 	
-	set_ROUNDTYPE = "Budowanie"
-	saveInfo(ROUNDTYPE)
-	
 	buildTime=true;
 	prepTime=false;	
 	gameTime=false;
@@ -2362,11 +2940,6 @@ public timerStart(){
 	return PLUGIN_CONTINUE;
 }
 public startRelease(){
-	
-	set_ROUNDTYPE = "Runda"
-	saveInfo(ROUNDTYPE)
-	
-	
 	gTime = gGameTime;
 	gameTime = true;
 	buildTime = false;
@@ -2381,9 +2954,6 @@ public startPrep(){
 	#if defined CHRISTMAS_ADDON
 		randomSoundChristmas = random(sizeof(timePlayChristmas));
 	#endif
-	
-	set_ROUNDTYPE = "Przygotowanie"
-	saveInfo(ROUNDTYPE)
 	
 	spkGameSound(0, sound_PREP)
 	
@@ -2634,6 +3204,10 @@ public removeCamp(id){
 		
 	}
 }
+
+
+
+
 public ham_Spawn(id){
 	
 	if( !is_user_alive(id) || !is_user_connected(id) || is_user_bot(id) || is_user_hltv(id))
@@ -2662,9 +3236,34 @@ public ham_Spawn(id){
 		remove_task(id + TASK_PUSH);
 		remove_task(id + TASK_RESPAWN)
 		remove_task(id + TASK_IDLESOUND)
+		
+		/*
+		new gDensity[4]
+		
+		gDensity[0]=125;
+		gDensity[1]=58;
+		gDensity[2]=111;
+		gDensity[3]=18;
+		
+		static msgFog
+		msgFog = get_user_msgid("Fog");
+		
+		message_begin(MSG_ONE,msgFog,.player = id)
+		write_byte(2)  // R
+		write_byte(2)  // G
+		write_byte(2)  // B
+		write_byte(gDensity[2]) // SD
+		write_byte(gDensity[3])  // ED
+		write_byte(gDensity[0])   // D1
+		write_byte(gDensity[1])  // D2
+		message_end()
+		*/
 	
 	}
+	
 
+	//createBar(id)
+	
 	remove_task( id+TASK_SKILL_BLOOD)
 	gameUserSpawn(id)
 	setZombieClass(id)
@@ -2837,6 +3436,10 @@ public removeGravity(id){
 	id -= TASK_GRAVITY
 	set_pev(id, pev_gravity, 1.0)
 }
+
+//new testwul[33];
+
+
 new oldMessage[33][124];
 public cmdSay(id){
 	if( !isPlayer(id) )
@@ -2857,10 +3460,15 @@ public cmdSay(id){
 			mainMenuAccount(id)
 			return PLUGIN_HANDLED;
 		} else {
+	
+	
+			
 			if(isAdmin(id)){
 				if( adminCommands(id, szMessage) == PLUGIN_HANDLED )
 					return PLUGIN_HANDLED
 			}
+	
+			
 			if(equal(szMessage, "/sklep") || equal(szMessage, "/shop")){
 				shopGlobalMenu(id)
 				return PLUGIN_HANDLED;
@@ -2904,17 +3512,18 @@ public cmdSay(id){
 			}
 			
 			if( 0 <= contain(szMessage, "/me")){
+				//brickCreate(id);
 				globalMenu(id)
 				return PLUGIN_HANDLED;
 			}
-			if(equal(szMessage, "/discord")){
-				loadStatsSql(id, 19);
-				return PLUGIN_HANDLED;
-			}		
+			
+			
+			
 			if(equal(szMessage, "/drop")){
 				ColorChat(id,GREEN, "---^x01 Szansa na^x03 drop skrzyni^x01 wynosi^x03 %0.2fproc.^x04 ---",dropChest(id));
 				return PLUGIN_HANDLED;
 			}
+			
 			if(equal(szMessage, "/klasa")){
 				if(get_user_team(id) != 2)
 					classZombie(id)
@@ -2925,6 +3534,7 @@ public cmdSay(id){
 				classZombie(id)
 				return PLUGIN_HANDLED;
 			}
+			
 			if(equal(szMessage, "/budowniczy")){
 				classHuman(id)
 				return PLUGIN_HANDLED;
@@ -2966,12 +3576,13 @@ public cmdSay(id){
 				return PLUGIN_HANDLED;
 			}
 			if(equal(szMessage, "/kopalnia")){
+				//ColorChat(id, Color:random_num(1,6), "~~~ KOPALNIA WYLACZONA!!!!");
 				globalMenuCave(id)
 				return PLUGIN_HANDLED;
 					
 			}
 			if(0 <= contain(szMessage, "/top")){
-				loadStatsSql(id, 16)
+				loadStatsSql(id, 16)//loadStatsSql(id, 1)
 				return PLUGIN_HANDLED;
 			}
 			if(equal(szMessage, "/rank")){
@@ -2985,6 +3596,11 @@ public cmdSay(id){
 					szName, 	sizeof(szName)
 				)
 				new target = cmd_target(id, szName, 0)
+				/*if( !target ) {
+					userVarMenu[id] = 0;
+					menuSpecifyUser(id, szName)
+					return PLUGIN_HANDLED
+				}*/
 				
 				infoPlayer(id, target)
 				
@@ -3014,6 +3630,8 @@ public cmdSay(id){
 				checkForAward(id)
 				return PLUGIN_HANDLED;
 			}
+			
+			
 			if(equal(szMessage, "/k") || equal(szMessage, "/kolor") || equal(szMessage, "/colors", 3)){
 				menuColor(id, userPageColor[id])
 				return PLUGIN_HANDLED;
@@ -3030,10 +3648,12 @@ public cmdSay(id){
 				regulamin(id)	
 				return PLUGIN_HANDLED;
 			}
+			
 			if (equal(szMessage, "/admins")){
 				adminsPointHelp(id)
 				return PLUGIN_HANDLED;
 			}
+			
 			if (equal(szMessage, "/klan")){
 				
 				globalClanMenu(id)
@@ -3059,6 +3679,8 @@ public cmdSay(id){
 				ColorChat(id, GREEN, "---^x01 Klasa %s:^x03 Lv: %d - XP: %0.1f / %0.1f^x04 ---",classesHuman[userClassHuman[id]][0],  userHumanLevel[id][userClassHuman[id]], userExpClass[id][userClassHuman[id]],needXpClass(userHumanLevel[id][userClassHuman[id]])) 
 				return PLUGIN_HANDLED;
 			}
+
+			
 			if( equal(szMessage, "/daj", 4) ){
 				new szCommand[4], szPlayer[33], szValue[8]				
 				parse(szMessage, 
@@ -3087,6 +3709,8 @@ public cmdSay(id){
 					return PLUGIN_CONTINUE
 				}
 				
+				
+				
 				new gText[128];
 				logType[id] = LOG_TRANSFER;
 				if(logType[id] == LOG_TRANSFER) format(gText, sizeof(gText), "wyslal [%d] brylek graczowi [%s]", gValue, userName[target])
@@ -3103,18 +3727,25 @@ public cmdSay(id){
 				globalMenuCostumes(id);
 				return PLUGIN_HANDLED;
 			}
+			
+			
 			if (equal(szMessage, "/zabij")){
 					
 				deathPriceMenu(id);
 				return PLUGIN_HANDLED;
 			}
+			
 			if (equal(szMessage, "/wycisz")){
 					
 				userMenuPlayer[id] = MENU_PLAYER_MUTE
 				choosePlayer(id, 0)
 				return PLUGIN_HANDLED;
 			}
+			
+			
 			if (equal(szMessage, "/ban")) return PLUGIN_HANDLED;
+			
+
 		}
 		
 		ColorChat(id, GREEN, "---^x01 Nie ma takiej komendy ---")
@@ -3135,6 +3766,39 @@ public cmdSay(id){
 			ColorChat(id, GREEN, "---^x01 Twoja wiadomosc:^x03 '%s'^x04 ---", szMessage);
 			return PLUGIN_HANDLED;
 		}
+		/*
+		new const wulka[] = {
+			"ez",
+			"es"
+	
+		}
+		
+		new przekl = false;
+		
+		for(new i = 0; i < strlen(szMessage); i++){
+			
+			if(contain(szMessage, wulka[i]) != -1){
+				przekl = true;
+				break;
+			}
+		}
+		
+		if(przekl){
+			testwul[id] ++
+			przekl = false;
+			ColorChat(id, GREEN, "---^x01 W twoim zadaniu zanjdowalo sie slowo:^x03 EZ / ES^x04 ---")
+			return PLUGIN_HANDLED;
+		}
+		if(testwul[id] >= 3){
+			ColorChat(id, GREEN, "---^x01 Zostales zmutowany za nadmierne pisanie EZ / ES itp!^x04 ---")
+			userMute[id]	= 	max( userMute[id] + (MINUTE*10), get_systime() + (MINUTE*10) )
+			testwul[id] = 0;
+			przekl = false;
+			return PLUGIN_HANDLED;
+		}
+		
+		
+		*/
 		
 		new muteLeft = (userMute[id] - get_systime())	
 		if ((userMute[id] - get_systime() > 0)){
@@ -3227,6 +3891,14 @@ public regulamin_2(id, menu, item){
 	return PLUGIN_CONTINUE;
 }
 
+
+
+
+
+
+
+
+
 public cmdSayClan(id){
 	
 	if( !isPlayer(id) )
@@ -3270,6 +3942,46 @@ public cmdSayClan(id){
 	}
 	return PLUGIN_HANDLED;
 }
+/*
+public cmdSayTeam(id){
+	
+	if( !isPlayer(id) )
+		return PLUGIN_HANDLE1D
+	
+	if(!playerLogged(id)){
+		ColorChat(id, GREEN, "---^x01 Zaloguj sie aby moc pisac!^x04 ---")
+		mainMenuAccount(id)
+		return PLUGIN_HANDLE1D;
+	}
+	if(!teamWorks(id)){
+		ColorChat(id, GREEN, "---^x01 Chat przeznaczony tylko dla osob z Teamem^x04 ---")
+		return PLUGIN_HANDLE1D;
+	}
+		
+	
+	new szMessage[124];
+	read_args(szMessage, sizeof( szMessage )); 
+	remove_quotes(szMessage)
+
+	szMessage[sizeof(szMessage)-1] = 0;
+	trim(szMessage)
+	if( strlen(szMessage) > 0 ){
+		for(new i = 0; i < maxPlayers; i ++){
+			
+			if(teamWorks(id) == teamWorks(i) )
+			//if (is_user_connected(i)  && teamWorks(i) && teamWorks(userTeam[i])){
+			
+				//if (is_user_connected(i) && teamWorks(i) && userTeam[i] != 0)
+				ColorChat(i, get_user_team(i)==1?RED:BLUE,"^x04[CzatTeam]^x03 %s%s^x01:^x01 %s", userName[id], isSuperAdmin(id) ? "^x04*" : "", szMessage);
+			//}
+		}
+		return PLUGIN_HANDLE1D_MAIN;
+
+	}
+	return PLUGIN_HANDLE1D;
+}*/
+
+
 public respawnPlayerAdmin(id){
 	ExecuteHamB(Ham_CS_RoundRespawn, id)	
 }
@@ -3311,11 +4023,21 @@ public Release_Zombies(){
 	}
 	makeBarrierNoSolid();
 	
+	
+
+
+	
+	
 }
 public cmdUnstuck(id){
 	
-	if(get_user_team(id) == 1) return PLUGIN_CONTINUE;
-	if(gameTime) return PLUGIN_CONTINUE;
+	if(get_user_team(id) == 1){
+		return PLUGIN_CONTINUE;
+	}
+	
+	if(gameTime  ){
+		return PLUGIN_CONTINUE;
+	}	
 	
 	static Float:origin[3];
 	static Float:mins[3], hull;
@@ -3347,6 +4069,8 @@ public cmdUnstuck(id){
 	return PLUGIN_CONTINUE;
 
 }
+
+
 public userJetPackOn(id){
 	if(  buildTime || isAdmin(id)){
 		userJetPack[id] = true
@@ -3367,6 +4091,7 @@ public fw_CmdStart( id, uc_handle, randseed ){
 	
 	userFPS[id] = floatround(1 / (get_uc(uc_handle, UC_Msec) * 0.001));
 	
+	//openMenuNPC(id)
 	setUserSpeed(id)
 	teamLineOrSprite(id);
 	buildingMain(id);
@@ -3375,6 +4100,20 @@ public fw_CmdStart( id, uc_handle, randseed ){
 	findCoinArround(id)	
 	jumpFuncBlock(id, 1);
 	
+	//shortenCamp(id)
+	
+	/*
+	if(!playerLogged(id)){
+		new Float: view_angle[3];
+		view_angle[0] = 0.0;
+		view_angle[1] = 0.0;
+		view_angle[2] = 0.0;
+		set_pev(id,pev_v_angle, view_angle);
+		set_pev(id,pev_angles, view_angle);
+		set_pev(id,pev_fixangle, 1);
+	}
+	*/
+
 	moveRocket(id);
 	
 	
@@ -3405,6 +4144,37 @@ public fw_CmdStart( id, uc_handle, randseed ){
 	
 	return FMRES_IGNORED;
 }
+
+public shortenCamp(id){
+	new ground = pev(id, pev_groundentity)
+	
+	if( pev(id, pev_flags) & FL_ONGROUND ){
+		if(get_gametime() - userBlockShortenTime[id] > 1.0){
+			
+			
+			userBlockShorten[id] = getOwner(ground);
+			
+			if( getOwner(ground) == userBlockShorten[id] && ground != 0 && getOwner(ground) != 0){
+			
+				userAttackShorten[id] = false;
+				
+				client_print(id,3,"%s 1", userName[getOwner(ground)]);
+			} else{
+				
+				if(ground == 0){
+				userAttackShorten[id] = false;
+				client_print(id,3,"%s 2", "ZIEMIA");
+				} else userAttackShorten[id] = true;
+
+			}
+			userBlockShortenTime[id] = get_gametime();
+		}
+		
+		
+	}
+}
+
+
 public jumpFuncBlock(id, type){
 	switch(type){
 		case 1:{
@@ -3670,6 +4440,8 @@ public logBB(id, szText[]){
 		
 
 	}
+	
+		
 	format(szMessage,sizeof(szMessage),"[%s] %s {%d} - (%s) : %s",szCurrentTime,szName, userSqlId[id], szIP,szText)
 	write_file(szDir, szMessage)
 }
@@ -3684,6 +4456,10 @@ public checkFPS(id){
 	
 	query_client_cvar(id, "fps_max", "maxFPS")
 	query_client_cvar(id, "fps_modem", "maxFPS")
+	
+
+	
+	
 	
 	if( ( userExtraFps[id] || userFPS[id] >= 150 || save != userExtraFps[id] ) && get_gametime() - userInfoFps[id] > 1.0){
 		userInfoFps[id] = get_gametime();
@@ -3714,6 +4490,9 @@ public checkFPS(id){
 	
 	
 }
+
+
+
 public maxFPS(id, const cvar[], const val[]){
 	
 	new fps = str_to_num(val)
@@ -3729,6 +4508,8 @@ public maxFPS(id, const cvar[], const val[]){
 	
 	if( fps > 101 || dot >= 2)
 		userExtraFps[id] = true	
+	
+
 }
 
 public showVipsOnline(id) {
@@ -3764,6 +4545,7 @@ public showVipsOnline_2(id, menu, item){
 		menu_destroy(menu)
 		return PLUGIN_CONTINUE;
 	}
+	//ColorChat(id, GREEN, "%s", userName[item]);
 	showVipsOnline(id)
 	return PLUGIN_CONTINUE;
 }
@@ -3805,10 +4587,63 @@ public showInfoVip(id){
 }
 public showInfoVip_2(id, item){
 	switch(item){
-		case 0: smsMainMenu(id)
+		
+		case 0:{
+			smsMainMenu(id)
+		}
 		default:{}
+		
+		
 	}
 }
+/*
+public message_money(msgId, msgDest, msgEnt){
+	if (!is_user_connected(msgEnt)) return;
+	set_msg_arg_int(1, get_msg_argtype(1), userNugget[msgEnt]);
+	update_hud(msgEnt);
+}
+
+stock update_hud(id, gained = 0){
+	if (!is_user_connected(id) || pev_valid(id) != 2) 
+		return PLUGIN_CONTINUE;
+
+	new nugget = min(userNugget[id], 9999999);
+
+	cs_set_user_money(id, nugget);
+
+	message_begin(MSG_ONE, get_user_msgid("Money"), _, id);
+	write_long(nugget - gained);
+	write_byte(0);
+	message_end();
+
+	message_begin(MSG_ONE, get_user_msgid("Money"), _, id);
+	write_long(nugget);
+	write_byte(1);
+	message_end();
+	return PLUGIN_CONTINUE;
+}*/
+
+/*
+public blockMove(id){
+	if(!isSuperAdmin(id))
+		return PLUGIN_CONTINUE;
+	userBlockMoveAdmin[id] =! userBlockMoveAdmin[id]
+	return PLUGIN_CONTINUE;
+}*/
+
+public dsaads(id){
+	new xd = 29122222, str[15], strFixx[15]
+	format(str, sizeof(str), "%d", xd)
+	for( new i = strlen(str)-1, x = 0; i > 0; i --, x++ ){
+		/*if( x % 3 == 0 && x > 0 && i != 0 ){            
+			format(strFixx, sizeof(strFixx), ".%d%s", str[i], strFixx)
+		}else */ format(strFixx, sizeof(strFixx), "%s %s", str[i], strFixx)
+	}
+	
+	client_print(0, print_console, "%s",strFixx)
+
+}
+
 public infoPlayer(id, target){
 	if(  !is_user_connected(target) || !is_user_connected(id))
 		return PLUGIN_CONTINUE;
@@ -3955,6 +4790,8 @@ public checkForAward(id){
 				
 			}
 		}else{	
+
+			
 			switch(random_num(1,7)){
 				case 1:{
 					new userRandom = random_num(500,1000);
@@ -4008,12 +4845,15 @@ public checkForAward(id){
 					empty	=	false;
 					
 				}
+				
 			}
 		}
 		if( empty ){
 			ColorChat(id, GREEN, "%s Ojejku :( Nic nie dostales.", PREFIXSAY)
 			iLen += format(gText[iLen], sizeof(gText)-1-iLen, "nic nie dostal z Nagrody!")
 		}
+		
+	
 	}
 	logBB(id, gText)
 	
@@ -4420,6 +5260,7 @@ public tutorBB_Final(id){
 	id -= TASK_TUTORFINAL
 	userTutorMsg[id] = "";
 }
+
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
 */
