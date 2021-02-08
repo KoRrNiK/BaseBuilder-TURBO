@@ -115,10 +115,6 @@ enum ( += 100){
 new userPoisonKiller[33]
 new userPoison[33]
 
-//new userBloodingKiller[33]
-//new userBlooding[33]
-
-
 	/*----------------------*\
 --------| USER			 |
 	\*----------------------*/
@@ -135,11 +131,9 @@ new userPoison[33]
 	new userVip[33]
 	new userConnected[33]
 	new bool:userJetPack[33]
-	
 	new userName[33][33]
 	new userIp[33][MAXBITIP];
 	new userSid[33][MAXBITAUTHID];
-	
 	new userTeam[33]
 	new userMenuId
 	new userTeamMenu[33]
@@ -161,11 +155,9 @@ new userPoison[33]
 	new userNugget[33];
 	new userNuggetShow[33];
 	new Float:userLastNuggetDealt[33]
-	
 	new userBone[33];
 	new userBoneShow[33];
 	new Float:userLastBoneDealt[33]
-	
 	new userGrab[33]
 	new userHudMoving[33]
 	new Float:userAimingHud[33]
@@ -174,7 +166,6 @@ new userPoison[33]
 	new userVarList[33][33]
 	new userVarMenu[33];
 	new bool:userCanGrab[33];
-//	new Float:userTeleportLast[33];
 	new Float:userTeamLine[33];
 	new userTeamBlock[33];
 	new userTeamExp[33];
@@ -188,57 +179,38 @@ new userPoison[33]
 	new bool:userExtraFps[33]
 	new Float:userInfoFps[33]
 	new userReset[33];
-	//new userBlockMoveAdmin[33];
 	new userNuggetAll[33];
 	new userJetpackSpeed[33] = 500;
 	new userLastAwardTime[33];
-	
 	enum { BLOCK_COLOR, BLOCK_RENDER, BLOCK_NORENDER }
 	new userMoverBlockColor[33];
-	
-	//enum { PLAYER_BAR_RED, PLAYER_BAR_GREEN, PLAYER_BAR_BLUE , PLAYER_BAR_SIZE,TOTAL_SETT_BAR}
-	//new userBarStyle[33][TOTAL_SETT_BAR];
-	//new userBar[33]
 	new userSqlId[33];
-	
 	new userAllDmg[33];
 	new userAllAward[33];
-	
 	new userMaxDmg[33];
 	new userFov[33];
 	new Float:userAfkValue[33];
 	enum _:typeAcces{ vip, admin, head }
-	//new coloredEnt[33];
-	//new colorEnt[33];
-	
 	new userScrollExp[33];
 	new userScrollNugget[33];
 	new userBoostMine[33];
 	new userMute[33];
-	
 	new bool:serverOffChat;
-	
 	new userPush[33];
-	
 	new userSuggestTeam[33]
-	
 	new userMaxHelp[33];
 	new userDayHelp[33];
-	
 	new userHelpPoint[33];
-	
-	
 	new Float:userSpeedAdmin[33];
-
 	new userFirstLogin[33][33];
-	
 	new userSecretPoint[33]
-	
 	new userLastAwardFree[33];
 	new userLastAwardRow[33];
 	new userLastAwardGot[33];
-
 	new userCheckCamp[33];
+	new userDarkScreen[33];
+	new userPageColor[33];
+	new bool:jumpBlock[33];
 
 new userStaminaDayRefresh[33];
 new userLastStaminaTime[33]
