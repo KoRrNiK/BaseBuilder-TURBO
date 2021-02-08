@@ -15,7 +15,6 @@
 #include <	tutor		>
 #include <	sqlx		>
 
-
 public plugin_init_sql(){
 	
 	
@@ -41,7 +40,6 @@ public plugin_init_sql(){
 	connection = SQL_Connect(sql, errorNum, error, sizeof(error));
 
 	if (errorNum) {
-		//ColorChat(0, GREEN, "[SQL]^x01 Blad zapytania.^x03 [%d] %s", errorNum, error);
 		log_amx("[SQL-LOG] Blad zapytania.[%d] %s", errorNum, error);
 		sql = Empty_Handle;
 		set_task(5.0, "plugin_init_sql");
@@ -297,7 +295,6 @@ public loadStatsSql(id, typeLoad){
 				WHERE 1 \
 				ORDER BY `kills` \
 				DESC LIMIT 10")
-		case 19: format(queryData, sizeof(queryData),"SELECT `players`.`discord` FROM `players` WHERE `idplayer`=%d", userSqlId[id])
 	}
 	SQL_ThreadQuery(sql, "loadStatsHandlerSql", queryData, tempId, sizeof(tempId));
 	return PLUGIN_CONTINUE;

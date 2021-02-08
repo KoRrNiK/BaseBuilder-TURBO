@@ -5,7 +5,7 @@ new const PREFIXSAY[] 	=  	"^xc2^xa6 BaseBuilder ^xc2^xa6^x01"
 new const fVAULTFILE[]	=	 "TURBOBB";
 new const APISMS[]	=	"16103";
 
-new const DB_HOST[]	=	"root"
+new const DB_HOST[]	=	"127.0.0.1"
 new const DB_USER[]	=	"user"
 new const DB_PASS[]	=	"pass"
 new const DB_NAME[]	=	"db"
