@@ -126,14 +126,16 @@ public plugin_precache(){
 
 public plugin_init(){	
 	
-	//tutorInit();
-	
+
 	register_plugin
 	(
 		PLUGIN,
 		VERSION,
 		AUTHOR
 	)
+	
+	register_cvar("basebuilder_version", VERSION, FCVAR_SERVER);
+	
 	serverOffChat 	=	false;
 
 	freeChest 	= 	find_ent_by_tname(-1, "freechest");
@@ -153,7 +155,6 @@ public plugin_init(){
 	register_clcmd("WartoscKoloruHud",	"readColor");
 	register_clcmd("chat", 			"ChatOff");
 	register_clcmd("bb_offset", 		"cloneOffset")
-	register_clcmd("zapisz", 		"zapisz");
 	register_clcmd("moc", 			"bindPower");
 	register_clcmd("moc2", 			"resetTime");	
 	register_clcmd("PodajNazweKlanu", 	"createClanHandle");
@@ -308,12 +309,7 @@ public plugin_init(){
 	new hour; time(hour);
 	if(hour >= 22 || hour < 6) activeMultiply = true
 	else activeMultiply = false;
-	
-
 }
-
-
-
 public ham_TakeDamageEnt(ent, idinflictor, id, Float:damage, damagebits){
 	
 	#if defined SCHROOM_ADDON
@@ -323,14 +319,14 @@ public ham_TakeDamageEnt(ent, idinflictor, id, Float:damage, damagebits){
 		if(isSchroom(ent)){
 			grzybekDMG(shroomPlayer, ent, 0.0)	
 		}	
-		
 		return HAM_IGNORED
 	#endif
 }
 public ham_UseButtonEnt(this, id, idactivator, use_type, Float:value){
 	
 	#if defined SCHROOM_ADDON 
-	if(id!=idactivator) return HAM_IGNORED;
+	
+	if(id != idactivator) return HAM_IGNORED;
 	
 	new szTarget[12];
 	entity_get_string(this, EV_SZ_targetname, szTarget, sizeof(szTarget));
@@ -348,7 +344,6 @@ public ham_UseButtonEnt(this, id, idactivator, use_type, Float:value){
 				ColorChat(id, GREEN, "---^x01 Teraz nie wolno strzelac do grzybkow^x04 ---")
 				return PLUGIN_CONTINUE
 			}
-			
 			new tt = numPlayers(1, false)
 			new ct = numPlayers(2, false)
 			if( ct + tt < 4 ){        
@@ -368,7 +363,6 @@ public fw_SetModel(ent,const model[]){
 	if(!pev_valid(ent)) return FMRES_IGNORED
 	
 	#if defined CHRISTMAS_ADDON
-	
 		new szClass[12]
 		entity_get_string(ent, EV_SZ_classname, szClass, sizeof(szClass))
 	
@@ -379,15 +373,9 @@ public fw_SetModel(ent,const model[]){
 	#endif 
 	return FMRES_IGNORED
 }
-
-
-new bool:jumpBlock[33];
-
 public jumpBlockTouch(id, ent){
-	if( !pev_valid(ent)  )
-		return 0
+	if( !pev_valid(ent)) return;
 
-		
 	new szClass[14], szTarget[7];
 	entity_get_string(ent, EV_SZ_classname, szClass, sizeof(szClass));
 	entity_get_string(ent, EV_SZ_targetname, szTarget, sizeof(szTarget));
@@ -395,25 +383,16 @@ public jumpBlockTouch(id, ent){
 	if(equal(szClass, "func_wall") && equal(szTarget, "JUMP")){
 		jumpFuncBlock(id, 2)
 	} 
-	return 1;
 }
-
-new userDarkScreen[33];
 public teamCampTouching(id){
-	if(  get_user_team(id) != 2 )
-		return
-		
-	if( !prepTime && !gameTime )
-		return
-	
-	if( isAdmin(id))
-		return
+	if( get_user_team(id) != 2) return
+	if(!prepTime && !gameTime) return
+	if(isAdmin(id)) return
 		
 	new ground = pev(id, pev_groundentity)
 	
 	if( ground != 0 && ( pev(id, pev_flags) & FL_ONGROUND ) ){
 		if( getOwner(ground) != id && getOwner(ground) != 0 && getOwner(ground) != userTeam[id] ){				
-			
 			static Float:fTime[ 33 ];
 			if( ( get_gametime() - fTime[ id ] ) >= 1.0 ){
 
@@ -445,13 +424,8 @@ public teamCampTouching(id){
 			}					
 			Display_Fade(id,(1<<12),(1<<12),(1<<12),0, 0, 0, min( 255, userDarkScreen[id]))
 		}
-	}else{
-		userDarkScreen[id] = max( userDarkScreen[id]-2, 0)
-		
-	}
+	}else userDarkScreen[id] = max( userDarkScreen[id]-2, 0)
 }
-
-
 public plugin_cfg(){
 	cfgClan()
 
@@ -464,20 +438,13 @@ public plugin_end(){
 	
 	endClan()
 }
-
-
-public WeapPickup(id){
-	return PLUGIN_HANDLED;
-}
-
-new userPageColor[33]
+public WeapPickup(id) return PLUGIN_HANDLED;
 public menuColor(id, item){
 	
 	if(!isVip(id)){
 		ColorChat(id, GREEN, "%s Kolorowanie dostepne tylko dla^x03 VIP'a", PREFIXSAY)
-		return PLUGIN_CONTINUE;
+		return;
 	}
-	
 	new gText[512], iLen = 0
 	new size = sizeof(gText) - iLen - 1
 	iLen = format(gText[iLen], size, "\r[BaseBuilder]\y Kolorowanie Blokow^n");
@@ -489,10 +456,7 @@ public menuColor(id, item){
 		format(gText, sizeof(gText), "%s",colorName[i]);
 		menu_additem(menu, gText)
 	}
-
-	
 	menu_display(id, menu, userPageColor[id]/7);
-	return PLUGIN_CONTINUE;
 }
 public menuColor_2(id, menu, item){
 	if(item == MENU_EXIT){
@@ -509,7 +473,7 @@ public coloredBlock(id, color){
 	
 	if(!isVip(id)){
 		ColorChat(id, GREEN, "%s Kolorowanie dostepne tylko dla^x03 VIP'a", PREFIXSAY)
-		return PLUGIN_CONTINUE;
+		return;
 	}
 	
 	new ent,body;
@@ -518,15 +482,15 @@ public coloredBlock(id, color){
 	
 	if(get_user_team(id) == 1 && !isAdmin(id)){
 		ColorChat(id, GREEN, "%s Nie mozesz kolorowac bedac Zombi", PREFIXSAY)
-		return PLUGIN_CONTINUE;
+		return;
 	}
 	if(buildTime && !isAdmin(id)){
 		ColorChat(id, GREEN, "%s Nie mozesz kolorowac podczas Budowania", PREFIXSAY)
-		return PLUGIN_CONTINUE;
+		return;
 	}
 	if(getOwner(ent) == 0){
 		ColorChat(id, GREEN, "%s Nie mozesz tego pokolorowac!", PREFIXSAY);
-		return PLUGIN_CONTINUE;	
+		return;	
 	}
 	
 	if(ent && !userGrab[id]){
@@ -534,12 +498,12 @@ public coloredBlock(id, color){
 		if (!isAdmin(id)){
 			if (id != getOwner(ent) && (userTeam[id] != getOwner(ent))){
 				ColorChat(id, GREEN, "%s Nie mozesz tego pokolorowac!", PREFIXSAY);
-				return PLUGIN_CONTINUE;
+				return;
 			}
 		}
 		if(!canBeMoved(id, ent)){
 			ColorChat(id, GREEN, "%s Nie mozesz tego pokolorowac!", PREFIXSAY);
-			return PLUGIN_CONTINUE;
+			return;
 		}
 		
 		new Float:gRender[3] = 0.0;
@@ -547,7 +511,6 @@ public coloredBlock(id, color){
 		
 
 		if(gRender[0] == colorAmount[color][0] && gRender[1] == colorAmount[color][1] && gRender[2] == colorAmount[color][2]){
-			
 			set_pev(ent,pev_rendermode,kRenderNormal)
 			set_pev(ent,pev_rendercolor,0.0,0.0,0.0)
 			set_pev(ent,pev_renderamt,255.0)
@@ -559,8 +522,6 @@ public coloredBlock(id, color){
 			set_pev(ent,pev_renderamt,colorAmount[color][3])
 		}		
 	}
-	return PLUGIN_CONTINUE;
-	
 }
 public OnResetHud(id){
 
@@ -573,7 +534,6 @@ public OnResetHud(id){
 	message_begin(MSG_ONE, hideWeapon, _, id)
 	write_byte(HUD_HIDE_FLASH  | HUD_HIDE_TIMER /* | HUD_HIDE_RHA*/ | HUD_HIDE_MONEY)
 	message_end()
-		
 }
 
 public fw_TraceLine(Float:start[3], Float:end[3], conditions, id, trace) {
@@ -602,11 +562,8 @@ public fw_TraceAttack(victim, attacker, Float:damage, Float:direction[3], ptr, d
 		
 	new weapon = get_user_weapon(attacker)
 
-	if(!is_user_connected(attacker))
-		return HAM_IGNORED
-
-	if((weapon == CSW_KNIFE))
-		return HAM_IGNORED
+	if(!is_user_connected(attacker)) return HAM_IGNORED
+	if((weapon == CSW_KNIFE)) return HAM_IGNORED
 
 	if(userDamagexTwo[attacker] > get_gametime()){
 		static Float:flEnd[3], Float:vecPlane[3]
@@ -618,9 +575,7 @@ public fw_TraceAttack(victim, attacker, Float:damage, Float:direction[3], ptr, d
 }
 traceShot(id, trace){
 	
-	if(!is_user_alive(id ) || userClassHuman[id] != human_AIM)
-		return FMRES_IGNORED;
-	
+	if(!is_user_alive(id ) || userClassHuman[id] != human_AIM) return FMRES_IGNORED;
 	
 	if(random_float(0.00, 100.00) <= str_to_float(paramClassesHuman[human_AIM][0])* userHumanLevel[id][human_AIM] || userHitOnlyHs[id] > get_gametime()){
 		if( checkWeapon(get_user_weapon(id))){	
@@ -637,32 +592,21 @@ traceShot(id, trace){
 	
 	return FMRES_IGNORED
 }
-
 public plugin_natives(){
 	register_native("bb_get_class", "native_return_class", 1)
 	register_native("bb_add_exp", "native_return_add_exp", 1)
-	
-
 }
-
-
 public Float:native_return_add_exp(id, Float:value){
 	addExpToFinal(id, Float:value)
-
 }
 public CurWeapon(id){
-	if( !is_user_connected(id) || !is_user_alive(id) )
-		return PLUGIN_CONTINUE;
+	if( !is_user_connected(id) || !is_user_alive(id) ) return;
 
 	new wpnID = read_data(2)	
 	if( get_user_team(id) == 2 ){
 	
-		if( checkWeapon(wpnID) ){
-			cs_set_user_bpammo(id, wpnID, 200 )
-		}
-		if(wpnID == CSW_KNIFE){
-			setModelsKnifeHuman(id)
-		}
+		if( checkWeapon(wpnID) ) cs_set_user_bpammo(id, wpnID, 200 )
+		if(wpnID == CSW_KNIFE) setModelsKnifeHuman(id)
 		
 	}else{		
 		new class = userClass[id]
@@ -693,9 +637,6 @@ public CurWeapon(id){
 		if( get_gametime() < userUnlimited[id] )
 			fm_cs_get_weapon_ammo( get_pdata_cbase(id, 373), g_MaxClipAmmo[ wpnID ])			
 	}
-
-
-	return PLUGIN_CONTINUE;
 }
 
 
@@ -710,20 +651,16 @@ public checkWeapon(wpnID){
 		return false
 	return true
 }
-
 public fw_GetGameDescription(){
 	new gText[32];
 	format(gText, sizeof(gText), "%s %s", PLUGIN, VERSION);
 	forward_return(FMV_STRING, gText)
-	
 	return FMRES_SUPERCEDE;
 }
 public fw_UpdateClientData(id, sw, cd_handle){
-	if( !is_user_alive(id) || !is_user_connected(id) )
-		return FMRES_IGNORED
+	if( !is_user_alive(id) || !is_user_connected(id) ) return FMRES_IGNORED
 	
-	if( userNoRecoil[id])	
-		set_cd(cd_handle, CD_PunchAngle, {0.0,0.0,0.0}) 
+	if( userNoRecoil[id]) set_cd(cd_handle, CD_PunchAngle, {0.0,0.0,0.0}) 
 		
 	return FMRES_IGNORED
 }
@@ -740,14 +677,11 @@ public fw_ServerFrame(){
 }
 
 public isInReconnect(id){
-	//if( has_flag(id, "a" ))
-	//	return -1;
 	new auth[33]
 	get_user_authid(id, auth, sizeof(auth) )
 	for( new i=0;i<sizeof(reconnectTable); i ++ ){
 		if( equal(reconnectTable[i], auth) ){
 			if( get_gametime()-reconnectTableTime[i] < 10.0 )
-			
 				return i;
 		}
 	}
@@ -774,8 +708,6 @@ public addToReconnect(id, type){
 		
 	}
 	return 1
-	
-	
 }
 
 public fw_PlayerPreThink(id){
@@ -789,8 +721,6 @@ public fw_PlayerPreThink(id){
 			speedMulti -= 0.05
 		}
 	}
-	
-	
 	if(userClassHuman[id] == human_MINER) {
 		if(userSpeedFire[id] > get_gametime()){
 			speedMulti -= 0.15
@@ -798,7 +728,6 @@ public fw_PlayerPreThink(id){
 		}
 		
 	}
-	
 	if( speedMulti < 1.0 ){
 		new weapon = get_user_weapon(id)
 		if( (checkWeapon(weapon) && get_user_team(id) == 2) || (get_user_team(id) == 1 && weapon == CSW_KNIFE) ){
@@ -811,11 +740,9 @@ public fw_PlayerPreThink(id){
 			}
 		}
 	}
-	
 	if(userNoRecoil[id]){
 		set_pev(id, pev_punchangle, {0.0,0.0,0.0})
 	}
-	
 	return FMRES_IGNORED;
 }
 public fw_ClientUserInfoChanged(id) { 
@@ -859,35 +786,19 @@ public snowOn(id){
 	client_cmd(id, "cl_weather 1")	
 	console_cmd(id, "cl_weather 1")
 }
-
-public zapisz(id){
-	if(!isSuperAdmin(id))
-		return;
-		
-	for(new i = 1; i < maxPlayers; i ++){
-		if(!is_user_connected(i) || is_user_hltv(i) || is_user_bot(i))
-			continue;
-		client_print(id, print_console, "Zapisales %s", userName[i])	
-		fVaultSave(i);
-	}
-}
 public client_disconnect(id){
 	
-
 	fVaultSave(id);	
 	mysqlSave(id);
 
-	if (get_user_team(id) == 2){
-		removeCamp(id);
-	}
+	if (get_user_team(id) == 2) removeCamp(id);
+	
 	leaveParty(id)
-		
 		
 	remove_task(id+TASK_RESPAWN)
 	remove_task(id+TASK_IDLESOUND)
 	
 	addToReconnect(id, 1)
-
 	
 	userHelpAdmin[id] 		= 	false;
 	needHelp[id]			=	0;
@@ -920,15 +831,12 @@ public client_connect(id){
 	get_user_authid(id, steam, sizeof(steam))
 	get_user_info(id, "_pw", pw, sizeof(pw))
 	
-	
-		
 	new day;
 	date(_,_, day);
 	
 	addToReconnect(id, 0);
 	
 	copy(userPassword[id], sizeof(userPassword[]), "_")
-
 	
 	userLoadVault[id]		= 	false;
 	
@@ -958,7 +866,6 @@ public client_connect(id){
 	userHPAddRound[id] 		= 	0;
 	userHPRegen[id] 			= 	false;
 	userHelp[id]			= 	false;
-	
 	userNuggetCollectedRound[id]	=	0;
 	userSelectWeapon[id] 		=	0;
 	userDeathNum[id]		=	0;
@@ -1000,14 +907,10 @@ public client_connect(id){
 	userMinePayGoblin[id]		=	true;
 			
 	userVip[id]			= 	false
-	for(new x = 0; x < sizeof(shopDescBuilder); x++)
-		userShopBuilder[id][x] 	= 	0;
-	for(new x = 0; x < sizeof(shopDescZombie); x++)
-		userShopZombie[id][x] 	= 	0;
-	for(new x = 0; x < sizeof(classesHuman); x++)
-		userHumanLevel[id][x] 	= 	0;
-	for(new x = 0; x < sizeof(classesHuman); x++)
-		userExpClass[id][x] 	= 	0.0;
+	for(new x = 0; x < sizeof(shopDescBuilder); x++) 		userShopBuilder[id][x] 	= 	0;
+	for(new x = 0; x < sizeof(shopDescZombie); x++) 		userShopZombie[id][x] 	= 	0;
+	for(new x = 0; x < sizeof(classesHuman); x++) 		userHumanLevel[id][x] 	= 	0;
+	for(new x = 0; x < sizeof(classesHuman); x++) 		userExpClass[id][x] 	= 	0.0;
 	for(new x = 0 ; x < sizeof(userHuman[]); x ++ ){
 		if(str_to_num(classesHuman[human_FREE][2]) == 0 )
 			userHuman[id] |= (1<<x)
@@ -1017,45 +920,29 @@ public client_connect(id){
 			userHumanLevel[id][human_FREE] = 1;	
 		userHumanLevel[id][x] = 0		
 	}
-	for(new i = 0 ; i < sizeof(userMission[]); i ++ )
-		userMission[id][i] = 0
-	for(new i = 0 ; i < sizeof(userMissionSecret[]); i ++ )
-		userMissionSecret[id][i] = 0
-	for(new i = 0 ; i < sizeof(userPro[]); i ++ )
-		userPro[id][i] = 0
-	for(new i = 0 ; i < sizeof(userUpgradeMine[]); i ++ )
-		userUpgradeMine[id][i] = 0
-	for(new i = 0 ; i < sizeof(userDigging[]); i ++ )
-		userDigging[id][i] = 0	
-	for(new i = 0 ; i < sizeof(userMission[]); i ++ )
-		userMission[id][i] = 0
-	for(new i = 0 ; i < sizeof(userMissionSecret[]); i ++ )
-		userMissionSecret[id][i] = 0
+	for(new i = 0 ; i < sizeof(userMission[]); i ++ ) 		userMission[id][i] = 0
+	for(new i = 0 ; i < sizeof(userMissionSecret[]); i ++ ) 	userMissionSecret[id][i] = 0
+	for(new i = 0 ; i < sizeof(userPro[]); i ++ ) 		userPro[id][i] = 0
+	for(new i = 0 ; i < sizeof(userUpgradeMine[]); i ++ ) 	userUpgradeMine[id][i] = 0
+	for(new i = 0 ; i < sizeof(userDigging[]); i ++ ) 		userDigging[id][i] = 0	
+	for(new i = 0 ; i < sizeof(userMission[]); i ++ ) 		userMission[id][i] = 0
+	for(new i = 0 ; i < sizeof(userMissionSecret[]); i ++ ) 	userMissionSecret[id][i] = 0
 	
 	userMute[id] 			= 	0;
-	
 	userMaxHelp[id]			=	maxHelpCount
 	userDayHelp[id]			=	day
 	userHelpAdmin[id] 		= 	false;
 	needHelp[id]			=	0;
-	
 	clan[id] = 0;
-	
 	userHudAdd[id][0] = 4;
 	userHudAdd[id][1] = 1;
 	userHudAdd[id][2] = 1;
 	userHudAdd[id][3] = 0;
-	
 	userSecretPoint[id] = 0;
-		
 	userLastAwardGot[id]		=	playedTime(id);
 	userLastAwardFree[id]		=	get_systime();
-	userLastAwardRow[id] 		=	0;	
-		
-		
+	userLastAwardRow[id] 		=	0;		
 	needHelp[findHelp(id)]		=	-1	
-	
-	
 	userChristmasStart[id] 		= 	0;
 	userChristmasMission[id] 	= 	0;
 	userChristmasType[id] 		= 	0;
@@ -1073,6 +960,7 @@ public client_connect(id){
 	#if defined CHRISTMAS_ADDON
 		userMenuChristmas[id] = false;
 	#endif
+	
 	loadInt(id)
 	
 	logType[id] = LOG_CONNECT;
@@ -1088,40 +976,30 @@ public client_connect(id){
 		addMission(id, mission_CONNECT, 1)
 	}*/
 	addMission(id, mission_CONNECT, 1)
-	
-
 }
 
 public addFlags(id){
-	if(!superAdminLocalhost)
-		return;
-	
-		
-	set_user_flags(id, read_flags("abcdefghijklmnouprs"))
-		
+	if(!superAdminLocalhost) return;
+	set_user_flags(id, read_flags("abcdefghijklmnouprs"))	
 	set_task(60.0, "infoAddFlag", id);
 }
 public infoAddFlag(id){
 	ColorChat(id, GREEN, "---^x01 Posiadasz Admina nadanego Automatycznie przez serwer!^x04 ---");
 	set_task(60.0, "infoAddFlag", id);
 }
-
 public playedTime(id){
 	return userTime[id] + ( floatround(get_gametime())-userPlayerConnected[id] );
 }
-
 #if defined CHRISTMAS_ADDON
 	new countDeath;
 #endif
-
 public DeathMsg(){
 	new attacker	=	read_data(1)
 	new victim	=	read_data(2)
 	new hs		=	read_data(3)
 	
 	
-	if( victim == attacker  )
-		return PLUGIN_CONTINUE
+	if( victim == attacker  ) return PLUGIN_CONTINUE
 		
 	if( attacker != victim ){
 		
@@ -1160,10 +1038,7 @@ public DeathMsg(){
 				
 				#if defined CHRISTMAS_ADDON
 					countDeath = 0;
-				
-		
 					addChristmasMission(victim, CH_FIRST, 1);
-					
 				#endif
 				
 				userFirstDeathHuman = true;
@@ -1171,27 +1046,14 @@ public DeathMsg(){
 			
 			#if defined CHRISTMAS_ADDON
 				countDeath ++
-				
-				
-				if(countDeath == 2){
-					
-					addChristmasMission(victim, CH_SECOND, 1);
-					
-				}
-				if(countDeath == 3){
-					
-					addChristmasMission(victim, CH_THREE, 1);
-					
-				}
+				if(countDeath == 2) addChristmasMission(victim, CH_SECOND, 1);
+				if(countDeath == 3) addChristmasMission(victim, CH_THREE, 1);
 			#endif
-			
 		}	
 		gameUserDeath(victim)
 	}
-	
 	return PLUGIN_CONTINUE
 }
-
 public globalHud(id){
 	id -= TASK_GLOBAL
 	
@@ -1235,9 +1097,6 @@ public globalHud(id){
 		
 		//iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n %s ENTITY-%d %s^n^n", symbolsCustom[SYMBOL_X], entity_count(), symbolsCustom[SYMBOL_X]);
 		iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n");
-
-		
-
 		
 		new symbolLevel = SYMBOL_LINE_CURVE;
 		
@@ -1251,15 +1110,12 @@ public globalHud(id){
 	
 			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^t%s^tDmg: +%0.2f%%^n^n", symbolsCustom[symbolLevel], userWeaponDamage[id][weapon]);
 		}
-		
-
 		if( newAwardLeft > 0)	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "-^tNagroda: %d:%s%d:%s%d^n", ( newAwardLeft / HOUR ), ( newAwardLeft / MINUTE % MINUTE )<10?"0":"", ( newAwardLeft / MINUTE % MINUTE ), (newAwardLeft%MINUTE)<10?"0":"", ( newAwardLeft %MINUTE ))
 		else			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "-^tNagroda: Do odebrania^n");
 		if(newLeftExp > 0 ) iLen += format(gText[iLen], sizeof(gText)-iLen-1,"-^tZwoj Doswiadczenia: %d:%s%d:%s%d^n",  ( newLeftExp / HOUR ),(newLeftExp / MINUTE % MINUTE)<10?"0":"", ( newLeftExp / MINUTE % MINUTE ), (newLeftExp%MINUTE)<10?"0":"", ( newLeftExp %MINUTE ));
 		if(newLeftNugget > 0 ) iLen += format(gText[iLen], sizeof(gText)-iLen-1,"-^tZwoj Szczescia: %d:%s%d:%s%d^n",  ( newLeftNugget / HOUR ),(newLeftNugget / MINUTE % MINUTE)<10?"0":"", ( newLeftNugget / MINUTE % MINUTE ), (newLeftNugget%MINUTE)<10?"0":"", ( newLeftNugget %MINUTE ));
 		//if( userTeam[id] != 0 ) iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n[^tTeam: %s^t]^n", userName[userTeam[id]]) 
-		
-		
+
 		if(!(bonus == -1)){
 			new Float:coolDown;
 			coolDown = floatsub(userClassUsed[id][bonus], get_gametime());
@@ -1297,7 +1153,6 @@ public globalHud(id){
 		}
 	}
 	
-
 	// WLACZONE ATRYBTUY
 	iLen = 0;
 	if(userNoClip[id] || userGodMod[id] || userAllowBuild[id] || userPush[id]){
@@ -1327,42 +1182,28 @@ public globalHud(id){
 		}
 	} 
 	
-	
 	// KTO PROSI O POMOC
 	iLen = 0;
 	if(isAdmin(id) && ( prepTime || ( gameTime && gTime > gGameTime - 10 ))){
 		for(new i = 0, count = 0; i < sizeof(needHelp); i ++){
 		
 				
-			if( needHelp[i] == 0 )
-				break
-			if( needHelp[i] == -1 )
-				continue
-				
-			
+			if( needHelp[i] == 0 ) break
+			if( needHelp[i] == -1 ) continue
+	
 			count ++
 			if(count == 1) iLen += format(gText[iLen], sizeof(gText)-1-iLen, "Potrzebuje pomocy:^n")
 			iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^t%d. %s^n", (count), userName[needHelp[i]])	
 		
 		}
-		
 		if(iLen > 0 ){
 			set_hudmessage(255, 32, 32, 0.70, 0.15, 0, 0.0, 0.2, 0.0, 0.05)
 			show_hudmessage(id, "%s", gText)
 		}
 	}	
-	
 	set_task(0.2, "globalHud" ,id+ TASK_GLOBAL)
 	return PLUGIN_CONTINUE;
 }
-
-public compareTop(elem1[], elem2[]){
-	if(elem1[1] > elem2[1]) return -1;
-	else if(elem1[1] < elem2[1]) return 1;
-	return 0;
-} 
-
-
 
 public hudDealDmg(id, Float:dmg, szText[]){
 	userMaxDmg[id] = max(userMaxDmg[id], floatround(dmg));
@@ -1388,7 +1229,6 @@ public hudGetDmg(id, Float:dmg, szText[]){
 	show_dhudmessage(id, "%d %s", floatround(dmg), szText)	
 	
 }
-
 public messageStatusIcon(const iMsgId, const iMsgDest, const iPlayer){
 	if(is_user_alive(iPlayer) && userConnected[iPlayer]) {
 		static szMsg[8]
@@ -1413,8 +1253,6 @@ public messageStatusIcon(const iMsgId, const iMsgDest, const iPlayer){
 	return PLUGIN_CONTINUE
 } 
 public fw_addtofullpack( es, e, ent, host, host_flags, player, p_set ){
-	
-	
 	if(!pev_valid(ent)) return FMRES_IGNORED;
 	
 	if( player ){
@@ -1430,7 +1268,6 @@ public fw_addtofullpack( es, e, ent, host, host_flags, player, p_set ){
 			set_es(  es, ES_Origin, { 999999999.0, 999999999.0, 999999999.0 } );
 			
 	}
-	
 	new szClass[18]; 
 	entity_get_string(ent, EV_SZ_classname, szClass, sizeof(szClass));
 	
@@ -1439,7 +1276,6 @@ public fw_addtofullpack( es, e, ent, host, host_flags, player, p_set ){
 			set_es(  es, ES_Origin, { 999999999.0, 999999999.0, 999999999.0 } );
 		}
 	}
-	
 	return FMRES_IGNORED
 }
 
@@ -1460,9 +1296,7 @@ public checkCamping(id){
 		new gText[128];
 		logType[id] = LOG_AFK;
 		if(logType[id] == LOG_AFK) format(gText, sizeof(gText), "zostal wyrzucony za AFK'a")
-		logBB(id, gText)
-			
-			
+		logBB(id, gText)	
 		return PLUGIN_CONTINUE;
 	}
 	new Float:fVelocity[3]
@@ -1475,11 +1309,8 @@ public checkCamping(id){
 		userButtonAfk[id] = button;
 		if(fVelocity[0] != 0|| fVelocity[1] != 0 || fVelocity[2] != 0 )
 			userAfkValue[id] -= 0.20;
-	} else {
-		userAfkValue[id] += 0.05;
-	}
+	} else  userAfkValue[id] += 0.05;
 	
-		
 	userAfkValue[id] = floatclamp(userAfkValue[id], 0.00, 100.00);
 
 	set_task(0.2, "checkCamping", id + TASK_AFK);
@@ -1494,38 +1325,20 @@ public ham_WeaponCleaner_Post(weapon, id){
 }
 public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 	
-	if( (damagebits & DMG_FALL) ){
-		return HAM_SUPERCEDE	
-	}
+	if( (damagebits & DMG_FALL) ) return HAM_SUPERCEDE	
 	
 	#if defined SCHROOM_ADDON 
-		if( isSchroom(attacker) || isSchroom(victim) )
-			return HAM_IGNORED	
+		if( isSchroom(attacker) || isSchroom(victim) ) return HAM_IGNORED	
 	#endif 
 	
-	if( !isPlayer(attacker) || !isPlayer(victim) )
-		return HAM_IGNORED
-	if( !is_user_alive(attacker) || !is_user_alive(victim) )
-		return HAM_IGNORED
-	
-	if (!is_valid_ent(victim) || !is_user_alive(victim) || !is_user_connected(attacker))
-		return HAM_IGNORED
-		
-		
-	if(get_user_team(attacker) == get_user_team(victim))
-		return HAM_IGNORED
-		
-	//if (bb_is_in_barrier(victim))
-	//	return HAM_IGNORED
-	
-	if(buildTime || roundEnd || prepTime)
-		return HAM_SUPERCEDE;
-	
-	if(userGodMod[attacker])
-		return HAM_SUPERCEDE;
-		
-	if (victim == attacker)
-		return HAM_SUPERCEDE;
+	if(!isPlayer(attacker) || !isPlayer(victim) ) return HAM_IGNORED
+	if(!is_user_alive(attacker) || !is_user_alive(victim) ) return HAM_IGNORED
+	if(!is_valid_ent(victim) || !is_user_alive(victim) || !is_user_connected(attacker)) return HAM_IGNORED	
+	if(get_user_team(attacker) == get_user_team(victim)) return HAM_IGNORED
+	//if(bb_is_in_barrier(victim)) return HAM_IGNORED
+	if(buildTime || roundEnd || prepTime)return HAM_SUPERCEDE;
+	if(userGodMod[attacker]) return HAM_SUPERCEDE;	
+	if(victim == attacker) return HAM_SUPERCEDE;
 
 	/*----------------------*\
 	| SKILL	| CLASS	| KLAN	 |
@@ -1535,9 +1348,6 @@ public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 		class_humanTakeDamage(victim, inflictor, attacker, damage, damagebits)
 		classTakeDamage(victim, inflictor, attacker, damage, damagebits)	
 	}
-	
-
-	
 	if(userClassHuman[attacker] == human_TRUPOSZ) {
 		if(userDamagexTwo[attacker] > get_gametime()){
 			damage *= 2.0
@@ -1559,24 +1369,15 @@ public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 			} else userCritical[attacker] = false;
 		}
 	}
-	if(userCritical[attacker]){
-		damage *= 2.0
-	}
 	
-	
-	
-	if( userDracula[victim] > get_gametime()){
-		damage *= -1.0
-	}
-
+	if(userCritical[attacker]) damage *= 2.0
+	if( userDracula[victim] > get_gametime()) damage *= -1.0
 	
 	/*----------------------*\
 	| SHOP			 |
 	\*----------------------*/
 	
-	if( userExtraDmg[attacker] ){
-		damage +=25.0
-	}
+	if( userExtraDmg[attacker] ) damage +=25.0
 	
 	/*----------------------*\
 	| HAPPY HOUR TIME	 |
@@ -1589,33 +1390,19 @@ public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 		
 		// ALL WEAPON
 		
-		if(bb_happy_hour() == happy_2XDMG){
-			damage *= 1.1;
-		}
-		
-		if(bb_happy_hour() == happy_ALL_EXP_NUGGET){
-			damage *= 1.15;
-		}
-		
-		
+		if(bb_happy_hour() == happy_2XDMG) damage *= 1.1;
+		if(bb_happy_hour() == happy_ALL_EXP_NUGGET) damage *= 1.15;		
 
 		// ONLY PISTOL
 		
 		if(bb_happy_hour() == happy_DMG_PISTOL){
-			
-			if(weapon == CSW_USP || weapon == CSW_GLOCK18 || weapon == CSW_P228 || weapon == CSW_DEAGLE || weapon == CSW_ELITE || weapon == CSW_FIVESEVEN ){
-				damage *= 1.3;
-			} 
-			
+			if(weapon == CSW_USP || weapon == CSW_GLOCK18 || weapon == CSW_P228 || weapon == CSW_DEAGLE || weapon == CSW_ELITE || weapon == CSW_FIVESEVEN ) damage *= 1.3;
 		}
 		
 		// ONLY RIFLE
 		
 		if(bb_happy_hour() == happy_DMG_WEAPON){
-			
-			if(!(weapon == CSW_USP || weapon == CSW_GLOCK18 || weapon == CSW_P228 || weapon == CSW_DEAGLE || weapon == CSW_ELITE || weapon == CSW_FIVESEVEN || weapon == CSW_KNIFE)){
-				damage *= 1.2;
-			} 
+			if(!(weapon == CSW_USP || weapon == CSW_GLOCK18 || weapon == CSW_P228 || weapon == CSW_DEAGLE || weapon == CSW_ELITE || weapon == CSW_FIVESEVEN || weapon == CSW_KNIFE)) damage *= 1.2;
 		}
 	}
 	
@@ -1623,9 +1410,8 @@ public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 	| VIP			 |
 	\*----------------------*/
 	
-	if(isVip(attacker) && get_user_team(attacker) == 2){
-		damage *= 1.05;
-	}	
+	if(isVip(attacker) && get_user_team(attacker) == 2) damage *= 1.05;
+	
 	/*----------------------*\
 	| LV. WEAPON		|
 	\*----------------------*/
@@ -1633,16 +1419,12 @@ public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 	
 	if( get_user_team(attacker) == 2){
 		if( (damagebits & DMG_BULLET) ){	
-			
 			if(equal(allGuns[userWeaponSelect[attacker]][0], weapons[get_user_weapon(attacker)])){
-				
 				damage += damage *(userWeaponDamage[attacker][userWeaponSelect[attacker]]* 0.01)
 			}
-	
 		}
 	}
 	
-
 	if( get_user_team(attacker) == 2){
 		if(foundedHat(attacker, HAT_NIEDZWIEDZ)) damage *= 1.05;
 		if(foundedHat(attacker, HAT_SWIATECZNASKARPETA)){
@@ -1656,37 +1438,29 @@ public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 			if(random_float(0.00, 100.00) <= 2.0){
 				bb_set_in_ice(attacker, victim, 3);
 			}
-		}
-			
-			
-			
+		}		
 	}
 
 	/*----------------------*\
 	| AFK			 |
 	\*----------------------*/	
 	
-	if(userAfkValue[attacker] > 0.00 )
-		userAfkValue[attacker] -= 0.50
+	if(userAfkValue[attacker] > 0.00 ) userAfkValue[attacker] -= 0.50
 		
 	/* ---------------------*/
+	
 	if(playerLogged(attacker)){
 		if(get_user_team(victim) != get_user_team(attacker)){
 			new gText[128]
 			hudDealDmg(attacker, damage, gText )
-			hudGetDmg(victim, damage, gText )
-			
+			hudGetDmg(victim, damage, gText )	
 		}
 	}
-	
 	if(get_user_team(victim) != get_user_team(attacker)){
-		addShotExp(attacker, damage)
-		
+		addShotExp(attacker, damage)	
 	}
 		
 	if( damage + 1.0 >= float(get_user_health(victim)) && get_user_team(victim) == 1 ){
-		
-		
 		if(random(100) <= 15){
 			if(get_user_team(victim) == 1){
 				if( userClass[victim] == class_HEALTH ){
@@ -1712,20 +1486,11 @@ public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 				}
 			}
 		}
-
-		/*----------------------*\
-		| MISSION		 |
-		\*----------------------*/	
-		
 		killPlayerRespawn(attacker, victim, (get_pdata_int(victim, OFFSET_LASTHITGROUP, OFFSET_LINUX_PLAYER) == HIT_HEAD) ? 1 : 0 )
 		return HAM_SUPERCEDE	
 	}
-	#if defined CHRISTMAS_ADDON
-		
-			
+	#if defined CHRISTMAS_ADDON	
 		addChristmasMission(attacker, CH_DMG, floatround(damage));
-		
-		
 	#endif
 	userAllDmg[attacker] += floatround(damage);
 	SetHamParamFloat(4, damage)
@@ -1740,7 +1505,6 @@ public killPlayerRespawn(attacker, victim, headShot){
 	get_weaponname(weapon, szWeapon, sizeof(szWeapon))
 	replace_all(szWeapon, sizeof(szWeapon), "weapon_", "")
 	
-	
 	make_deathmsg(attacker, victim, headShot, szWeapon)	
 	
 	cs_set_user_deaths(victim, cs_get_user_deaths(victim)+1)
@@ -1750,7 +1514,6 @@ public killPlayerRespawn(attacker, victim, headShot){
 	userPoints[attacker] += 2
 	userDeaths[victim] += 1
 	userPoints[victim] += 3
-	
 	
 	if(foundedHat(attacker, HAT_BALWAN)){
 		if(random_float(0.00, 100.00) <= 3.0){
@@ -1778,8 +1541,7 @@ public killPlayerRespawn(attacker, victim, headShot){
 	
 	if(userHelp[victim]) userHelp[victim] = false;
 
-	
-	
+
 	addLevelKills(attacker, userWeaponSelect[attacker], headShot);
 	
 	
@@ -1789,13 +1551,11 @@ public killPlayerRespawn(attacker, victim, headShot){
 
 	new all = 0, ct = 0;
 	for(new i = 1; i < maxPlayers; i ++){
-		if(!is_user_connected(i) || is_user_hltv(i) || is_user_bot(i))
-			continue
-		all++;
+		if(!is_user_connected(i) || is_user_hltv(i) || is_user_bot(i)) continue
 		
-		if(get_user_team(i) == 2){
-			ct  ++;	
-		}
+		all++;
+
+		if(get_user_team(i) == 2) ct  ++;		
 	}
 			
 	if(get_user_team(victim) == 1) addNuggetToFinal(victim, ( (all - ct) * 2 ) + userDeathNum[victim] )
@@ -1832,8 +1592,6 @@ public classTakeDamage(victim, inflictor, attacker, &Float:damage, damagebits){
 			}
 		}
 	}
-	
-	
 	if( userClass[victim] == class_DEMON ){
 		new Float:reduceDamage;
 		new bool:isProDamage= didPro(victim,  pro_PAKER)
@@ -1843,10 +1601,7 @@ public classTakeDamage(victim, inflictor, attacker, &Float:damage, damagebits){
 		
 		reduceDamage = damage
 		addPro(victim, pro_PAKER, floatround(reduceDamage))
-		
 	}
-	
-	
 	if(get_user_team(attacker) == 1){
 		new bool:isProPercent = didPro(attacker,  pro_DEATH)
 		if(random(100) <= 5 + ( isProPercent ? 3 : 0 )){
@@ -1854,7 +1609,6 @@ public classTakeDamage(victim, inflictor, attacker, &Float:damage, damagebits){
 				
 				damage = float(get_user_health(victim))
 				addPro(attacker, pro_DEATH, 1)
-				
 			}
 		}
 		
@@ -1867,12 +1621,10 @@ public classTakeDamage(victim, inflictor, attacker, &Float:damage, damagebits){
 	if(get_user_team(attacker) == 2 && attacker != victim ){
 		if(random_float(0.0, 100.0) <= 0.5 ){
 			if( userClass[victim] == class_POISON){
-				//if( !(damagebits & DMG_SONIC ) ){
 				if(get_user_health(victim) <= 4)
 					return HAM_IGNORED;
 					
 				#if defined CHRISTMAS_ADDON
-		
 					addChristmasMission(victim, CH_POISON, 1);
 						
 				#endif
@@ -1885,8 +1637,7 @@ public classTakeDamage(victim, inflictor, attacker, &Float:damage, damagebits){
 					
 				if( !task_exists( attacker+TASK_CLASS_POISON) ){
 					set_task(1.0, "class_poison_active", attacker+TASK_CLASS_POISON)
-				}
-				//}		
+				}		
 			}
 		}
 	}
@@ -1941,9 +1692,8 @@ public class_humanTakeDamage(victim, inflictor, attacker, Float:damage, damagebi
 				
 			if(random_float(0.00, 100.00) <= str_to_float(paramClassesHuman[human_ELEKTRYK][0])* userHumanLevel[attacker][human_ELEKTRYK] ){
 				if( is_valid_ent( victim ) && is_user_alive( victim ) ){
-					if( get_user_team( attacker ) == get_user_team( victim ) ){
-						return PLUGIN_HANDLED;
-					}
+					
+					if( get_user_team( attacker ) == get_user_team( victim ) ) return PLUGIN_HANDLED;
 						
 					new fOrigin[ 3 ]
 					new fOriginEnd[ 3 ];
@@ -1966,16 +1716,12 @@ public class_humanTakeDamage(victim, inflictor, attacker, Float:damage, damagebi
 						
 					showBeam(fOrigin, fOriginEnd, thunder, 5, 40, 3, 255, 255, 255)
 					
-					
 					emitBonusSound(victim, bonus_sound_ELECTRO);
 					new damage = (str_to_num(paramClassesHuman[human_ELEKTRYK][1]) * userHumanLevel[attacker][human_ELEKTRYK]) + floatround(damageClassClan(attacker));
-					ExecuteHam( Ham_TakeDamage, victim, attacker, attacker, float( damage ), DMG_ENERGYBEAM );
-					
-					
+					ExecuteHam( Ham_TakeDamage, victim, attacker, attacker, float( damage ), DMG_ENERGYBEAM );	
 				}
 			} 
 		}
-		
 		if(userClassHuman[attacker] == human_LAB) {
 			if(random_float(0.00, 100.00) <= str_to_float(paramClassesHuman[human_LAB][0])* userHumanLevel[attacker][human_LAB] ){
 				new bonus = str_to_num(classesHuman[human_LAB][4])
@@ -2002,7 +1748,6 @@ public class_humanTakeDamage(victim, inflictor, attacker, Float:damage, damagebi
 				set_task(0.5, "removeSlow", victim);
 			}
 		}
-		
 		if(userClassHuman[attacker] == human_SHOOTER) {
 			if(random_float(0.00, 100.00) <= str_to_float(paramClassesHuman[human_SHOOTER][0])* userHumanLevel[attacker][human_SHOOTER]){
 				new bool:isProAdd = didPro(attacker, pro_LARGEAMMO)
@@ -2014,7 +1759,6 @@ public class_humanTakeDamage(victim, inflictor, attacker, Float:damage, damagebi
 					
 			} else userAddAmmo[attacker] = false;	
 		} 
-		
 		if(userClassHuman[attacker] == human_BULLDOZER) {
 			if(random_float(0.00, 100.00) <= str_to_float(paramClassesHuman[human_BULLDOZER][0])* userHumanLevel[attacker][human_BULLDOZER]){
 				new iOrigin[3], Float:fOrigin[3], Float:fOriginTarget[3]
@@ -2056,8 +1800,7 @@ public class_humanTakeDamage(victim, inflictor, attacker, Float:damage, damagebi
 				new closest = returnClosestOne(victim, 500, 1)
 				if (closest != -1)
 					ExecuteHamB( Ham_TakeDamage, closest, attacker, attacker, damage * 0.5, DMG_SONIC );
-			}
-				
+			}	
 		}		
 		if(userClassHuman[attacker] == human_BOOMBERMA) {		
 			if( damage > pev(victim, pev_health)){
@@ -2067,12 +1810,8 @@ public class_humanTakeDamage(victim, inflictor, attacker, Float:damage, damagebi
 					entity_get_vector(victim, EV_VEC_origin,	fOrigin);
 					bombTrapCreate(attacker, fOrigin)
 				}
-				
-			}
-				
+			}		
 		}
-		
-		
 		if(userClassHuman[attacker] == human_MINER) {
 			if(random_float(0.00, 100.00) <= str_to_float(paramClassesHuman[human_MINER][0])* userHumanLevel[attacker][human_MINER]){
 				createNugget(attacker, victim)
@@ -2093,51 +1832,32 @@ public removeSkill(){
 	new ent = -1;
 
 	while ((ent = find_ent_by_class(ent, classPoison))){
-		if (pev_valid(ent)){
-			remove_entity(ent);
-		}
+		if (pev_valid(ent)) remove_entity(ent);
 	}
 	while ((ent = find_ent_by_class(ent, classField))){
-		if (pev_valid(ent)){
-			remove_entity(ent);
-		}
+		if (pev_valid(ent)) remove_entity(ent);	
 	}
 	while ((ent = find_ent_by_class(ent, classTrap))){
-		if (pev_valid(ent)){
-			remove_entity(ent);
-		}
+		if (pev_valid(ent)) remove_entity(ent);	
 	}
 	while ((ent = find_ent_by_class(ent, classAmmo))){
-		if (pev_valid(ent)){
-			remove_entity(ent);
-		}
+		if (pev_valid(ent)) remove_entity(ent);
 	}
 	while ((ent = find_ent_by_class(ent, classFireBall))){
-		if (pev_valid(ent)){
-			remove_entity(ent);
-		}
+		if (pev_valid(ent)) remove_entity(ent);
 	}
 	while ((ent = find_ent_by_class(ent, classIceBolt))){
-		if (pev_valid(ent)){
-			remove_entity(ent);
-		}
+		if (pev_valid(ent)) remove_entity(ent);
 	}
 	while ((ent = find_ent_by_class(ent, classbombTrap))){
-		if (pev_valid(ent)){
-			remove_entity(ent);
-		}
+		if (pev_valid(ent)) remove_entity(ent);
 	}
 	while ((ent = find_ent_by_class(ent, classBomb))){
-		if (pev_valid(ent)){
-			remove_entity(ent);
-		}
+		if (pev_valid(ent)) remove_entity(ent);
 	}
 	while ((ent = find_ent_by_class(ent, rocketClass))){
-		if (pev_valid(ent)){
-			remove_entity(ent);
-		}
+		if (pev_valid(ent)) remove_entity(ent);
 	}
-
 }
 
 public gameStart(){
@@ -2163,12 +1883,9 @@ public gameStart(){
 		userAllowBuild[i] = 0;
 		userBlocksUsed[i] = 0;
 		userUnlimited[i] = 0.0;
-		for(new x = 0; x < sizeof(shopDescBuilder); x++){
-			userShopBuilder[i][x] = 0;
-		}
-		for(new x = 0; x < sizeof(shopDescZombie); x++){
-			userShopZombie[i][x] = 0;
-		}
+		
+		for(new x = 0; x < sizeof(shopDescBuilder); x++) userShopBuilder[i][x] = 0;
+		for(new x = 0; x < sizeof(shopDescZombie); x++) userShopZombie[i][x] = 0;
 		
 		userExtraDmg[i] 	= false
 		userNoRecoil[i] 	= false
@@ -2182,8 +1899,6 @@ public gameStart(){
 		userDraculaUsed[i]	= 	false;
 		userWeaponBool[i] 	= 	false;
 		userFirstDeathHuman	=	false
-		
-		
 	
 		granadeMission[i][0] = false;
 		granadeMission[i][1] = false;
@@ -2196,7 +1911,6 @@ public gameStart(){
 		
 	}
 	
-	
 	new ct = numPlayers(2, false)
 	new tt = numPlayers(1, false)
 	
@@ -2205,8 +1919,6 @@ public gameStart(){
 		startNewRound();
 	} else roundGood=false;
 }
-
-
 public startNewRound(){	
 	
 	if( task_exists(TASK_CLOCK) )
@@ -2217,26 +1929,21 @@ public startNewRound(){
 	
 	resetBlocks();
 	
-	if( ct <= 0 || tt <= 0 || (ct + tt ) <= 1 )
-		return 0;
+	if( ct <= 0 || tt <= 0 || (ct + tt ) <= 1 ) return 0;
 	
 	startBuild();
 	timerStart();
-	
-	
-	
+		
 	freeChestCreate()
 	
 	for(new i = 1; i < maxPlayers; i ++){
-		if( !is_user_connected(i) || is_user_hltv(i) || is_user_bot(i))
-			continue;
+		
+		if( !is_user_connected(i) || is_user_hltv(i) || is_user_bot(i)) continue;
 			
 		#if defined CHRISTMAS_ADDON
 			addChristmasMission(i, CH_ROUND, 1);
 		#endif
-		userCheckCamp[i] = false;
-			
-			
+		userCheckCamp[i] = false;	
 	}
 	#if defined CHRISTMAS_ADDON
 		randomSoundChristmas = random(sizeof(timePlayChristmas));
@@ -2253,45 +1960,33 @@ public startBuild(){
 	
 	gTime = gBuildTime;
 }
-
 public happyColorBarrier(){
 	
-
 	new Float:color[3];	
 	color[0] = hourTime ? float(colorsHappy[nextColorsHappy][0]) : float(255)
 	color[1] = hourTime ? float(colorsHappy[nextColorsHappy][1]) : float(102)
 	color[2] = hourTime ? float(colorsHappy[nextColorsHappy][2]) : float(0)
 	
-	set_pev(gBarrier,pev_rendermode,kRenderTransColor)
-		
+	set_pev(gBarrier,pev_rendermode,kRenderTransColor)	
 	set_pev(gBarrier,pev_rendercolor,color)	
-		
 	set_pev(gBarrier,pev_renderamt, Float:{100.0} )
 
-	
 	return PLUGIN_HANDLED;
 }
-
 public timerStart(){
 	
-	if (gTime > 0 && !clockStop){
-		gTime --;
-	}
-	if(roundEnd)
-		return PLUGIN_CONTINUE;
+	if (gTime > 0 && !clockStop) gTime --;
+	if(roundEnd) return PLUGIN_CONTINUE;
 	
+	new number[5];
 	
 	#if defined CHRISTMAS_ADDON
 		soundPrep();
-		new number[5];
-		
 		if ( ( gTime <= 10 && gTime > 0 || gTime == 30 ) && !gameTime && !clockStop){
 			num_to_word(gTime, number, sizeof(number));
 			cmd_execute(0, "spk %s", number);
 		}
 	#else 
-		new number[5];
-		
 		if ( ( gTime <= 10 && gTime > 0 || gTime == 30 ) && !gameTime && !clockStop){
 			num_to_word(gTime, number, sizeof(number));
 			cmd_execute(0, "spk %s", number);
@@ -2301,21 +1996,12 @@ public timerStart(){
 	new gText[132], gRound[132], iLen;
 	new happy[132];
 	
-	if(hourTime) 
-		format(happy, sizeof(happy), "[ HAPPY HOUR TIME - /happy ]^n", happyHourDesc[randomHappyHour][0]);
+	if(hourTime)  format(happy, sizeof(happy), "[ HAPPY HOUR TIME - /happy ]^n", happyHourDesc[randomHappyHour][0]);
 	
-	
-	
-	
-	if(clockStop){
-		format(gRound, sizeof(gRound), "Zatrzymane")
-	}else  {
-
-	
+	if(clockStop) format(gRound, sizeof(gRound), "Zatrzymane")
+	else  {	
 		if (buildTime){
-			if (!gTime){
-				startPrep();
-			}
+			if (!gTime) startPrep();
 			format(gRound, sizeof(gRound), "Budowanie")
 		}	
 		if(prepTime){
@@ -2325,9 +2011,7 @@ public timerStart(){
 			} 
 			format(gRound, sizeof(gRound), "Przygotowanie")
 		}
-		if(gameTime) {
-			format(gRound, sizeof(gRound), "Runda")
-		}
+		if(gameTime) format(gRound, sizeof(gRound), "Runda")
 	}
 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "%s[ %s - %d:%s%d ]", happy, gRound, gTime/60, (gTime%60 < 10 ? "0" : ""), gTime%60)
 	
@@ -2336,11 +2020,8 @@ public timerStart(){
 	show_dhudmessage(0, "%s",gText)
 	
 	if(hourTime){
-		if(buildTime || prepTime)
-			happyColorBarrier();
+		if(buildTime || prepTime) happyColorBarrier();
 	}
-	
-	
 	set_task(1.0, "timerStart", TASK_CLOCK);
 	return PLUGIN_CONTINUE;
 }
@@ -2351,8 +2032,7 @@ public startRelease(){
 	prepTime = false;
 	
 	removeNotUsedBlock()
-	
-	
+
 }
 public startPrep(){
 	
@@ -2363,9 +2043,7 @@ public startPrep(){
 	spkGameSound(0, sound_PREP)
 	
 	for(new i = 1; i < maxPlayers; i ++){
-		if( get_user_team(i) == 2  )
-			menuWeapon(i)
-			
+		if( get_user_team(i) == 2) menuWeapon(i)	
 		userBlocksUsed[i] = 0;	
 	}
 	
@@ -2379,9 +2057,7 @@ public startPrep(){
 }
 public respawnAll(){
 	for( new i = 1; i<maxPlayers; i++ ){
-		if( !is_user_connected(i) || get_user_team(i) != 2)
-			continue;
-		
+		if( !is_user_connected(i) || get_user_team(i) != 2) continue;
 		stopEnt(i)	
 		ExecuteHamB(Ham_CS_RoundRespawn, i)
 		set_pev(i, pev_velocity, Float:{0.0,0.0,0.0})
@@ -2400,8 +2076,7 @@ public gameEnd(){
 	new tt = numPlayers(1, false)
 
 	for(new i = 1; i < maxPlayers; i ++){
-		if( !is_user_connected(i) || is_user_hltv(i) || is_user_bot(i))
-			continue
+		if( !is_user_connected(i) || is_user_hltv(i) || is_user_bot(i)) continue
 			
 		deathPlayerWin(i);
 		resetPriceDefault(i)
@@ -2416,7 +2091,6 @@ public gameEnd(){
 			for(new i = i; i < maxPlayers; i ++){
 				if(get_user_team(i) == 2){
 					
-				
 					addMission(i, mission_SURVIVOR, 1)
 						
 					new Float:randomExp = 0.0
@@ -2434,7 +2108,6 @@ public gameEnd(){
 					addNuggetToFinal(i, randomNugget)
 						
 					ColorChat(i, GREEN, "%s Otrzymales za przetrwanie rundy^x04 |^x01 Brylek:^x03 %d^x04 /^x01 Expa:^x03 %0.1f", PREFIXSAY, randomNugget, randomExp);
-					
 				}
 				
 			}
@@ -2465,7 +2138,6 @@ public gameEnd(){
 				cs_set_user_team(i, userRoundTeam[i] == 1 ? 2 : 1 )
 					
 			}
-			
 			tt = numPlayers(1, false)
 			ct = numPlayers(2, false)
 			new dif = abs(ct-tt)
@@ -2493,11 +2165,8 @@ public gameEnd(){
 					cs_set_user_team(target, lookFor == 2 ? 1 : 2 )
 				}
 			}
-		
 		}
 	}
-	
-	
 }
 public makeBarrierSolid(){
 	if (gBarrier){
@@ -2520,13 +2189,10 @@ public makeBarrierNoSolid(){
 	}
 	return PLUGIN_CONTINUE;
 }
-
-
 public gameUserDeath(id){
 	if( !roundEnd ){
 		
-		if( task_exists(id+TASK_RESPAWN) )
-			remove_task(id+TASK_RESPAWN)
+		if( task_exists(id+TASK_RESPAWN) ) remove_task(id+TASK_RESPAWN)
 			
 		if( get_user_team( id ) == 2 ){		
 			if( buildTime || prepTime )
@@ -2548,12 +2214,8 @@ public gameUserDeath(id){
 	}
 }
 public gameUserSpawn(id){
-	if( prepTime || buildTime ){
-		userRoundTeam[id] = get_user_team(id)
-	}	
-	
-	if( task_exists(id+TASK_RESPAWN) )
-		remove_task(id+TASK_RESPAWN)
+	if( prepTime || buildTime ) userRoundTeam[id] = get_user_team(id)
+	if( task_exists(id+TASK_RESPAWN) ) remove_task(id+TASK_RESPAWN)
 		
 	StripWeapons(id, Primary);
 	StripWeapons(id, Secondary);
@@ -2564,8 +2226,7 @@ public fw_ClientKill(id){
 }
 public respawnPlayerAsTT(id){
 	id -= TASK_RESPAWN
-	if( is_user_hltv(id) ||  get_user_team(id) > 2  || !is_user_connected(id))	
-		return;
+	if( is_user_hltv(id) ||  get_user_team(id) > 2  || !is_user_connected(id)) return;
 
 	if( !is_user_alive(id) && is_user_connected(id) ){		
 		cs_set_user_team(id, 1)
@@ -2574,8 +2235,7 @@ public respawnPlayerAsTT(id){
 }
 public respawnPlayer(id){	
 	id -= TASK_RESPAWN
-	if( get_user_team(id) > 2 || !is_user_connected(id))
-		return
+	if( get_user_team(id) > 2 || !is_user_connected(id)) return
 	if( !is_user_alive(id) && is_user_connected(id) ){		
 		ExecuteHamB(Ham_CS_RoundRespawn, id)	
 	}
@@ -2583,15 +2243,12 @@ public respawnPlayer(id){
 public numPlayers(team, bool:alive ){
 	new iNum=0
 	for(new i=1;i<maxPlayers;i++){
-		if( !is_user_connected(i) || is_user_hltv(i) )
-			continue
+		if( !is_user_connected(i) || is_user_hltv(i) ) continue
 		
-		if( alive )
-			if( !is_user_alive(i) )
-				continue
-		
-		if( get_user_team(i) != team )
-			continue;
+		if( alive ){
+			if( !is_user_alive(i)) continue
+		}
+		if( get_user_team(i) != team ) continue;
 		iNum++;
 	}
 	return iNum;
@@ -2606,7 +2263,6 @@ public removeCamp(id){
 		}else {
 			adminResetBlock(2, id, id)				
 		}
-		
 	}
 }
 public ham_Spawn(id){
@@ -2616,9 +2272,7 @@ public ham_Spawn(id){
 
 
 	if (!userFirstSpawn[id]){
-		
-		//loadStatsSql(id, 9)
-		
+
 		set_task(2.0, "globalHud" , id + TASK_GLOBAL)
 		set_task(speedMine - float(userUpgradeMine[id][up_GOBLIN]), "miningNugget", id + TASK_MINER);
 		
@@ -2629,9 +2283,7 @@ public ham_Spawn(id){
 			if( !task_exists(id+TASK_AFK) )
 				set_task(0.1, "checkCamping", id + TASK_AFK);
 		}
-		
-		//changeTeamIfSuggested(id)
-		
+
 		userFirstSpawn[id] = true
 		
 		remove_task(id + TASK_PUSH);
@@ -2668,14 +2320,10 @@ public changeTeamIfSuggested(id){
 	}
 	new ct=numPlayers(2, false)-(get_user_team(id)==2?1:0)
 	new tt=numPlayers(1, false)-(get_user_team(id)==1?1:0)
-	
-	if( tt == 0 || ct == 0 ){
-		return
-	}
-	
 	new dif = abs(ct-tt)
-	if( dif > 1 )
-		return;
+	
+	if( tt == 0 || ct == 0 ) return
+	if( dif > 1 ) return;
 	
 	cs_set_user_team(id,  userSuggestTeam[id] )
 	respawnPlayerAdmin(id)
@@ -2683,7 +2331,6 @@ public changeTeamIfSuggested(id){
 	userSuggestTeam[id]=0;
 	client_print(0, print_chat, "changeTeamIfSuggested")
 }
-
 public cmdChangeTeam(id){
 	if( get_user_team(id) ){
 		globalMenu(id)
@@ -2717,8 +2364,7 @@ public forceTeam(id, msgid){
 	
 }
 public joinTeam(menu_msgid[], id) {
-	if (get_user_team(id) || is_user_hltv(id))
-		return
+	if (get_user_team(id) || is_user_hltv(id)) return
 		
 	static msg_block, joinclass[] = "joinclass"
 	msg_block = get_msg_block(menu_msgid[0])
@@ -2734,7 +2380,6 @@ public joinTeam(menu_msgid[], id) {
 		cs_set_user_team(id, 1)
 		//ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 zrobil^x03 RC^x01 zostal przeniesiony do^x03 ZM^x04 ---", userName[id]);
 	} else addMission(id, mission_CONNECT, 1)
-	
 	set_task( 1.0, "checkTeam", id)
 }
 public messageSayText(){
@@ -2821,7 +2466,6 @@ public cmdSay(id){
 	read_args(szMessage, sizeof( szMessage )); 
 	remove_quotes(szMessage)
 		
-	
 	if(szMessage[0] == '/' || szMessage[0] == '!'){
 		if(!playerLogged(id)){
 			if(equal(szMessage, "/konto", 6)  || equal(szMessage, "/haslo", 6) || equal(szMessage, "/zaloguj", 8) || equal(szMessage, "/login", 6) || equal(szMessage, "/zarejestruj", 12)){
@@ -2926,8 +2570,6 @@ public cmdSay(id){
 				smsMainMenu(id)	
 				return PLUGIN_HANDLED;
 			}
-			
-			
 			if(equal(szMessage, "/vips")){
 				showVipsOnline(id)
 				return PLUGIN_HANDLED;
@@ -2938,8 +2580,7 @@ public cmdSay(id){
 			}
 			if(equal(szMessage, "/kopalnia")){
 				globalMenuCave(id)
-				return PLUGIN_HANDLED;
-					
+				return PLUGIN_HANDLED;	
 			}
 			if(0 <= contain(szMessage, "/top")){
 				loadStatsSql(id, 16)
@@ -2979,9 +2620,7 @@ public cmdSay(id){
 				ColorChat(id, GREEN, "---^x01 Twoje^x03 ID^x01 konta:^x03 %d^x04 ---", userSqlId[id]);
 				return PLUGIN_HANDLED;
 			}
-			
 			if (equal(szMessage, "/nagroda")){
-				
 				checkForAward(id)
 				return PLUGIN_HANDLED;
 			}
@@ -3006,7 +2645,6 @@ public cmdSay(id){
 				return PLUGIN_HANDLED;
 			}
 			if (equal(szMessage, "/klan")){
-				
 				globalClanMenu(id)
 				return PLUGIN_HANDLED;
 			}
@@ -3057,30 +2695,27 @@ public cmdSay(id){
 					ColorChat(id, GREEN, "%s Nie masz tyle Brylek!", PREFIXSAY)
 					return PLUGIN_CONTINUE
 				}
-				
 				new gText[128];
 				logType[id] = LOG_TRANSFER;
-				if(logType[id] == LOG_TRANSFER) format(gText, sizeof(gText), "wyslal [%d] brylek graczowi [%s]", gValue, userName[target])
-				logBB(id, gText)
-				
+				if(logType[id] == LOG_TRANSFER){
+					format(gText, sizeof(gText), "wyslal [%d] brylek graczowi [%s]", gValue, userName[target])
+					logBB(id, gText)
+				}
 				userNugget[id]		-=	gValue
 				userNugget[target]	+=	gValue
 				ColorChat(id, 		GREEN, 	"%s Wyslales^x03 %s^x01 Brylek do gracza^x04 %s!", PREFIXSAY, formatNumber(gValue), userName[target] ) 
 				ColorChat(target, 	GREEN, 	"%s Otrzymales^x03 %s^x01 Brylek do gracza^x04 %s!", PREFIXSAY, formatNumber(gValue), userName[id] ) 
 				return PLUGIN_HANDLED;
 			}
-			if (equal(szMessage, "/kostium")){
-					
+			if (equal(szMessage, "/kostium")){	
 				globalMenuCostumes(id);
 				return PLUGIN_HANDLED;
 			}
-			if (equal(szMessage, "/zabij")){
-					
+			if (equal(szMessage, "/zabij")){	
 				deathPriceMenu(id);
 				return PLUGIN_HANDLED;
 			}
-			if (equal(szMessage, "/wycisz")){
-					
+			if (equal(szMessage, "/wycisz")){	
 				userMenuPlayer[id] = MENU_PLAYER_MUTE
 				choosePlayer(id, 0)
 				return PLUGIN_HANDLED;
@@ -3131,10 +2766,11 @@ public cmdSay(id){
 		
 		new gText[192]
 		logType[id] = LOG_CHAT
-		if(logType[id] == LOG_CHAT) format(gText, sizeof(gText), "global chat: [%s]", szMessage);
-		logBB(id,gText)
+		if(logType[id] == LOG_CHAT){
+			format(gText, sizeof(gText), "global chat: [%s]", szMessage);
+			logBB(id,gText)
+		}
 	}
-	
 	return PLUGIN_HANDLED
 }
 
@@ -3160,12 +2796,9 @@ public adminsPointHelp(id){
 	
 	
 	for(new i = 1; i < maxPlayers; i++){
-		if(!is_user_connected(i) || is_user_hltv(i) || is_user_bot(i) || !isAdmin(i))
-			continue;
+		if(!is_user_connected(i) || is_user_hltv(i) || is_user_bot(i) || !isAdmin(i))continue;
 		
 		iLen += format(gText[iLen], sizeText, "<tr><td>%s</td><td>%d</td></tr>",userName[i], userHelpPoint[i]);
-		
-		
 	}
 		
 	iLen += format(gText[iLen], sizeText, "</table>")
@@ -3232,12 +2865,11 @@ public cmdSayClan(id){
 		
 		new gText[192]
 		logType[id] = LOG_CHAT
-		if(logType[id] == LOG_CHAT) format(gText, sizeof(gText), "clan chat: [%s]", szMessage);
-		logBB(id,gText)
-		
-				
+		if(logType[id] == LOG_CHAT){
+			format(gText, sizeof(gText), "clan chat: [%s]", szMessage);
+			logBB(id,gText)
+		}		
 		return PLUGIN_HANDLED_MAIN;
-
 	}
 	return PLUGIN_HANDLED;
 }
@@ -3250,16 +2882,13 @@ public Release_Zombies(){
 	
 	gTime = gameTime;
 	buildTime = false;
-	
-	
+
 	startRelease()
 	
 	for( new i = 1 ; i < maxPlayers; i++ ){
-		if( !is_user_connected(i) )
-			continue
+		if( !is_user_connected(i) ) continue
 		
-		if(userGrab[i])
-			stopEnt(i)
+		if(userGrab[i]) stopEnt(i)
 			
 		if(get_user_team(i) == 2){
 			
@@ -3267,21 +2896,14 @@ public Release_Zombies(){
 				giveWeapons(i, userWeaponSelect[i])
 				userWeaponBool[i] = false;
 			}
-			else if(gameTime)
-				menuWeapon(i)
-			 
-		}
-			
+			else if(gameTime) menuWeapon(i) 
+		}	
 	}
-	
-	
-
 	switch(random_num(0,1)){
 		case 0:spkGameSound(0,sound_START)
 		case 1:spkGameSound(0,sound_START2)
 	}
 	makeBarrierNoSolid();
-	
 }
 public cmdUnstuck(id){
 	
@@ -3316,7 +2938,6 @@ public cmdUnstuck(id){
 		else stuck[id] = 0	
 	}
 	return PLUGIN_CONTINUE;
-
 }
 public userJetPackOn(id){
 	if(  buildTime || isAdmin(id)){
@@ -3333,8 +2954,7 @@ public userJetPackOff(id){
 
 public fw_CmdStart( id, uc_handle, randseed ){
 	
-	if( !is_user_alive(id) || !is_user_connected(id) || is_user_hltv(id) )
-		return FMRES_IGNORED
+	if( !is_user_alive(id) || !is_user_connected(id) || is_user_hltv(id) ) return FMRES_IGNORED
 	
 	userFPS[id] = floatround(1 / (get_uc(uc_handle, UC_Msec) * 0.001));
 	
@@ -3348,31 +2968,21 @@ public fw_CmdStart( id, uc_handle, randseed ){
 	
 	moveRocket(id);
 	
-	
 	if(userFPS[id] >= 125 || !playerLogged(id)){
-		
-	
 		if(entity_get_int(id, EV_INT_button) & IN_JUMP || entity_get_int(id, EV_INT_button) & IN_DUCK ){
 			entity_set_int(id, EV_INT_oldbuttons, entity_get_int(id, EV_INT_button))
 		}
 	}
-	
 	if( userJetPack[ id ] ){
 		if( buildTime || isAdmin(id) ){		
 			new Float:fVelo[ 3 ]		
 			VelocityByAim(id, userJetpackSpeed[id], fVelo )
 			entity_set_vector(id , EV_VEC_velocity, fVelo )
 			entity_set_int(id,EV_INT_sequence, 8 ) 									
-			
 		}			
 	}
-
-	if (!userGrab[id] || !is_valid_ent(userGrab[id]))
-		return FMRES_HANDLED
-	
-
+	if (!userGrab[id] || !is_valid_ent(userGrab[id])) return FMRES_HANDLED;
 	if(userNoRecoil[id]) set_pev(id, pev_punchangle, Float:{0.0,0.0,0.0});
-	
 	
 	return FMRES_IGNORED;
 }
@@ -3380,7 +2990,6 @@ public jumpFuncBlock(id, type){
 	switch(type){
 		case 1:{
 			if(jumpBlock[id]){
-				
 				new Float:powerJump = 550.0;
 				new Float:fVelocity[3] = 0.0;
 		
@@ -3441,14 +3050,13 @@ public resetBlocks(){
 		if( !pev_valid(ent) )
 			continue;
 		
-		if( ent == gBarrier ) 
-			continue;
+		if( ent == gBarrier )  continue;
 			
 		entity_get_string(ent, EV_SZ_classname, szClass, 9);
 		entity_get_string(ent, EV_SZ_targetname, szTarget, 6);
 		
-		if( !equal(szClass, "func_wall") || containi(szTarget, "ignore") !=-1 || equal(szTarget, "barrier")/* || towerdefenceEntMap(ent)*/)
-			continue;
+		if( !equal(szClass, "func_wall") || containi(szTarget, "ignore") !=-1 || equal(szTarget, "barrier")) continue;
+		
 		unSetBlock( ent )
 		
 		if( getLock(ent) == 3 ){
@@ -3463,7 +3071,6 @@ public resetBlocks(){
 			set_pev(ent,pev_rendercolor, Float:{ 0.0, 0.0, 0.0 })
 			set_pev(ent,pev_renderamt, 255.0 )
 		}
-		
 	}
 	return PLUGIN_CONTINUE;
 }
@@ -3471,24 +3078,16 @@ public removeNotUsedBlock(){
 
 	new szClass[10], szTarget[10];
 	for(new ent=maxPlayers; ent<maxEnts;ent ++){
-		if( !pev_valid(ent) )
-			continue;
-		
-		if( ent == gBarrier ) 
-			continue;
-		
+		if( !pev_valid(ent) ) continue;
+		if( ent == gBarrier )  continue;
 		
 		entity_get_string(ent, EV_SZ_classname, szClass, 9);
 		entity_get_string(ent, EV_SZ_targetname, szTarget, 9);
 		
-		if( !equal(szClass, "func_wall") || containi(szTarget, "ignore")!=-1 || containi(szTarget, "JUMP")!=-1)
-			continue;			
+		if(!equal(szClass, "func_wall") || containi(szTarget, "ignore")!=-1 || containi(szTarget, "JUMP")!=-1) continue;			
+		if(getOwner(ent) != 0 ) continue
 		
-		if( getOwner(ent) != 0 )
-			continue
-		
-		if( getLock(ent) == 3 )
-			remove_entity(ent)
+		if( getLock(ent) == 3 ) remove_entity(ent)
 		else engfunc( EngFunc_SetOrigin, ent, Float:{ -8192.0, -8192.0, -8192.0 } );
 	}
 	return PLUGIN_CONTINUE;
@@ -3524,13 +3123,10 @@ public globalMenu(id){
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r8.\w Oddajesz EXP'a Klasie:\r %s", typeExpClass[userGiveClassExp[id]][0]);
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n^n\r9.\r Moce!")
 	
-	
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n^n\r0.\w Wyjdz")
 	
 	show_menu(id, B1 | B2 | B3 | B4 | B5 | B6 | B7 | B8 | B9 | B0, gText, -1, "globalMenu" )	
 }
-
-
 public globalMenu_2(id, item){
 	
 	switch(item){
@@ -3579,9 +3175,6 @@ public globalMenu_2(id, item){
 	}
 	return PLUGIN_CONTINUE;
 }
-
-
-
 public logBB(id, szText[]){
 	new szMessage[256]
 	new szName[32]
@@ -3636,8 +3229,6 @@ public logBB(id, szText[]){
 		case LOG_WARNING_ADD: 	format(szDir,sizeof(szDir),"%s/%s/warnings/add_%s.log",szDir, folderLogs, szData);
 		case LOG_WARNING_REMOVE: format(szDir,sizeof(szDir),"%s/%s/warnings/remove_%s.log",szDir, folderLogs, szData);
 		case LOG_WARNING_CHANGE: format(szDir,sizeof(szDir),"%s/%s/warnings/change_%s.log",szDir, folderLogs, szData);
-		
-
 	}
 	format(szMessage,sizeof(szMessage),"[%s] %s {%d} - (%s) : %s",szCurrentTime,szName, userSqlId[id], szIP,szText)
 	write_file(szDir, szMessage)
@@ -3686,7 +3277,6 @@ public checkFPS(id){
 public maxFPS(id, const cvar[], const val[]){
 	
 	new fps = str_to_num(val)
-	
 	new dot = 0
 	
 	new i = 0
@@ -3699,7 +3289,6 @@ public maxFPS(id, const cvar[], const val[]){
 	if( fps > 101 || dot >= 2)
 		userExtraFps[id] = true	
 }
-
 public showVipsOnline(id) {
 
 	new gText[1536];
@@ -3713,16 +3302,11 @@ public showVipsOnline(id) {
 		
 		x = players[i];
 		
-		
-		if(!is_user_connected(x) || is_user_bot(x) || is_user_hltv(x))
-			continue;
-		
-		if(!isVip(x))
-			continue;
+		if(!is_user_connected(x) || is_user_bot(x) || is_user_hltv(x)) continue;
+		if(!isVip(x)) continue;
 			
 		format(gText, sizeof(gText), "\y%s\d -\w VIP",userName[x]);
 		menu_additem(menu, gText);
-		
 	}
 	menu_display(id, menu, 0);
 	return PLUGIN_CONTINUE;
@@ -3739,7 +3323,6 @@ public showVipsOnline_2(id, menu, item){
 
 public vipStatus(){
 	new id = get_msg_arg_int(1);
-
 	if (is_user_alive(id) && isVip(id)) set_msg_arg_int(2, ARG_BYTE, get_msg_arg_int(2) | 4);
 }
 
@@ -3779,10 +3362,7 @@ public showInfoVip_2(id, item){
 	}
 }
 public infoPlayer(id, target){
-	if(  !is_user_connected(target) || !is_user_connected(id))
-		return PLUGIN_CONTINUE;
-	
-	
+	if(  !is_user_connected(target) || !is_user_connected(id)) return PLUGIN_CONTINUE;
 
 	new gText[1536]
 	new iLen = 0;
@@ -3825,8 +3405,6 @@ public infoPlayer(id, target){
 	
 	iLen += format(gText[iLen], sizeText, "<tr><td>Kolor Hud:</td><td><b style=^"color: rgb(%d,%d,%d); text-shadow: 0 0 5px rgb(%d,%d,%d)^">%d,%d,%d</b></td></tr>", userHud[target][PLAYER_HUD_RED], userHud[target][PLAYER_HUD_GREEN], userHud[target][PLAYER_HUD_BLUE],userHud[target][PLAYER_HUD_RED], userHud[target][PLAYER_HUD_GREEN], userHud[target][PLAYER_HUD_BLUE],userHud[target][PLAYER_HUD_RED], userHud[target][PLAYER_HUD_GREEN], userHud[target][PLAYER_HUD_BLUE])
 	
-	
-	
 	iLen += format(gText[iLen], sizeText, "</table>")	
 	iLen += format(gText[iLen], sizeText, "</html>")
 	
@@ -3856,17 +3434,6 @@ public checkForAward(id){
 	new gText[128], iLen;
 	logType[id] = LOG_AWARD;
 	if(logType[id] == LOG_AWARD){
-		
-		/*if(random(100) <= 10){
-			new luzr = random_num(1,10);
-			userLuzCoin[id] += luzr;
-			
-			addSecretMission(id, mission_secret_LUZAK, luzr)
-			
-			ColorChat(id, GREEN, "%s Otrzymales^x04 %d Luzaczkow^x01.", PREFIXSAY, luzr)
-			iLen += format(gText[iLen], sizeof(gText)-1-iLen, "dostal %d Luzakow z Nagrody w Bonusie! + ",luzr)
-		}*/
-		
 		if( isVip(id)){
 			
 			switch(random_num(1,6)){
@@ -3975,7 +3542,6 @@ public checkForAward(id){
 					
 					ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 otrzymal^x04 Zwoj Szczescia^x01 na^x04 %d %s^x01 z nagrody!", PREFIXSAY, userName[id], (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" )
 					empty	=	false;
-					
 				}
 			}
 		}
@@ -3983,21 +3549,17 @@ public checkForAward(id){
 			ColorChat(id, GREEN, "%s Ojejku :( Nic nie dostales.", PREFIXSAY)
 			iLen += format(gText[iLen], sizeof(gText)-1-iLen, "nic nie dostal z Nagrody!")
 		}
+		logBB(id, gText);
 	}
-	logBB(id, gText)
-	
 	userAllAward[id] ++
 	userLastAwardTime[id]=playedTime(id)
 	return PLUGIN_CONTINUE;
 }
-
 public playerRandomInfo(){
 	new listPlayer[33]
 	new iNum = 0;
 	for( new i = 1; i < maxPlayers; i ++ ){
-		if( !is_user_connected(i) || is_user_hltv(i) )
-			continue
-		
+		if( !is_user_connected(i) || is_user_hltv(i) ) continue
 		listPlayer[iNum++] = i
 	}
 	if( iNum > 0 ){
@@ -4015,61 +3577,42 @@ public playerRandomInfo(){
 }
 
 public fw_SetClientListening(iReceiver, iSender, bool:bListen){
-
-	if (get_systime() < userMute[iSender]/* || get_systime() < userMute[iReceiver]*/ || userMutePlayer[iReceiver][iSender])
-	{
-		engfunc(69, iReceiver, iSender, 0);
-		forward_return(3, 0);
-		return 4;
+	if (get_systime() < userMute[iSender]/* || get_systime() < userMute[iReceiver]*/ || userMutePlayer[iReceiver][iSender]){
+		engfunc(EngFunc_SetClientListening, iReceiver, iSender, false)
+		forward_return(FMV_CELL, false)
+		return FMRES_SUPERCEDE;
 	}
-	engfunc(69, iReceiver, iSender, 1);
-	forward_return(3, 1);
-	return 4;
+	engfunc(EngFunc_SetClientListening, iReceiver, iSender, true)
+	forward_return(FMV_CELL, true)
+	return FMRES_SUPERCEDE;
 }
-
-
 public adminHelpPush(id){
 	
 	id -= TASK_PUSH
 	
-	if(!userPush[id])
-		return;
+	if(!userPush[id]) return;
 		
 	new Float:fOrigin[3], Float:fOriginTarget[3], iOrigin[3], Float:fVelocity[3]	
 	entity_get_vector(id, EV_VEC_origin, fOrigin)
 		
 	for( new i = 1; i < maxPlayers; i ++ ){
 		
-		if( i == id )
-			continue;
-		
-		if(isAdmin(i))
-			continue;
-		
-		if(buildTime || prepTime)
-			continue;
-		
-		if( !is_user_alive(i) || get_user_team(i) != 1) 
-			continue;
+		if( i == id ) continue;
+		if(isAdmin(i)) continue;
+		if(buildTime || prepTime) continue;
+		if(!is_user_alive(i) || get_user_team(i) != 1)  continue;
 			
 		entity_get_vector(i, EV_VEC_origin, fOriginTarget)
-		
-		
-		if( get_distance_f(fOriginTarget, fOrigin) >= 200.0)
-			continue;
+
+		if( get_distance_f(fOriginTarget, fOrigin) >= 200.0) continue;
 			
-		
 		get_user_origin(id, iOrigin, 2)
 		IVecFVec(iOrigin, fOrigin)
-				
-		
 		entity_get_vector(id, 	EV_VEC_origin, 	fOrigin)
-		
 		entity_get_vector(i, 	EV_VEC_origin, 	fOriginTarget)
 		fOriginTarget[2] = fOrigin[2]
 		xs_vec_sub(fOrigin, fOriginTarget, fVelocity)
-		xs_vec_normalize( fVelocity , fVelocity );	
-			
+		xs_vec_normalize( fVelocity , fVelocity );		
 		xs_vec_mul_scalar( fVelocity , -700.0 , fVelocity );
 		fVelocity[2] *= 1.5;
 		entity_set_vector(i, 	EV_VEC_velocity, 	fVelocity)
@@ -4078,11 +3621,8 @@ public adminHelpPush(id){
 }
 
 public ChatOff(id){
-	if(!isSuperAdmin(id))
-		return PLUGIN_CONTINUE;
-	
+	if(!isSuperAdmin(id)) return;
 	serverOffChat =! serverOffChat;
-	return PLUGIN_CONTINUE;
 }
 
 
@@ -4106,11 +3646,7 @@ public bloodSpriteGo(attacker, victim){
 	get_user_attacker(victim,weapon,hitpoint)
 	
 	xs_vec_add(fOrigin,fVec[hitpoint],fOrigin)
-	
-	/*for(new i = 1;i < 25;i++){
-		makeBloodSprite(fOrigin);
-		makeBlood(fOrigin);
-	}*/
+
 }
 
 
@@ -4118,9 +3654,7 @@ public createNugget(id, id2){
 	new Float:fOrigin[3]
 	pev(id2, pev_origin, fOrigin)
 	
-	
 	for(new i = 0; i < random(5); i ++){
-	
 		switch(random(100)){
 			case 0: 		createNuggetOrigin(fOrigin, 1,1, BLACK_NUGGET, 	.owner=id)		
 			case 1..5: 	createNuggetOrigin(fOrigin, 1,1, PINK_NUGGET, 	.owner=id)		
@@ -4145,7 +3679,6 @@ public nuggetThink(ent){
 		pev(ent, pev_origin, fOrigin)
 		fOrigin[2] += 20.0
 		
-		
 		if( get_gametime() - pev(ent, pev_fuser1) > 3.0 ){
 			if( pev(ent, pev_flags) & FL_ONGROUND ){
 				new Float:fVelocity[3]
@@ -4156,7 +3689,6 @@ public nuggetThink(ent){
 		}
 		set_pev(ent, pev_fuser3, get_gametime())
 	}
-	
 	if( get_gametime() - pev(ent, pev_fuser1) > 10.0 ){
 		
 		listNuggetOnFloor[pev(ent, pev_iuser1)] = 0
@@ -4225,30 +3757,24 @@ public findCoinArround(id){
 	
 	for( new i = 0 ; i < MAXNUGGETSFLOOR; i ++ ){
 		ent = listNuggetOnFloor[i]
-		if( !pev_valid(ent) )
-			continue;	
-			
-		if( get_gametime() - pev(ent, pev_fuser1) < random_float(1.50,2.50) )
-			continue
+		if(!pev_valid(ent)) continue;		
+		if(get_gametime() - pev(ent, pev_fuser1) < random_float(1.50,2.50)) continue
 		
 	
 		if(teamWorks(id)){
 			id = userTeam[id]
 			
-			if(pev(ent, pev_iuser3) != id) 
-				continue;
+			if(pev(ent, pev_iuser3) != id) continue;
 		}
 		
-		if(pev(ent, pev_iuser3) != id) 
-			continue;
+		if(pev(ent, pev_iuser3) != id) continue;
 			
 		pev(ent, pev_origin, fOriginCoin)
 		
 		if(!pickUp){
 			if( get_distance_f(fOrigin, fOriginCoin) > 155.0){
 					
-				if( get_gametime() - pev(ent, pev_fuser1) < random_float(1.50,2.50) )
-					continue
+				if( get_gametime() - pev(ent, pev_fuser1) < random_float(1.50,2.50) ) continue
 				if( get_distance_f(fOrigin, fOriginCoin)  < 300.0 ){
 					new Float:fVeloc[3]
 					xs_vec_sub(fOrigin, fOriginCoin, fVeloc)				
@@ -4257,9 +3783,7 @@ public findCoinArround(id){
 					set_pev(ent, pev_velocity, fVeloc)
 					
 					
-				}
-					
-				continue
+				} continue
 			}
 		}
 		
