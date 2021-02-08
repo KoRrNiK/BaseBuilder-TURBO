@@ -62,13 +62,9 @@
 
 #include "TURBObasebuilder/randomItem.inl"
 
-
-
 public plugin_precache(){
-
 	
 	tutorPrecache()
-	
 	
 	precache_model(modelNuggetDrop)
 
