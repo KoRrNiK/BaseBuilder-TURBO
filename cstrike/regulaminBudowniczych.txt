@@ -1,0 +1,2 @@
+<body style="background: url('https://i.imgur.com/NkyfvjC.png') top center #6cc801;margin:0px;padding:0px;background-size:100% 100%;background-repeat:no-repeat;"></body>
+</html>
