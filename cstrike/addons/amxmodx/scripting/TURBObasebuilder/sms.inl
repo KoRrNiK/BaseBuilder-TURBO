@@ -30,28 +30,11 @@ public smsMainMenu(id){
 	return PLUGIN_HANDLED;
 }
 public smsMainMenu_2(id, item){
-	/*new x = true;
-	if(x){
-		ColorChat(id, GREEN, "== Sklep zostal wylaczony ==")
-		return PLUGIN_CONTINUE
-	}*/
 	switch(item){
-		case 0:{/*
-			
-			if( !has_flag(id, HEADFLAG) ){
-				ColorChat(id, GREEN, "== Sklep zostal wylaczony ==")
-				return PLUGIN_CONTINUE
-			}*/
-			addCash(id)
-		}
-		case 1:{
-			luzaczkiShop(id)
-		}
-		case 2:{
-			yourBuyService(id)	
-		}
+		case 0: addCash(id)
+		case 1: luzaczkiShop(id)
+		case 2: yourBuyService(id)	
 		case 5:{
-
 			if(!isSuperAdmin(id)){
 				smsMainMenu(id)
 				return PLUGIN_CONTINUE
@@ -213,7 +196,6 @@ public yourBuyService_2(id, item){
 		}
 	}
 }
-
 public addValue(id){
 	if(!isSuperAdmin(id))
 		return PLUGIN_CONTINUE;
@@ -261,20 +243,14 @@ public addValue(id){
 				format(gText, sizeof(gText), "dodal Brylki [%s] ilosc [%d]", userName[target], value)	
 			}
 			case MENU_GIVING_LVL:{
-				
-				
 				userLevel[target] += value
 				userLevel[target] = clamp(userLevel[target], 0, MAXLVL);
-	
 				ColorChat(id, GREEN, "---^x01 Dodales^x04 [^x03%d Lv.^x04][^x03Graczowi %s^x04] ---",value, userName[target])
 				ColorChat(target, GREEN, "---^x01 Otrzymales^x04 [^x03%d Lv.^x04][^x03Od Admina %s^x04] ---", value, userName[id])
 				format(gText, sizeof(gText), "dodal Lv. [%s] ilosc [%d ]", userName[target], value)	
 			}
 			case MENU_GIVING_TIME:{
-				
-				
 				userTime[target] += value *60
-				
 				//userTime[target] += value*60
 				ColorChat(id, GREEN, "---^x01 Dodales^x04 [^x03%d min Czasu Gry^x04][^x03Graczowi %s^x04] ---", value, userName[target])				
 				ColorChat(target, GREEN, "---^x01 Otrzymales^x04 [^x03%d min Czasu Gry^x04][^x03Od Admina %s^x04] ---", value, userName[id])
@@ -301,9 +277,9 @@ public addValue(id){
 				format(gText, sizeof(gText), "dodal Kosci [%s] ilosc [%d]", userName[target], value)	
 			}
 		}
+		logBB(id, gText)
 	}
 	choosePlayer(id, 0)
-	logBB(id, gText)
 	return PLUGIN_CONTINUE;
 }
 public addValueTransfer(id){
@@ -317,8 +293,6 @@ public addValueTransfer(id){
 		ColorChat(id ,GREEN, "---^x01 Nie ma gracza na serwerze ktoremu chciales dac Brylki^x04 ---");
 		return PLUGIN_CONTINUE;
 	}
-	
-		
 	switch(userMenuPlayer[id]){	
 		case MENU_PLAYER_NUGGET:{
 				
@@ -365,9 +339,6 @@ public codeCheck(id){
 	HTTP2_Download(szLink, _, _, "checkCodeSmsSeti");
 	return PLUGIN_CONTINUE	
 }
-
-
-
 public checkCodeSmsSeti(idHandler, error){	
 	
 	new gText[128]
@@ -428,7 +399,6 @@ public checkCodeSmsSeti(idHandler, error){
 		}
 	}
 	return PLUGIN_HANDLED;
-	
 }
 public luzaczkiShop(id){
 	if( !playerLogged(id) ){
@@ -452,10 +422,6 @@ public luzaczkiShop(id){
 	
 	new menu = menu_create(gText, "luzaczkiShop_2")
 	
-	//new iLen = 0;
-	//iLen += format(gText[iLen], sizeof(gText)-iLen-1, "%s", itemsShop[0][0])
-	//menu_additem(menu, gText)
-	
 	for( new i = 0; i < sizeof(itemsShop); i ++ ){
 		format(gText, sizeof(gText), "%s\d [\y %s\r Luzaczkow\d ]", itemsShop[i][0], itemsShop[i][1])
 		menu_additem(menu, gText)
@@ -468,11 +434,6 @@ public luzaczkiShop(id){
 	menu_display(id, menu, 0)
 	return PLUGIN_CONTINUE;
 }
-
-
-new userBuyVipDay[33];
-new bool:userBuyVipAccept[33];
-
 public luzaczkiShop_2(id, menu, item){
 	if( item == MENU_EXIT ){
 		smsMainMenu(id)
@@ -484,12 +445,6 @@ public luzaczkiShop_2(id, menu, item){
 		return PLUGIN_HANDLED
 	}
 	userService[id] = item;
-	
-	/*if(item == 0){
-		userBuyVipDay[id] = 0;
-		vipMenuBuy(id)
-		return PLUGIN_CONTINUE
-	}*/
 	luzaczkiFinal(id)
 	return PLUGIN_CONTINUE
 }
@@ -523,10 +478,6 @@ public luzaczkiFinal_2(id, item){
 	item = userService[id];
 	switch(item){
 		case 0:{
-			/*userBuyVipAccept[id] = false;
-			userBuyVipDay[id] = 0;
-			vipMenuBuy(id)
-			return PLUGIN_CONTINUE;*/
 			timeVip[id]	= 	max( timeVip[id] + (DAY*30), get_systime() + (DAY*30) )
 		}		
 		case 1:{
@@ -570,142 +521,6 @@ public luzaczkiFinal_2(id, item){
 	
 	return PLUGIN_HANDLED
 	
-}
-
-new vipCostDay = 1
-public vipMenuBuy(id){
-	new x = false;
-	
-	if(!x){
-		ColorChat(id, GREEN, "---^x01 Myslales, ze takim sposobem kupisz VIPA?^x04 ---");
-		return;
-	}
-	
-	new item = userService[id] ;
-	new gText[512]
-	new iLen;
-	new daysLeft = (timeVip[id] - get_systime())	
-	new gratis[33];
-
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\wPosiadasz\r %d\w Luzaczkow^n", userLuzCoin[id])
-	
-	
-	format(gratis, sizeof(gratis), " + %d dni gratisu", userBuyVipDay[id] >= 180 ? 30 : userBuyVipDay[id] >= 150 ? 25 : userBuyVipDay[id] >= 120 ? 20 : userBuyVipDay[id] >= 90 ? 15 : userBuyVipDay[id] >= 60 ? 10 : 5)
-	
-	
-	if( daysLeft > 0 || isVip(id) ){
-		if( has_flag(id, flagVip)) iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\wPozostalo\r Bez Limitu Vip^n")
-		 else iLen += format(gText[iLen], sizeof(gText)-iLen-1,"\wPozostalo\r %d godz %s%d min %s%d sek\w VIP'a^n",( daysLeft / HOUR ),(daysLeft / MINUTE % MINUTE)<10?"0":"", ( daysLeft / MINUTE % MINUTE ), (daysLeft%MINUTE)<10?"0":"", ( daysLeft %MINUTE ))
-		
-	
-	
-	}
-	
-	if(userBuyVipDay[id] > 0) iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\wCzy na pewno chcesz kupic\r VIP'a\w na:\r %d dni%s^n^n", userBuyVipDay[id], userBuyVipDay[id] >= 30 ? gratis : "")
-	else iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n");
-	
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\y%s^t^t\dOpis:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], itemsShop[item][2])
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\y%s^t^t\dTaryfikator Cenowy:\r 1 dzien za %d Luzaczkow^n", symbolsCustom[SYMBOL_DR_ARROW], vipCostDay)
-	
-	if(userBuyVipDay[id] == 0) iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\y%s^t^t\dCena:\r Wpisz najpierw ilosc Dni!^n^n", symbolsCustom[SYMBOL_DR_ARROW], userBuyVipDay[id] * vipCostDay)
-	else iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\y%s^t^t\dCena:\r %d Luzakow^n^n", symbolsCustom[SYMBOL_DR_ARROW], userBuyVipDay[id] * vipCostDay)
-	
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\r1.\w Wpisz ilosc Dni^n")
-	if(userBuyVipDay[id] == 0)
-		iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\d2. Kup VIP'a!^n")
-	else  iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\r2.\w Kup VIP'a! %s^n", userBuyVipAccept[id] ? "\r[POTWIERDZ]":"")
-	
-	
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r3.\y Jednak nie kupuje")
-	
-	show_menu(id, B1 | B2 | B3, gText, -1, "vipMenuBuy")
-	
-}
-public vipMenuBuy_2(id, item){
-	
-	new x = false;
-	
-	if(!x){
-		ColorChat(id, GREEN, "---^x01 Myslales, ze takim sposobem kupisz VIPA?^x04 ---");
-		return PLUGIN_CONTINUE;
-	}
-	
-	switch(item){
-		case 0:{
-			userBuyVipAccept[id] = false;
-			vipMenuBuy(id)
-			client_print(id, print_center, "Teraz wpisz na ile dni chcesz kupic VIP'a");
-			cmd_execute(id, "messagemode IloscDni")
-		}
-		case 1:{
-			new costDay = userBuyVipDay[id] * vipCostDay
-			if(userBuyVipDay[id] == 0 ){
-				vipMenuBuy(id)
-				return PLUGIN_HANDLED
-			}
-			if( userLuzCoin[id] < costDay){
-				ColorChat(id, GREEN, "---^x01 Niestety nie masz na to^x03 Luzaczkow^x04 ---")
-				vipMenuBuy(id)
-				return PLUGIN_HANDLED
-			}
-		
-			if(!userBuyVipAccept[id]){
-				userBuyVipAccept[id] = true
-				vipMenuBuy(id)
-				return PLUGIN_CONTINUE;
-			}
-			
-			
-			
-			userLuzCoin[id] -= 	costDay
-			
-			new bonus = 0;
-			
-			if(userBuyVipDay[id] >= 30 )	
-				bonus = userBuyVipDay[id] >= 180 ? 30 : userBuyVipDay[id] >= 150 ? 25 : userBuyVipDay[id] >= 120 ? 20 : userBuyVipDay[id] >= 90 ? 15 : userBuyVipDay[id] >= 60 ? 10 : 5
-		
-			timeVip[id]	= 	max( timeVip[id] + (DAY*(userBuyVipDay[id]+ bonus)), get_systime() + (DAY*(userBuyVipDay[id]+ bonus)) )
-			ColorChat(id, GREEN, "---^x01 Kupiles^x03 VIP'a^x01 na^x03 (%d Dni)^x01 za^x03 %d Luzaczkow^x04 ---", userBuyVipDay[id]+bonus, costDay)
-			Display_Fade(id, 4096,4096, 4096, 64, 255, 64, 80);
-			set_dhudmessage(30, 160, 30, -1.0, 0.20, 0, 0.5, 2.0, 0.5, 0.5)
-			show_dhudmessage(id, "Kupiles VIP'a na (%d Dni) za %d Luzaczkow", userBuyVipDay[id]+bonus, costDay);
-			new gText[128];
-			logType[id] = LOG_BUY;
-			if(logType[id] == LOG_BUY){
-				format(gText, sizeof(gText), "kupil [VIP'a na (%d Dni)] za [%d Luzaczkow]", userBuyVipDay[id]+bonus, costDay)	
-			}
-			logBB(id, gText)
-			
-			userBuyVipAccept[id] = false;
-			
-			luzaczkiShop(id)
-		}
-		case 2:{
-			return PLUGIN_HANDLED;
-		}
-		
-	}
-	return PLUGIN_CONTINUE;
-		
-}
-
-public buyVipDay(id){
-	
-	new x = false;
-	
-	if(!x){
-		ColorChat(id, GREEN, "---^x01 Myslales, ze takim sposobem kupisz VIPA?^x04 ---");
-		return;
-	}
-	
-	new szArg[9]
-	read_argv(1, szArg, sizeof(szArg))
-	remove_quotes(szArg)
-	new value = abs(str_to_num(szArg))
-	
-	userBuyVipDay[id] = value
-	
-	vipMenuBuy(id)
 }
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }

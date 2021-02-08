@@ -18,7 +18,6 @@ public buyCave(id){
 	new size = sizeof(gText)-iLen-1
 	
 	new newUpgradeLeft  =  userLastUpgradeTime[id] + upgradeCave - playedTime(id);
-	//iLen += format(gText[iLen], size, "\r[KOPALNIA JEST AKTUALNIE WYLACZONA!! NIE WYKOPUJE NIC!!!^n^n")
 	iLen += format(gText[iLen], size, "\dAby odblokowac kopalnie trzeba najpierw ja kupic!^n")
 	iLen += format(gText[iLen], size, "\dZakup trwa:\r %dgodz %s%dmin %s%dsek\d, po tym czasie^n", ( upgradeCave / HOUR ), ( upgradeCave / MINUTE % MINUTE )<10?"0":"", ( upgradeCave / MINUTE % MINUTE ), (upgradeCave%MINUTE)<10?"0":"", ( upgradeCave %MINUTE ))
 	iLen += format(gText[iLen], size, "\dKopalnia jest przypisana do twojego konta i mozesz zaczac zarabiac!^n^n")
@@ -83,9 +82,6 @@ public buyCave_2(id, item){
 			startUpgrade[id] = 1;
 			ColorChat(id, GREEN, "%s Kopalnia odblokuje sie za:^x03 %dgodz %s%dmin %s%dsek", PREFIXSAY,  ( upgradeCave / HOUR ), ( upgradeCave / MINUTE % MINUTE )<10?"0":"", ( upgradeCave / MINUTE % MINUTE ), (upgradeCave%MINUTE)<10?"0":"", ( upgradeCave %MINUTE ));
 			userLastUpgradeTime[id] = playedTime(id)
-			
-			
-			
 		}
 	}
 	return PLUGIN_CONTINUE;
@@ -93,7 +89,6 @@ public buyCave_2(id, item){
 public miningMenu(id){
 	new gText[556], iLen;
 	new size = sizeof(gText)-iLen-1
-	//iLen += format(gText[iLen], size, "\r[KOPALNIA JEST AKTUALNIE WYLACZONA!! NIE WYKOPUJE NIC!!!^n^n")
 	iLen += format(gText[iLen], size, "\
 					\dGobliny musisz oplacac codziennie aby Kopaly!^n\
 					Wyczerpanie sie konczy nawet jak nie oplacisz Goblinow^n^n"
@@ -193,14 +188,11 @@ public miningUpgrade_2(id,menu, item){
 		return PLUGIN_CONTINUE;
 	}
 
-				
-	
 	userVarMenu[id] = item
 	
 	viewUpgradeMine(id, item)
 	
-	return PLUGIN_CONTINUE;
-	
+	return PLUGIN_CONTINUE;	
 }
 
 public viewUpgradeMine(id, item){	
@@ -251,7 +243,6 @@ public viewUpgradeMine_2(id, item){
 	}
 	return PLUGIN_CONTINUE;
 }
-
 public miningNugget(id){
 	id -= TASK_MINER;
 	
@@ -355,9 +346,11 @@ public removePointCave(id){
 		}
 		new gText[128];
 		logType[id] = LOG_CAVE;
-		if(logType[id] == LOG_CAVE) format(gText, sizeof(gText), "stracil [1 poziom] z ulepszenia [%s]",upgradeMine[randomRemove][0])
-		logBB(id, gText)
-			
+		if(logType[id] == LOG_CAVE){
+			format(gText, sizeof(gText), "stracil [1 poziom] z ulepszenia [%s]",upgradeMine[randomRemove][0])
+			logBB(id, gText)
+		}
+	
 		userUpgradeMine[id][randomRemove] --
 					
 	}

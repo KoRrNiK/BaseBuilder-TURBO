@@ -230,7 +230,6 @@ public teamLineOrSprite(id){
 				userTeamLine[id] = get_gametime();
 				if (get_distance_f(fOriginId, fOriginTeam) > 350) drawLine(id, fOriginId, fOriginTeam, 25,65,170, 3, 10, 0);
 			}
-			
 		}
 	}
 }

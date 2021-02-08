@@ -8,8 +8,9 @@
 #include <	colorchat	>
 
 new bool:userBuyClassAccept[33];
-
 new userVarClass[33][33];
+new userRocketItem[33]
+new userRocketCamera[33]
 
 public classHuman(id){
 	new gText[170]
@@ -37,7 +38,6 @@ public classHuman(id){
 		menu_additem(menu, gText)
 	
 	}
-	
 	menu_display(id, menu, 0)
 }
 public classHuman_2(id, menu, item){
@@ -305,13 +305,7 @@ public buyClass(id, item){
 
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\y%s^t^t\dNazwa:\r %s^n",  symbolsCustom[SYMBOL_DR_ARROW],classesHuman[class][0]);
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\y%s^t^t\dOpis:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], classesHuman[class][1]);
-	//iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\y%s^t^t\dCena klasy:\r %s Brylek^n",  symbolsCustom[SYMBOL_DR_ARROW],classesHuman[class][2]);
-	//iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\y%s^t^t\dCena Dodatkowa:\r %d Brylek^n",  symbolsCustom[SYMBOL_DR_ARROW],allClassHumman(id));
-	//iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\y%s^t^t\dIle musisz zaplacic:\r %d Brylek^n",  symbolsCustom[SYMBOL_DR_ARROW],(allClassHumman(id)+ str_to_num(classesHuman[class][2])));
-	
-	
-	
-	//iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r1.\w Kup %s", userBuyClassAccept[id] ? "\r[POTWIERDZ]":"")
+
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r2.\w Wroc")
 	
 	
@@ -322,40 +316,11 @@ public buyClass(id, item){
 
 public buyClass_2(id, item){
 	new class = userVarMenu[id];
-	
-	//new cost = str_to_num(classesHuman[class][2]) + (allClassHumman(id));
-	
+
 	switch(item){
 		
 		case 0:{
 			buyClass(id, class)
-			/*
-			if(userNugget[id] < cost){
-				ColorChat(id, GREEN, "---^x01 Nie posiadasz Brylek aby kupic ta klase!^x04 ---");
-				return PLUGIN_CONTINUE
-			}
-			if(!userBuyClassAccept[id]){
-				userBuyClassAccept[id] = true;
-				buyClass(id, class)
-				return PLUGIN_CONTINUE
-			}
-			new gText[128];
-			logType[id] = LOG_CLASS;
-			if(logType[id] == LOG_CLASS){
-				format(gText, sizeof(gText), "kupil klase [%s]", classesHuman[class][0]);
-			}
-			logBB(id,gText)
-					
-			addClassHuman(id, class);
-			ColorChat(id, GREEN, "---^x01 Zakupiles klase^x03 %s!^x04 ---", classesHuman[class][0]);
-			userNugget[id] -= cost
-			userHumanLevel[id][class] ++;
-			userBuyClassAccept[id] = false;
-			#if defined CHRISTMAS_ADDON
-		
-				addChristmasMission(id,CH_CLASS, 1);
-							
-			#endif*/
 		}
 		case 1:{
 			classHuman(id)
@@ -368,7 +333,6 @@ public setHumanClass(id){
 	
 	switch(get_user_team(id)){
 		case 2:{
-			
 			new class = userClassHuman[id]
 			
 			userMaxSpeed[id] 	= 250.0
@@ -401,8 +365,6 @@ public setHumanClass(id){
 				
 				set_user_health(id, userMaxHealth[id])
 				set_user_armor(id, userMaxArmor[id]);
-				
-				
 			}
 			
 			
@@ -431,8 +393,6 @@ public allClassHumman(id){
 		if(!hasClassHuman(id, i)) continue;
 		
 		iNum ++;
-		
-		
 	}
 	return iNum * 1000 ;
 }
@@ -492,8 +452,6 @@ public atributeMenu_2(id, menu, item){
 		ColorChat(id, GREEN, "%s Ta klasa nie posiada dodatkowych mocy!", PREFIXSAY);
 		return PLUGIN_CONTINUE;
 	}
-	
-
 	usePower(id, bonus)
 	atributeMenu(id)	
 	
@@ -666,12 +624,6 @@ public Float:resetTime(id){
 public fw_touch(ent, toucher){	
 	if(!pev_valid(ent)) return HAM_IGNORED;
 	
-	
-	//client_print(0,print_chat,"entTouched %d, entOther %d",toucher, ent)
-     
-	
-	//if(pev_valid(ent) && toucher == 0 ) HAM_IGNORED;
-	
 	new szClass[18]; 
 	new szClassTouched[18]
 	new szTarget[10];
@@ -692,11 +644,7 @@ public fw_touch(ent, toucher){
 	if(equal(szClass, classBomb)){
 		bombTouch(ent, toucher)
 	}
-	/*if(equal(szClass, classBrick)){
-		brickTouch(ent, toucher)
-	}*/
-	
-	
+
 	return HAM_IGNORED;
 		
 	
@@ -762,8 +710,7 @@ public poisonTouch(ent, toucher){
 			}
 		}
 	}
-	emitBonusSound(ent, bonus_sound_POISON);	
-			
+	emitBonusSound(ent, bonus_sound_POISON);			
 	
 	message_begin(MSG_BROADCAST ,SVC_TEMPENTITY);
 	write_byte(TE_SPRITE);
@@ -874,7 +821,6 @@ public electricPower(id){
 	new ent = create_entity("info_target")
 	entity_set_string(	ent, 	EV_SZ_classname, 	classField)
 	
-	
 	entity_set_int(		ent, 	EV_INT_movetype, 	MOVETYPE_FLY)	
 	entity_set_int(		ent, 	EV_INT_solid, 		SOLID_NOT)
 	entity_set_model(	ent, 	modelField)
@@ -936,9 +882,7 @@ public electroDamage(id, ent){
 	new bool:isProDamage = didPro(owner, pro_DAMAGEFIELD)
 		
 	new dmg = str_to_num( bonusClass[bonus_FIELD][4]) *  userHumanLevel[owner][human_ELEKTRYK] + ( isProDamage ? 40 : 0 ) + floatround(damageClassClan(owner))
-		
-		
-		
+				
 	for( new i = 1; i < maxPlayers; i ++ ){
 		if( !is_user_alive(i) || i == owner || get_user_team(i) != 1) 
 			continue;
@@ -967,10 +911,8 @@ public electroDamage(id, ent){
 		emitBonusSound(ent, bonus_sound_ELECTRO);
 		
 	}
-	
 	FVecIVec(fOrigin, iOrigin)
 	entity_set_float(id, EV_FL_fuser2, get_gametime())
-	
 	return PLUGIN_CONTINUE;
 }
 
@@ -1001,15 +943,11 @@ public healerBonus(id){
 		set_user_health(i, min(userMaxHealth[i], get_user_health(i) + health ));
 	}
 }
-
-
-
 public ammoCreateBonus(id){
 	new Float:fOrigin[3]
 	
 	new ent = create_entity("info_target")
 	entity_set_string(	ent, 	EV_SZ_classname, 	classAmmo)
-	
 	
 	entity_set_int(		ent, 	EV_INT_movetype, 	MOVETYPE_FLY)	
 	entity_set_int(		ent, 	EV_INT_solid, 		SOLID_NOT)
@@ -1024,14 +962,11 @@ public ammoCreateBonus(id){
 	
 	entity_set_float(	ent, 	EV_FL_fuser4,		float(1  + ( userHumanLevel[id][human_SHOOTER]/3) + ( isProTime ? 5 : 0)))
 	entity_set_int(		ent, 	EV_INT_iuser1,		id )
-	//set_rendering(		ent, 	kRenderFxGlowShell, 	32, 153, 32, 	kRenderNormal, 	1)
 	addPro(id, pro_ECOBOX,1);
 	
 	set_task(0.1, "ammoThinkBonus", ent)	
 	
 }
-
-
 public ammoThinkBonus(ent){
 	if( !pev_valid(ent) )
 		return PLUGIN_CONTINUE;
@@ -1041,10 +976,6 @@ public ammoThinkBonus(ent){
 	
 	entity_get_vector(ent, EV_VEC_origin, fOrigin)
 	
-		
-	//new owner= entity_get_int(ent, EV_INT_iuser1)
-	
-	//if(owner){
 	for( new i = 1; i <= maxPlayers; i ++ ){
 		if( !is_user_alive(i) || get_user_team(i) != 2/*|| !owner*/) 
 			continue;
@@ -1059,7 +990,6 @@ public ammoThinkBonus(ent){
 			fm_cs_get_weapon_ammo( get_pdata_cbase(i, 373), g_MaxClipAmmo[get_user_weapon(i)])
 		}
 	}
-	//}
 	if( gTime > 1.0 ){
 		remove_entity(ent)	
 		
@@ -1129,7 +1059,6 @@ public fireCreate(id){
 	entity_get_vector(	id, 	EV_VEC_v_angle, 		fAngles);
 	entity_get_vector(	id, 	EV_VEC_origin,		fOrigin);
 
-	
 	new ent = create_entity("info_target");
 	
 	entity_set_string(	ent, 	EV_SZ_classname, 	classFireBall);
@@ -1137,8 +1066,6 @@ public fireCreate(id){
 	entity_set_int(		ent, 	EV_INT_solid,		SOLID_TRIGGER);
 	entity_set_int(		ent, 	EV_INT_movetype,	MOVETYPE_FLY);	
 	
-	//entity_set_model(	ent,	FIREBALL);
-	//entity_set_float(	ent,	EV_FL_scale,		0.4);
 	entity_set_model(	ent,	modelFire);
 	
 	
@@ -1168,8 +1095,6 @@ public fireCreate(id){
 	message_end() 
 	
 	fireThink(ent)
-
-
 }
 
 public fireThink(ent){
@@ -1195,13 +1120,9 @@ public fireThink(ent){
 public fireBallTouch(ent, toucher){
 	if(!pev_valid(ent))
 		return PLUGIN_CONTINUE;
-	 //!pev_valid(toucher)
 	 
 	new szClass[18];
 	entity_get_string(ent, EV_SZ_classname, szClass, sizeof(szClass));
-	
-	//if(!equal(szClass, classFireBall))
-	//	return PLUGIN_CONTINUE;
 	
 	new owner = entity_get_int(ent, EV_INT_iuser1)
 	
@@ -1223,21 +1144,16 @@ public fireBallTouch(ent, toucher){
 			continue;			
 		entity_get_vector(i, EV_VEC_origin, fOriginTarget);
 		
-		
 		if( get_distance_f(fOrigin, fOriginTarget) < 150.0){
 			
 			if(userClass[i] != class_DEVIL){
 				bb_set_in_fire(owner, i, 30)
 			}
-
-
-			
 			addPro(owner, pro_FIRE,damageAll)
 			
 			if( damageAll >= get_user_health(i)) addPro(owner, pro_MAGICFIRE,  1)
 			
 			ExecuteHamB( Ham_TakeDamage, i, owner, owner, float(damageAll), DMG_BLAST );
-			
 			
 		}
 	}
@@ -1261,12 +1177,6 @@ public fireBallTouch(ent, toucher){
 	remove_entity(ent);
 	return PLUGIN_CONTINUE;
 }
-
-
-
-
-
-
 public iceBoltCreate(id){
 
 	new Float:fVelocity[3], Float:fOrigin[3], Float:fAngles[3];
@@ -1308,25 +1218,17 @@ public iceBoltCreate(id){
 	message_end() 
 	
 	iceBoltThink(ent)
-
-
 }
 
 public iceBoltThink(ent){
-	if(!pev_valid(ent))
-		return PLUGIN_CONTINUE;
-		
-	
-	//new frame = floatround(entity_get_float(ent, EV_FL_frame) + 1.0 ) % 4;
-	//entity_set_float(ent, EV_FL_frame, float(frame));
+	if(!pev_valid(ent)) return PLUGIN_CONTINUE;
+
 	new Float:fOrigin[3], iOrigin[3];
 	
 	entity_get_vector(ent, EV_VEC_origin, fOrigin)
 	FVecIVec(fOrigin, iOrigin)
 	
 	makePou(iOrigin, sprite_pouIce)
-	//Particles(fOrigin, 4.0, sprite_pouIce, 6, 2, 1, random_num(4,10), 5)
-	
 
 	set_task(0.1, "iceBoltThink", ent);
 	
@@ -1351,10 +1253,6 @@ public iceBoltTouch(ent, toucher){
 	entity_get_string(toucher, EV_SZ_classname, szClass, sizeof(szClass));
 	if(toucher == ent)
 		return PLUGIN_CONTINUE;
-	
-	//entity_get_string(toucher, EV_SZ_classname, szClass, sizeof(szClass));
-	//if(equal(szClass, poisonClass))
-	//	return PLUGIN_CONTINUE;
 	
 	new Float:fOrigin[3], Float:fOriginTarget[3];
 	entity_get_vector(ent, EV_VEC_origin, fOrigin)
@@ -1389,9 +1287,7 @@ public iceBoltTouch(ent, toucher){
 			}
 			
 			ExecuteHamB( Ham_TakeDamage, i, owner, owner, float(damageAll), DMG_FREEZE );
-			
-			
-			
+
 		}
 	}
 
@@ -1404,8 +1300,6 @@ public iceBoltTouch(ent, toucher){
 	write_byte(10);
 	write_byte(255);
 	message_end();
-	
-	
 	
 	makeLight(fOrigin,25, 56, 150, 255,15, 30);
 	
@@ -1626,14 +1520,12 @@ public bombTrapEffect(ent){
 	return PLUGIN_CONTINUE;	
 }
 public bombTrapThink(ent){
-	if( !pev_valid(ent))
-		return PLUGIN_CONTINUE;
+	if( !pev_valid(ent)) return PLUGIN_CONTINUE;
 
 	new szClass[18];
 	entity_get_string(ent, EV_SZ_classname, szClass, sizeof(szClass));
 	
-	if(!equal(szClass, classbombTrap))
-		return PLUGIN_CONTINUE;
+	if(!equal(szClass, classbombTrap)) return PLUGIN_CONTINUE;
 	
 	new owner = entity_get_int(ent, EV_INT_iuser1)
 	
@@ -1655,10 +1547,7 @@ public bombTrapThink(ent){
 				closeTrap = true
 			}
 		}
-		if(closeTrap){
-			trapBomberExplode(ent)
-		}
-		
+		if(closeTrap) trapBomberExplode(ent)
 	}
 	if (pev_valid(ent)){
 		set_task(0.1, "bombTrapThink", ent);
@@ -1691,7 +1580,6 @@ public trapBomberExplode(ent){
 			
 		}
 	}
-
 	message_begin(MSG_BROADCAST ,SVC_TEMPENTITY);
 	write_byte(TE_SPRITE);
 	engfunc(EngFunc_WriteCoord,fOrigin[0]);
@@ -1720,31 +1608,16 @@ public trapBomberExplode(ent){
 
 
 public Float:damageClassClan(id){
-	
 	new Float:damage
 	
 	if(clan[id]){
 		if(get_clan_info(clan[id], CLAN_DAMAGECLASS)){
 			new userLevelAdd = 5;
-			
 			damage += get_clan_info(clan[id], CLAN_DAMAGECLASS) * userLevelAdd
 		}
 	}
 	return damage
 }
-
-
-
-
-
-
-
-new userRocketItem[33]
-new userRocketCamera[33]
-
-
-
-
 public rocketCreate(id){
 
 	new Float:fTime = 10.0
@@ -1906,94 +1779,6 @@ public moveRocket(id){
 		}
 	}
 }
-
-
-
-/*
-
-public brickCreate(id){
-	new Float:fVelocity[3], Float:fOrigin[3];
-
-	new ent = create_entity("info_target");
-	
-	entity_set_string(	ent, 	EV_SZ_classname, 	classBrick);
-	
-	entity_set_int(		ent, 	EV_INT_solid,		SOLID_TRIGGER);
-	entity_set_int(		ent, 	EV_INT_movetype,	MOVETYPE_TOSS);	
-
-	entity_set_model(	ent, 	modelBrick);
-	entity_set_float(	ent, 	EV_FL_gravity,		1.0);
-	entity_get_vector(	id, 	EV_VEC_origin,		fOrigin);
-	fOrigin[2] += 5
-	
-	entity_set_vector(	ent, 	EV_VEC_origin,		fOrigin);
-	velocity_by_aim(	id,	random_num(400, 600),			fVelocity);	
-	
-	entity_set_vector(	ent, 	EV_VEC_velocity, 	fVelocity);
-
-	new Float:fAngles[3];
-	fAngles[0] = random_float(0.0, 360.0);
-	fAngles[1] = random_float(-0.0, 360.0);
-	
-	entity_set_vector(	ent, 	EV_VEC_angles, 		fAngles);
-	entity_set_int(		ent, 	EV_INT_iuser1,		id );
-	
-	set_rendering(ent, kRenderFxGlowShell, 86,58,47, kRenderNormal, 5)
-	
-}
-public brickTouch(ent, toucher){
-	
-	if(!pev_valid(ent))
-		return PLUGIN_CONTINUE;	
-	
-	new owner = entity_get_int(ent, EV_INT_iuser1)
-	if(owner == toucher) return PLUGIN_CONTINUE;
-	
-	new Float:fOrigin[3], Float:fOriginTarget[3];
-	new bool:isProDamage= didPro(owner, pro_RADIO)	
-	new dmg = str_to_num( bonusClass[bonus_BOTTLE][4]) *  userHumanLevel[owner][human_LAB] + floatround(damageClassClan(owner))
-	
-	
-	entity_get_vector(ent, EV_VEC_origin, fOrigin)
-	fOrigin[2] += 3.5;
-	for( new i = 1 ; i < maxPlayers;i ++ ){
-					
-		if( !is_user_connected(i) || !is_user_alive(i)|| get_user_godmode(i) || i == owner || get_user_team(i) != 1)
-			continue;			
-		entity_get_vector(i, EV_VEC_origin, fOriginTarget);
-
-		if( get_distance_f(fOrigin, fOriginTarget) < 150.0){
-			
-			ExecuteHamB( Ham_TakeDamage, i, owner, owner, float(dmg), DMG_POISON );
-			addPro(owner, pro_RADIO,dmg)
-			
-		}
-	}
-	
-	message_begin(MSG_PVS,SVC_TEMPENTITY)
-	write_byte(TE_BREAKMODEL)	
-	engfunc(EngFunc_WriteCoord,fOrigin[0])
-	engfunc(EngFunc_WriteCoord,fOrigin[1])
-	engfunc(EngFunc_WriteCoord,fOrigin[2] + random_float(5.0, 10.0))		
-	write_coord(random_num(16,48))
-	write_coord(random_num(16,48))
-	write_coord(random_num(16,48))
-	write_coord(random_num(10,30))
-	write_coord(random_num(10,30))
-	write_coord(random_num(10,30))
-	write_byte(10)	// spread
-	write_short(brickGib)
-	write_byte(random_num(5,10))	// count
-	write_byte(random_num(25,30))	// life
-	write_byte(7)
-	message_end()
-//	BeamCylinder(fOrigin, 50.0, spriteBeam, 10, 0, 10, 1, 0,255, 170, 170, 255, 0);
-//	stock BeamCylinder(Float:fOrigin[3], Float:height, sprite, startframe, framerate,life,width,noise,red,green,blue,bright,speed){
-//	BeamCylinder(fOrigin, 50.0, spriteBeam, 0, 5, 15, 1, 40,  86,58,47, 255, 1)
-	emitBonusSound(ent, bonus_sound_BRICK);
-	remove_entity(ent);
-	return PLUGIN_CONTINUE;
-}*/
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n{\\ colortbl ;\\ red0\\ green0\\ blue0;}\n\\ viewkind4\\ uc1\\ pard\\ cf1\\ lang1045\\ b\\ f0\\ fs16 \n\\ par }
 */

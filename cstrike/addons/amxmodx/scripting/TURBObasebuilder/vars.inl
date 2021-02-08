@@ -5,26 +5,15 @@ new const PREFIXSAY[] 	=  	"^xc2^xa6 BaseBuilder ^xc2^xa6^x01"
 new const fVAULTFILE[]	=	 "TURBOBB";
 new const APISMS[]	=	"16103";
 
-new const DB_HOST[]	=	"127.0.0.1";
-new const DB_USER[]	=	"user";
-new const DB_PASS[]	=	"pass";
-new const DB_NAME[]	=	"db";
+new const DB_HOST[]	=	"root"
+new const DB_USER[]	=	"user"
+new const DB_PASS[]	=	"pass"
+new const DB_NAME[]	=	"db"
 
 new bool:superAdminLocalhost = false;
 
 new const accentMotdColor[]	=	"#ff003c";
 new const accentColorHud[]	=	{ 120, 250, 50 }
-
-/*
-new gNuggetForCT 	= 30;
-new gNuggetForCTVip 	= 60;
-
-new gNuggetForTT 	= 10;
-new gNuggetForTTVip 	= 20;
-
-new gNuggetForDeathTT 	= 10;
-new gNuggetForDeathTTVip = 20;
-*/
 
 new Float:gExpForWillSurvive	=	3.0
 new Float:gExpForWillSurviveVip	=	5.0
@@ -54,15 +43,9 @@ new maxHelpCount			=	8;
 #define forPlayer(%1) 			for(new %1 = 1; %1 < maxPlayers; %1++)
 #define forArray(%1,%2) 		for(new %1 = 0; %1 < sizeof(%2); %1++)
 
-
-
-
 native bb_set_in_fire(id, victim, duration)
 native bb_set_in_ice(id, victim, duration);
 native bool:bb_is_in_barrier(id)
-
-
-new bool:TD;
 
 	/*----------------------*\
 --------| SMS			 |
@@ -75,15 +58,6 @@ new szSmsCode[14]
 new lastBuyer
 new userService[33]
 new userLuzCoin[33]
-
-
-
-// SMS - 1zl - 4,5zl = 6  luzaczki  
-// SMS - 7zl - 12,5zl = 8  luzaczki  
-
-// PSC - 10zl ( 85 luzakow )
-// PSC - 20zl ( 170 luzakow )
-
 
 #define TOTAL_BUY_SMSSHOP_PRICES 10
 new const pricesMenu[TOTAL_BUY_SMSSHOP_PRICES][5][]={
@@ -264,6 +238,7 @@ new userPoison[33]
 	new userLastAwardRow[33];
 	new userLastAwardGot[33];
 
+	new userCheckCamp[33];
 
 new userStaminaDayRefresh[33];
 new userLastStaminaTime[33]
@@ -473,9 +448,6 @@ new const POUICEBOLT[]		=	"sprites/basebuildervt/iceBoltPou.spr"
 
 new const SHROOMSLEEP[]		=	"sprites/basebuildervt/sleepshroom.spr"
 
-new const SHARSPRITE[]		=	"sprites/basebuildervt/shar.spr"
-//new const BAR_SPR[]		 = 	"sprites/bar.spr";
-
 new const modelPoison[]		=	"models/basebuildervt/bottle.mdl";
 new const modelField[]		=	"models/basebuildervt/field.mdl";
 new const modelTrap[]		=	"models/basebuildervt/trap.mdl";
@@ -485,8 +457,6 @@ new const modelIce[]		=	"models/basebuildervt/icebonus.mdl";
 new const modelFire[]		=	"models/basebuildervt/firebonus.mdl";
 new const modelTrapBomb[]	=	"models/basebuildervt/bombertrap.mdl";
 new const modelRocket[] 		= 	"models/basebuildervt/rocket.mdl"
-//new const modelBrick[] 		= 	"models/basebuildervt/brick.mdl"
-//new brickGib;
 
 new const classPoison[]		=	"poisonClass";
 new const classField[]		=	"electricClass";
@@ -497,9 +467,8 @@ new const classIceBolt[]		=	"iceBoldClass";
 new const classBomb[]		=	"bombClass";
 new const classbombTrap[]	=	"bombTrapClass";
 new const rocketClass[] 		= 	"rocketClass"
-//new const classBrick[] 		= 	"brickClass"
 
-new spriteShar;
+
 new spriteBeam;
 new sprite_explode;
 new sprite_pouFire;
@@ -813,61 +782,6 @@ new userShopZombie[33][shopZ_TOTAL];
 new userHPAddRound[33];
 new userDeathNum[33];
 
-	/*----------------------*\
---------| SKILLS		 |
-	\*----------------------*/
-	/*
-enum { skill_DMG, skill_CRTY, skill_HEALTH, skill_EXP, skill_NUGGET, skill_AMMO, skill_BOLT, skill_FREEZ, skill_NORECOIL, skill_SPLASH,skill_BLOOD, skill_HS,skill_TOTAL }
-new const skillDesc[skill_TOTAL][5][] = {
-	
-	
-		
-		//int 	= dodaje
-		//float 	= float
-		//bool 	= aktywny / nieaktywny
-		//percent	= procenty
-		//damage 	= DMG * poziom ulepszenia 
-		//solid	= Stala liczba
-	
-		
-	
-	// NAZWA			| OPIS										| TYP		| TYP-2		| TEAM 3 - all / 2 - TT / 1 - CT
-	  { "Obrazenia" , 			"Poziom ulepszenie + tyle wiecej zadajesz DMG",					"int",		"",		"3"}		// 0
-	,{ "Krytyk" , 			"Szansa na krytyka\d |\d (\r DMG x2\d )",					"percent",	"",		"1"}		// 1
-	,{ "Zycie" , 			"Dodaje wiecej HP | Zombie Ulepszenie x50"	,				"int",		"",		"3"}		// 2
-	,{ "Wiecej EXP'a" , 		"Dostajesz wiecej expa\r za strzal / uderzenie", 				"float",	"",		"3"}		// 3
-	,{ "Wiecej Brylek" , 		"Dostajesz wiecej Brylek\r za zabicie",						"int",		"",		"3"}		// 4
-	,{ "Doladowanie Amunicji",	"Szansa na doladowanie amunicji podczas strzelania\d |\r +1 ammo",		"percent",	"",		"1"}		// 5
-	,{ "Piorun", 			"Szansa na porazenie piorunem Zombi",						"percent",	"damage",	"1"}		// 6
-	,{ "Zamrozenie",			"Podczas strzelania mozesz zamrozic Zombi",					"percent",	"",		"1"}		// 7
-	,{ "NoRecoil",			"Wbudowany\d NoRecoil\r, naboje leca w jedno miejsce",				"bool",		"",		"1" }		// 8
-	,{ "Splash DMG",			"Szansa na SPLASHDMG\d (\r 2%\d )\r Zadaje DMG do okola Zombi",			"solid",	"damage",	"1"}		// 9
-	,{ "Krwawienie",			"Sznasa na skaleczenie Zombi! Przez 5 sekund",					"percent",	"damage",	"1"}		// 10
-	,{ "100% HS",			"Trafiasz w 100% w glowe!",							"percent",	"",		"1"}		// 10
-	
-}
-
-new const skillParam[skill_TOTAL][6][] = {
-	
-	// MIN		| MAX		| MNOZNIK	| CENA 		| DAMAGE	| SOLID
-	  { "1", 		"5",		"1.00",		"2",		"-1",		"-1"}		// 0
-	,{ "1", 		"5",		"1.00",		"1",		"-1",		"-1"}		// 1
-	,{ "1", 		"15",		"1.00",		"1",		"-1",		"-1"}		// 2
-	,{ "1", 		"15",		"0.01",		"5",		"-1",		"-1"}		// 3
-	,{ "1", 		"4",		"1.00",		"3",		"-1",		"-1"}		// 4
-	,{ "1",		"5",		"1.00",		"1",		"-1",		"-1"}		// 5
-	,{ "1",		"10",		"0.10",		"1",		"50",		"70"}		// 6
-	,{ "1",		"10",		"0.10",		"2",		"-1",		"-1"}		// 7
-	,{ "1",		"1",		"0.00",		"20",		"-1",		"-1"}		// 8
-	,{ "1",		"10",		"1.00",		"2",		"20",		"2"}		// 9
-	,{ "1",		"2",		"1.00",		"5",		"10",		"-1"}		// 10
-	,{ "1",		"5",		"0.50",		"3",		"-1",		"-1"}		// 10
-}
-*/
-
-
-//new userSkillPoint[33];
-//new userSkill[33][skill_TOTAL];
 
 	/*----------------------*\
 --------| MISSION		 |
@@ -1488,7 +1402,6 @@ new Float:bonusExpTeam;
 
 #define MAXLEN 64
 #define MAXWAR 15
-
 	
 new userWarningName[33][MAXLEN], userWarningTime[33][MAXLEN], userWarningMap[33][MAXLEN]
 new userWarningPlayer[33][MAXLEN]
@@ -1498,23 +1411,12 @@ new userWarningInfo[33];
 new userWarningMenu[33][33];
 new userWarningItem[33];
 
-
-
 new userViewClan[33][33];
 new userViewClanInfo[33];
-
-new bool:userCheckCamp[33];
-new userBlockShorten[33]
-new Float:userBlockShortenTime[33]
-new bool:userAttackShorten[33]
-
-
-
 
 enum { UP_ZM_HEALTH, UP_ZM_SPEED, UP_ZM_REDUCTION, UM_ZM_TOTAL}
 
 new userZombie[33][class_TOTAL][UM_ZM_TOTAL]
-
 
 new const upgradeClasses[class_TOTAL][9][] = {
 	// ADD HEALTH		| ADD SPEED	| ADD REDUCTION	| MAX HEALTH	| MAX SPEED	| MAX REDUCTION		| COST HEALTH	| COST SPEED	| COST REDUCTION			

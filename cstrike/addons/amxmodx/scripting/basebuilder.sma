@@ -153,7 +153,6 @@ public plugin_init(){
 	register_clcmd("WartoscKoloruHud",	"readColor");
 	register_clcmd("chat", 			"ChatOff");
 	register_clcmd("bb_offset", 		"cloneOffset")
-	register_clcmd("IloscDni",		"buyVipDay");
 	register_clcmd("zapisz", 		"zapisz");
 	register_clcmd("moc", 			"bindPower");
 	register_clcmd("moc2", 			"resetTime");	
@@ -209,7 +208,6 @@ public plugin_init(){
 	register_menu("buyCave", 		B1 | B2, 					"buyCave_2");
 	register_menu("yourBuyService",		B0,					"yourBuyService_2");
 	register_menu("showVipsOnline",		B0,					"showVipsOnline_2");	
-	register_menu("vipMenuBuy",		B1 | B2 | B3,				"vipMenuBuy_2");	
 	
 	register_menu("createClanMenu",		B1 | B2 | B3 | B0,				"createClanMenu_2");		
 	register_menu("avansClanMenu",		B1 | B2 | B3 | B0,				"avansClanMenu_2");		
@@ -465,7 +463,6 @@ public plugin_end(){
 	if (connection != Empty_Handle) SQL_FreeHandle(connection);
 	
 	endClan()
-	bbServer[SERVER_ONLINE] = 0;
 }
 
 
@@ -2090,10 +2087,7 @@ public class_humanTakeDamage(victim, inflictor, attacker, Float:damage, damagebi
 public round_start(){
 	gameStart();	
 	resetBlocks()
-	removeSkill();
-	
-	saveInfo(CHECK)
-	
+	removeSkill();	
 }
 public removeSkill(){
 	new ent = -1;
@@ -2250,10 +2244,6 @@ public startNewRound(){
 	return 1;
 }
 public startBuild(){
-	
-	set_ROUNDTYPE = "Budowanie"
-	saveInfo(ROUNDTYPE)
-	
 	buildTime=true;
 	prepTime=false;	
 	gameTime=false;
@@ -2355,11 +2345,6 @@ public timerStart(){
 	return PLUGIN_CONTINUE;
 }
 public startRelease(){
-	
-	set_ROUNDTYPE = "Runda"
-	saveInfo(ROUNDTYPE)
-	
-	
 	gTime = gGameTime;
 	gameTime = true;
 	buildTime = false;
@@ -2374,10 +2359,7 @@ public startPrep(){
 	#if defined CHRISTMAS_ADDON
 		randomSoundChristmas = random(sizeof(timePlayChristmas));
 	#endif
-	
-	set_ROUNDTYPE = "Przygotowanie"
-	saveInfo(ROUNDTYPE)
-	
+
 	spkGameSound(0, sound_PREP)
 	
 	for(new i = 1; i < maxPlayers; i ++){
@@ -2899,11 +2881,7 @@ public cmdSay(id){
 			if( 0 <= contain(szMessage, "/me")){
 				globalMenu(id)
 				return PLUGIN_HANDLED;
-			}
-			if(equal(szMessage, "/discord")){
-				loadStatsSql(id, 19);
-				return PLUGIN_HANDLED;
-			}		
+			}	
 			if(equal(szMessage, "/drop")){
 				ColorChat(id,GREEN, "---^x01 Szansa na^x03 drop skrzyni^x01 wynosi^x03 %0.2fproc.^x04 ---",dropChest(id));
 				return PLUGIN_HANDLED;
@@ -3456,8 +3434,7 @@ public fw_EmitSound(id,channel,const sample[],Float:volume,Float:attn,flags,pitc
 
 
 public resetBlocks(){
-	if(TD) return PLUGIN_CONTINUE;
-	
+
 	new szClass[10], szTarget[7];
 	new Float:fOrigin[3]		
 	for(new ent=maxPlayers; ent<maxEnts;ent ++){
@@ -3491,8 +3468,7 @@ public resetBlocks(){
 	return PLUGIN_CONTINUE;
 }
 public removeNotUsedBlock(){
-	if(TD) return PLUGIN_CONTINUE;
-	
+
 	new szClass[10], szTarget[10];
 	for(new ent=maxPlayers; ent<maxEnts;ent ++){
 		if( !pev_valid(ent) )
@@ -3505,7 +3481,7 @@ public removeNotUsedBlock(){
 		entity_get_string(ent, EV_SZ_classname, szClass, 9);
 		entity_get_string(ent, EV_SZ_targetname, szTarget, 9);
 		
-		if( !equal(szClass, "func_wall") || containi(szTarget, "ignore")!=-1 || containi(szTarget, "JUMP")!=-1/*  || towerdefenceEntMap(ent)*/)
+		if( !equal(szClass, "func_wall") || containi(szTarget, "ignore")!=-1 || containi(szTarget, "JUMP")!=-1)
 			continue;			
 		
 		if( getOwner(ent) != 0 )
@@ -3527,7 +3503,7 @@ public globalMenu(id){
 	
 	new gText[1536], iLen
 
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\dTURBOMod by\r %s^n", AUTHOR);
+	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\dTURBOMod by\r KoRrNiK^n"); // No i po co usuwacie?? xd
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\r[BaseBuilder]\y Glowne Menu^n");
 
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r1.\w Sklep")
@@ -4155,8 +4131,6 @@ public createNugget(id, id2){
 		}
 	}
 }
-
-
 public nuggetThink(ent){
 	if( !pev_valid(ent) ) return
 		
@@ -4190,9 +4164,6 @@ public nuggetThink(ent){
 		
 	}else set_pev(ent, pev_nextthink, get_gametime()+0.1)	
 }
-
-
-
 createNuggetOrigin(Float:fOrigin[3], minN, maxN, type, owner = 0){
 
 	new Float:fVelocity[3]
@@ -4242,8 +4213,6 @@ createNuggetOrigin(Float:fOrigin[3], minN, maxN, type, owner = 0){
 		}
 	}
 }
-
-
 public findCoinArround(id){
 	
 	new Float:fOrigin[3]

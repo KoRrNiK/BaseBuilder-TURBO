@@ -17,15 +17,8 @@
 #include <	colorchat	>
 
 public costumePrecache(){
-
-	
-	for(new i = 0; i < 4; i ++){
-		precache_model(modelsCostumes[i][0])
-	}
-
-	
+	for(new i = 0; i < 4; i ++) precache_model(modelsCostumes[i][0])
 }
-
 stock bool:hasCostumes(id, hat){
 	new type = typeHat(hat)
 	return !!(userHat[id][type] & (1<< ( hat - 32 * type )));
@@ -40,10 +33,8 @@ stock addCostumes(id, hat){
 		if(is_user_connected(id) || !is_user_bot(id) || !is_user_hltv(id)){
 			format(gText, sizeof(gText), "otrzymal kostium: %s od: %s", costumesNames[hat][0], userName[id]);
 		}
+		logBB(id,gText)
 	}
-	logBB(id,gText)
-		
-	
 }
 stock removeCostumes(id, hat){
 	new type = typeHat(hat)
@@ -58,10 +49,7 @@ stock removeCostumes(id, hat){
 	}
 	logBB(id,gText)
 }
-stock typeHat(i){
-	//return i >= 32 ? 1 : 0
-	return i >= 96 ? 3 : i >= 64 ? 2 : i >= 32 ? 1 : 0
-}
+stock typeHat(i) return i >= 96 ? 3 : i >= 64 ? 2 : i >= 32 ? 1 : 0
 public allunlockHat(id){
 	new iNum = 0;
 	for(new i = 0; i < MAXHAT; i ++){
@@ -70,24 +58,18 @@ public allunlockHat(id){
 	}
 	return iNum;
 }
-
 public globalMenuCostumes(id){
 	
 	if(!isSuperAdmin(id)){
 		menuCostumes(id);
 		return;
 	}
-		
-	
-	
-	
 	new menu = menu_create("\r[BaseBuilder]\y Kostiumy!", "globalMenuCostumes_2");
 	
 	menu_additem(menu, "Twoje Kostiumy");
 	menu_additem(menu, "Wszystkie Kostiumy");
 	
 	menu_display(id, menu, 0);
-	
 }
 public globalMenuCostumes_2(id, menu, item){
 	if(item == MENU_EXIT){
@@ -96,18 +78,11 @@ public globalMenuCostumes_2(id, menu, item){
 	}
 	
 	switch(item){
-		case 0:{
-			menuCostumes(id);
-		}
-		case 1:{
-			menuCostumesAll(id)
-		}
+		case 0: menuCostumes(id);
 		
+		case 1: menuCostumesAll(id)
 	}
-	
-
 }	
-
 public menuCostumes(id){
 	
 	new gText[512], iLen = 0;
@@ -119,7 +94,6 @@ public menuCostumes(id){
 	
 	if((userSelectNewHat[id] != userSelectHat[id])) 
 		iLen 	+=	format(gText[iLen], sizeof(gText)-iLen-1, "\y%s^t^t\dNowy Kostium:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], costumesNames[userSelectNewHat[id]][0])
-		
 	iLen 	+=	format(gText[iLen], sizeof(gText)-iLen-1, "^n\d---\y Twoja lista kostiumow\w ")	
 		
 	new menu = menu_create(gText, "menuCostumes_2");
@@ -136,14 +110,10 @@ public menuCostumes(id){
 			format(gText, sizeof(gText), "%s%s",  userSelectHat[id]  == i ? "\r" :"\w", costumesNames[i][0])  
 		}
 		
-		
 		menu_additem(menu, gText);
 		
 		selectHat[id][x++] = i
-	
-		
 	}
-	
 	if(!x) ColorChat(id, GREEN, "---^x01 Nie posiadasz kostiumow!^x04 ---");
 	else menu_display(id, menu, menuPage[id][0]/7);
 	
@@ -161,50 +131,16 @@ public menuCostumes_2(id, menu, item){
 	
 	new hat = selectHat[id][item]
 	userVarMenu[id] = hat;
-
-	/*if( userSelectHat[id] != hat ){
-		if( buildTime || prepTime ){
-			ColorChat(id, GREEN,"---^x01 Twoj nowy kostium:^x03 %s^x04 ---", costumesNames[hat] )
-						
-			userSelectHat[id] = hat;
-			userSelectNewHat[id] = hat
-			chechHat(id, hat)
-		}else{
-			userSelectNewHat[id] = hat
-			ColorChat(id, GREEN,"---^x01 Twoj kostium zmieni sie po odrodzeniu na:^x03 %s^x04 ---",  costumesNames[hat]  )
-		}
-					
-	} else {
-		if( buildTime || prepTime ){	
-			userSelectHat[id] = -1;
-			userSelectNewHat[id] = -1
-			removeHat(id)
-			ColorChat(id, GREEN,"---^x01 Zdjales kostium^x04 ---"); 
-		} else {
-			if(userSelectHat[id] == hat){
-				ColorChat(id, GREEN,"---^x01 Aktualnie masz to ubrane!^x04 ---"); 
-				ColorChat(id, GREEN,"---^x01 Zdejmowac kostiumy mozesz tylko podczas^x03 budowania^x01 i^x03 przygotowania!^x04 ---"); 
-			}
-		}
-	}
-	*/
 	infoCostumes(id)
-	
-	
 }
-
-
-
 
 public infoCostumes(id){
 	
 	new hat = userVarMenu[id]
 	new gText[512], iLen
 
-	
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\r[BaseBuilder]\y Informacje o Kostiumie!^n^n")
 	
-	//iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\w[ Informacje ]^n")
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\y%s^t^t\dKostium:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW],costumesNames[hat][0])
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\y%s^t^t\dBonus:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW],costumesNames[hat][1])
 	
@@ -251,9 +187,7 @@ public infoCostumes_2(id, item){
 				}
 			}
 		}
-		default:{ 
-			menuCostumes(id)
-		}
+		default: menuCostumes(id)
 	}
 	return PLUGIN_CONTINUE;
 }
@@ -269,8 +203,6 @@ public menuCostumesAll(id){
 		
 	}
 	menu_display(id, menu, menuPage[id][1]/7);
-	
-	
 }
 public menuCostumesAll_2(id, menu, item){
 	

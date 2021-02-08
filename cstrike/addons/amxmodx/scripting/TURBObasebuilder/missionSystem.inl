@@ -1,10 +1,17 @@
+#include <amxmodx>
+#include <amxmisc>
+#include <cstrike>
+#include <fun>
+#include <hamsandwich>
+#include <fakemeta>
+#include <fakemeta_util>
+#include <engine>
 
 public completeMission(id){
 	Display_Fade(id, 1024,1024,1024, 255, 64, 127, 90);
 	set_dhudmessage(255, 64, 127, -1.0, 0.20, 0, 0.5, 3.0, 0.5, 0.5)
 	show_dhudmessage(id,  "!! WYKONALES MISJE !!")
 }
-
 public addMission(id, mission, value){
 	if( userMission[id][mission] != -1 ){
 		new missionUser = userMission[id][mission]      
@@ -33,9 +40,6 @@ public addSecretMission(id, mission, value){
 		}
 	}
 }
-
-
-
 public addPro(id, mission, val){
 	if( userPro[id][mission] != -1){
 		
@@ -45,10 +49,7 @@ public addPro(id, mission, val){
 			
 	}
 }
-public bool:didPro(id, mission){
-	return !!((userPro[id][mission] == -1))
-}
-
+public bool:didPro(id, mission) return !!((userPro[id][mission] == -1))
 public menuMissionAll(id){
 	
 	new gText[512], iLen
@@ -72,9 +73,7 @@ public menuMissionAll(id){
 
 public menuMissionAll_2(id, item){
 	switch(item){
-		
 		case 0:{
-			
 			missionMenu[id] = MISSION_MENU_BASIC
 			menuMission(id)
 		}
@@ -135,7 +134,6 @@ public menuMission(id){
 	}
 	menu_display(id, menu, 0)
 }
-	
 public menuMission_2(id, menu, item){
 	if( item == MENU_EXIT){
 		menuMissionAll(id)
@@ -164,14 +162,7 @@ public missionMenuDesc(id){
 		else iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\y%s^t^t\dPostep:\r %d/%s\d -\r %0.1f%%^n", symbolsCustom[SYMBOL_DR_ARROW], userMission[id][item], missionDesc[item][2], userMission[id][item]*100.0/str_to_num(missionDesc[item][2]))
 		
 		iLen += format(gText[iLen], sizeof(gText)-iLen-1,"^n\w[Nagroda]^n\y%s^t^t", symbolsCustom[SYMBOL_DR_ARROW])
-		
-		/*new value = missionAward[item][1]
-		switch( missionAward[item][0] ){
-			case EXP:	iLen += format(gText[iLen], sizeof(gText)-iLen-1,"\dExp:\r %d", value)
-			case NUGGET:	iLen += format(gText[iLen], sizeof(gText)-iLen-1,"\dBrylki:\r %d", value)
-			case VIP:	iLen += format(gText[iLen], sizeof(gText)-iLen-1,"\dVIP:\r %d godz.",value)
-			case LUZACZKI:	iLen += format(gText[iLen], sizeof(gText)-iLen-1,"\dLuzaczki:\r %d", value)
-		}*/
+	
 		iLen += format(gText[iLen], sizeof(gText)-iLen-1,"%s", missionNameAward(id))
 		
 		new pageOneSelect[22];
@@ -197,15 +188,6 @@ public missionMenuDesc(id){
 		
 		iLen += format(gText[iLen], sizeof(gText)-iLen-1,"^n\w[Nagroda]^n\y%s^t^t", symbolsCustom[SYMBOL_DR_ARROW])
 		
-		/*
-		new value = missionSecretAward[item][1]
-		switch( missionSecretAward[item][0] ){
-			case EXP:	iLen += format(gText[iLen], sizeof(gText)-iLen-1,"\dExp:\r %d", value)
-			case NUGGET:	iLen += format(gText[iLen], sizeof(gText)-iLen-1,"\dBrylki:\r %d", value)
-			case VIP:	iLen += format(gText[iLen], sizeof(gText)-iLen-1,"\dVIP:\r %d godz.", value)
-			case LUZACZKI:	iLen += format(gText[iLen], sizeof(gText)-iLen-1,"\dLuzaczki:\r %d", value)
-			
-		}*/
 		iLen += format(gText[iLen], sizeof(gText)-iLen-1,"%s", missionNameAward(id))
 		
 		new pageOneSelect[22];
@@ -226,27 +208,7 @@ public missionMenuDesc(id){
 		new pageOneSelect[22];
 		format(pageOneSelect, sizeof(pageOneSelect), "%s", ( userPro[id][item] == -1 ) ? "Nagroda odebrana" : (userPro[id][item] == str_to_num(proDesc[item][4])  ? "Odbierz nagrode" : userProSelected[id] == item ? "Wykonujesz te misje" : "Aktywuj Misje"))
 		iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n%s1.%s %s^n", userPro[id][item] == -1? "\d" : "\r", userPro[id][item] == -1 ? "\d" : "\y", pageOneSelect);	
-	
-	
-	
-	
-	
-	
-	/*
-	
-		
-		iLen += format(gText[iLen], sizeof(gText)-1-iLen, "\dPostep:\r %d/%s\d -\r %0.1f%%^n", userPro[id][item], proDesc[item][4], userPro[id][item]*100.0/str_to_num(proDesc[item][4]))
-	
-		if( userPro[id][item] > str_to_num(proDesc[item][4]) )
-			iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\d1. Nagroda zostala juz odebrana^n")
-		else if( userPro[id][item]  == str_to_num(proDesc[item][4]) )
-			iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\r1.\y Odbierz nagrode^n")
-		else{
-			if( userProSelected[id] == item )
-				iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\r1.\y Wykonujesz te misje^n")
-			else iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\r1.\y Aktywuj misje^n")
-		}
-		*/
+
 	}
 	
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\r2.\y Wroc")	
@@ -265,17 +227,7 @@ public missionMenuDesc_2(id, item){
 				if( ( userMission[id][target] == -1 )){
 					ColorChat(id, GREEN, "%s Juz odebrales misje:^x03 %s", PREFIXSAY,   missionDesc[target][0] );	
 				} else if( userMission[id][target] == str_to_num(missionDesc[target][2])){
-					
-	
-					
-					
-					/*new value = missionAward[target][1]
-					switch( missionAward[target][0] ){
-						case EXP:	addExpToFinal(id, float(value)) 
-						case NUGGET:	userNugget[id] +=  value;
-						case VIP:	timeVip[id]	= 	max( timeVip[id] + (HOUR*value), get_systime() + (HOUR*value) )
-						case LUZACZKI:	userLuzCoin[id] +=  value;
-					}*/
+
 					missionGiveAward(id)
 					
 					
@@ -288,17 +240,7 @@ public missionMenuDesc_2(id, item){
 				if( ( userMissionSecret[id][target] == -1 )){
 					ColorChat(id, GREEN, "%s Juz odebrales misje:^x03 %s", PREFIXSAY,  missionDescSecret[target][0]);	
 				} else if( userMissionSecret[id][target] == str_to_num(missionDescSecret[target][2])){
-					
-					
-					
-					
-					/*new value = missionSecretAward[target][1]
-					switch( missionSecretAward[target][0] ){
-						case EXP:	addExpToFinal(id, float(value)) 
-						case NUGGET:	userNugget[id] +=  value;
-						case VIP:	timeVip[id]	= 	max( timeVip[id] + (HOUR*value), get_systime() + (HOUR*value) )
-						case LUZACZKI:	userLuzCoin[id] +=  value;
-					}*/
+
 					missionGiveAward(id)
 					
 				} else {
@@ -324,13 +266,12 @@ public missionMenuDesc_2(id, item){
 				logType[id] = LOG_MISSION;
 				if(logType[id] == LOG_MISSION){
 					format(gText, sizeof(gText), "odebral  profesjonalna misje [%s]", proDesc[target][0]);
+					logBB(id,gText)
 				}
-				logBB(id,gText)
 				
 				userPro[id][target] = -1;
 				userProSelected[id] = -1;
 				ColorChat(id, GREEN, "%s Otrzymujesz nagrode:^x04 %s", PREFIXSAY,  proDesc[target][3])	
-				
 			}
 		}
 		case 1: menuMission(id);
@@ -355,11 +296,6 @@ public returnMissionSecretDesc(mission){
 	replace_all(missionReturn, sizeof(missionReturn), "%d", missionVar);
 	return missionReturn;
 }
-
-
-
-
-
 public missionNameAward(id){
 
 	new item 	= ( isMisisonMenu[id] )
@@ -367,22 +303,12 @@ public missionNameAward(id){
 	new type 	= ( missionMenu[id] == MISSION_MENU_BASIC ) ? missionAward[item][0] : missionSecretAward[item][0]
 	
 	new gText[256], iLen = 0;
-
-			
-	/*switch( type ){
-		case EXP:	iLen 	+= 	format(gText[iLen], sizeof(gText) - iLen -1,"\dExp:\r %d", value)
-		case NUGGET:	iLen 	+= 	format(gText[iLen], sizeof(gText) - iLen -1,"\dBrylki:\r %d", value)
-		case VIP:	iLen 	+= 	format(gText[iLen], sizeof(gText) - iLen -1,"\dVIP:\r %d godz.", value)
-		case LUZACZKI:	iLen 	+= 	format(gText[iLen], sizeof(gText) - iLen -1,"\dLuzaczki:\r %d", value)
-	}*/
+	
 	iLen 	+= 	format(gText[iLen], sizeof(gText) - iLen -1,"\d%s:\r %d", nameItems[type][0], value)
-	
-	
 	
 	return gText
 			
 }
-
 public missionGiveAward(id){
 
 
@@ -400,8 +326,8 @@ public missionGiveAward(id){
 		logType[id] = LOG_MISSION;
 		if(logType[id] == LOG_MISSION){
 			format(gText, sizeof(gText), "odebral podstawowa misje [%s]", missionDesc[item][0]);
+			logBB(id,gText)
 		}
-		logBB(id,gText)
 						
 		ColorChat(id, GREEN, "%s Gracz:^x04 %s^x01 odebral misje -^x03 %s", PREFIXSAY, userName[id], missionDesc[item][0]);
 		userMission[id][item] = -1;
@@ -411,9 +337,9 @@ public missionGiveAward(id){
 		logType[id] = LOG_MISSION;
 		if(logType[id] == LOG_MISSION){
 			format(gText, sizeof(gText), "odebral sekretna misje [%c] (%s)", missionDescSecret[item][0], missionDescSecret[item][0] );
+			logBB(id,gText)
 		}
-		logBB(id,gText)
-			
+
 		ColorChat(id, GREEN, "%s Gracz:^x04 %s^x01 odebral sekretna misje -^x03 %c", PREFIXSAY, userName[id], missionDescSecret[item][0]);
 		userMissionSecret[id][item] = -1;
 		

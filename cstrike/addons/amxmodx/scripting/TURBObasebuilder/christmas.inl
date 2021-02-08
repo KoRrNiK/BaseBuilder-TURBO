@@ -16,22 +16,6 @@
 #include <	regex		>
 #include <	colorchat	>
 
-
-
-
-public addChristmasMission(id, mission, val){
-	if(!userChristmasStart[id]) return;
-	if(dayCount() != mission) return; 
-	
-	if( mission == userChristmasType[id]){
-		if( userChristmasMission[id] != -1){
-			userChristmasMission[id] = min(userChristmasMission[id]+val, str_to_num(christmasMission[mission][1]))	
-		}
-	}
-}
-
-
-	
 enum { CHRISTMAS_V, CHRISTMAS_W, CHRISTMAS_ALL } 	
 new const modelGranade[CHRISTMAS_ALL][] = {
 	"models/basebuildervt/christmas/v_snowball.mdl",
@@ -48,9 +32,20 @@ new userMenuChristmas[33];
 new Float:distanceOpen = 75.5
 new entChristmas[1024];
 new bool:christmas;
+new Float:userUnstuckTree[33];
+
+public addChristmasMission(id, mission, val){
+	if(!userChristmasStart[id]) return;
+	if(dayCount() != mission) return; 
+	
+	if( mission == userChristmasType[id]){
+		if( userChristmasMission[id] != -1){
+			userChristmasMission[id] = min(userChristmasMission[id]+val, str_to_num(christmasMission[mission][1]))	
+		}
+	}
+}
 public christmasPrecache(){
 	
-
 	create_entity("env_snow")
 
 	for(new i = 1; i < sizeof(timePlayChristmas); i ++){
@@ -60,22 +55,14 @@ public christmasPrecache(){
 		
 	for(new i = 0; i < CHRISTMAS_ALL; i++){
 		precache_model(modelGranade[i])
-	}
-		
-		
+	}	
 		
 	precache_model(szTreeModel)
 	precache_model(szTreeSprite)
-	
-	
 
-	
-	
 }
-new Float:userUnstuckTree[33];
 public christmasTouchTree(id, ent){
-	if( !pev_valid(ent)  )
-		return 
+	if( !pev_valid(ent)  ) return 
 
 	new szClass[15];
 	entity_get_string(ent, EV_SZ_classname, szClass, sizeof(szClass));
@@ -86,9 +73,7 @@ public christmasTouchTree(id, ent){
 			userUnstuckTree[id] = get_gametime();
 		}
 	} 
-
 }
-
 public checkChristmas(){
 	if(christmas) return true;
 	else return false;
@@ -101,12 +86,9 @@ public numTree(){
 	}
 	return iNum;
 }
-
-
 public menuCreateChristmas(id){
 	if(!isSuperAdmin(id)) return;
-	//if(!checkChristmas()) return;
-	
+
 	new gText[128];
 	format(gText, sizeof(gText), "\r[BaseBuilder]\y Swieta!");
 	new menu = menu_create(gText, "menuCreateChristmas_2");
@@ -115,9 +97,6 @@ public menuCreateChristmas(id){
 	menu_additem(menu, "Sworz Choinke", .callback=cb)
 	menu_additem(menu, "Usun", .callback=cb)
 	menu_additem(menu, "Zapisz^n")
-	
-
-	
 	menu_display(id, menu, 0);
 	
 }
@@ -144,7 +123,6 @@ public menuCreateChristmas_2(id, menu, item){
 			entity_get_vector(id,	EV_VEC_origin, 	fOrigin );
 		
 			createTree(fOrigin, SOLID_NOT)
-			//createTree(fOrigin, SOLID_BBOX)
 			new Float:fMin[3];
 			entity_get_vector(id, EV_VEC_mins, fMin);
 			if(fMin[2]==-18.0) fOrigin[2] -= 18.0
@@ -153,8 +131,6 @@ public menuCreateChristmas_2(id, menu, item){
 			menuCreateChristmas(id)
 		}
 		case 1:{
-			
-			
 			while ((ent = find_ent_by_class(ent, szChristmasTree)) > 0) {
 		
 				if (ent > 0){
@@ -168,20 +144,15 @@ public menuCreateChristmas_2(id, menu, item){
 					remove_entity(ent);
 				}
 			}
-			
-			
-				
-				
+	
 			menuCreateChristmas(id)
 		}
 		
 		case 2:{
 			saveChristmas();
-			//delete_file(configFile);
 			ColorChat(id, GREEN, "---^x01 Zapisales^x04 ---");
 			menuCreateChristmas(id)
 		}
-		
 	}
 
 	return PLUGIN_CONTINUE;
@@ -189,25 +160,18 @@ public menuCreateChristmas_2(id, menu, item){
 public menuCreateChristmas_3(id, menu, item) {
 	switch(item){
 		case 0: {
-			if(numTree() == 0)
-				return ITEM_ENABLED;
+			if(numTree() == 0) return ITEM_ENABLED;
 			else return ITEM_DISABLED;	
 		}
 		case 1:{
-			if(numTree() == 1)
-				return ITEM_ENABLED;
+			if(numTree() == 1) return ITEM_ENABLED;
 			else return ITEM_DISABLED;
 		}
 		default: return ITEM_ENABLED
 	}	
 	return ITEM_ENABLED;
 }
-
-
 public openMenuTree(id, ent, Float:cordx,  Float:cordy){
-
-
-	//if(!checkChristmas()) return PLUGIN_CONTINUE;
 
 	if( !pev_valid(ent) || userMenuChristmas[id] || !isTree(ent)) return;		
 	new button =  pev(id, pev_button);
@@ -222,13 +186,10 @@ public openMenuTree(id, ent, Float:cordx,  Float:cordy){
 			set_dhudmessage(153, 255, 102, cordx, cordy, 0, 0.1, 0.1, 0.1, 0.1)
 			show_dhudmessage(id, "^nAby sprawdzic dzisiejsze wyzwanie!^nKliknij: [ E ]^n")
 								
-			userAimingHud[id] = get_gametime();
-						
+			userAimingHud[id] = get_gametime();			
 		}
 	}	
-
 	if( ( button & IN_USE ) && get_distance_f( fOrigin, fOriginEnt ) <= distanceOpen ){
-		
 		menuChristmas(id)
 		userMenuChristmas[id] = true;
 		
@@ -239,9 +200,7 @@ public dayCount(){
 	return (((get_systime() -  firstDayDecember ) / DAY));
 }
 public menuChristmas(id){	
-	
 	new gText[712], iLen = 0;
-	
 
 	new mission = dayCount()
 
@@ -253,7 +212,6 @@ public menuChristmas(id){
 		
 		ColorChat(id, GREEN, "---^x01 Ustawiono nowe wyzwanie!^x04 ---");
 	}
-	
 	if(dayCount() >= 0) iLen += format(gText[iLen], sizeof(gText) - iLen - 1, "\r[\y AKTUALNIE MAMY:\w %d Dzien!\r ]^n^n", dayCount()+1);
 	
 	iLen += format(gText[iLen], sizeof(gText) - iLen - 1, "\wWitaj wedrowcze!\w Co Ciebie do mnie sprowadza?^n");
@@ -272,7 +230,6 @@ public menuChristmas(id){
 			iLen += format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y%s^t^t\dPostep:\r %d/%d", symbolsCustom[SYMBOL_DR_ARROW], userChristmasMission[id], str_to_num(christmasMission[userChristmasType[id]][1]));
 		}
 	}
-	
 	new menu = menu_create(gText, "menuChristmas_2");
 	
 	if(dayCount() < 0 || dayCount() >= CHRISTMAS_TOTAL_MISSION){
@@ -287,9 +244,7 @@ public menuChristmas(id){
 				menu_additem(menu, "\rWykonaj najpierw wyzwanie");
 			else menu_additem(menu, "\yZacznij Losowac\d |\r POWODZENIA!");
 		}
-
 	}
-
 	menu_display(id,menu, 0)
 }
 
@@ -302,7 +257,6 @@ public menuChristmas_2(id, menu, item){
 		return
 		
 	}
-	
 	new ent = find_ent_by_class(ent, szChristmasTree)
 
 	new Float:fOrigin[3], Float:fOriginEnt[3]
@@ -314,7 +268,6 @@ public menuChristmas_2(id, menu, item){
 		userMenuChristmas[id] = false
 		return;
 	}
-	
 	switch(item){
 		
 		case 0:{
@@ -342,7 +295,6 @@ public menuChristmas_2(id, menu, item){
 				return;
 					
 			}
-			
 			new value;
 			switch(userChristmasType[id]){
 				case 0:{
@@ -541,7 +493,6 @@ public menuChristmas_2(id, menu, item){
 					} else userScrollNugget[id] += userTimeScrool
 					
 					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Szczescia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" )
-					
 				}
 				case 27:{
 					new userTimeScrool = (HOUR*random_num(1,4))
@@ -552,7 +503,6 @@ public menuChristmas_2(id, menu, item){
 					} else userScrollNugget[id] += userTimeScrool
 					
 					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Szczescia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" )
-					
 				}
 				case 28:{
 					value = random_num(1,10);
@@ -581,16 +531,12 @@ public menuChristmas_2(id, menu, item){
 					}
 				}
 			}
-			
 			userChristmasMission[id] = -1;
 			
 		}
 	}
 	userMenuChristmas[id] = false
 }
-	
-
-
 createTree(Float:fOrigin[3], solid){
 	new ent = create_entity("info_target");
 	
@@ -637,7 +583,6 @@ createSprite(Float:fOrigin[3]){
 	drop_to_floor(ent);
 	return ent;
 }
-
 public treeThink(ent){
 	if( !pev_valid(ent) && !isTree(ent)) return
 	
@@ -651,7 +596,6 @@ public treeThink(ent){
 	if(get_gametime() - entity_get_float(ent, EV_FL_fuser1) > 0.2 ){
 		fOriginTarget[2] += 132.5;
 		Particles(fOriginTarget, 3.0, sprite_pouIce, random_num(1,4), 2, random_num(2,3), random_num(4,10), 2)
-		//Particles(fOriginTarget, Float:random, sprite, count, life, scale, velocity, randompart){
 		entity_set_float(ent, EV_FL_fuser1, get_gametime());
 	}
 	
@@ -660,7 +604,6 @@ public treeThink(ent){
 	entity_set_vector(	ent, 	EV_VEC_angles, 		fAngles);
 	entity_set_float(	ent,	EV_FL_nextthink,	get_gametime() + 0.1 );
 }
-
 stock bool:isTree(ent){
 	new szClass[14]
 	entity_get_string(ent, EV_SZ_classname, szClass, sizeof(szClass) )
@@ -669,9 +612,7 @@ stock bool:isTree(ent){
 	return false;
 }
 saveChristmas( ) {
-	
-	//if(!checkChristmas()) return ;
-	
+
 	if(file_exists(configFile )) delete_file(configFile);
 	
 	new file = fopen(configFile, "wt");
@@ -695,8 +636,6 @@ saveChristmas( ) {
 }
 loadChristmas(){
 	
-	//if(!checkChristmas()) return PLUGIN_CONTINUE;
-	
 	new map[ 33 ];
 	get_mapname(map,sizeof(map));
 	
@@ -715,7 +654,6 @@ loadChristmas(){
 	new file = fopen(configFile, "rt" );
 	
 	if( !file ) return PLUGIN_CONTINUE;
-	
 	
 	new szData[1024];
 	
@@ -748,14 +686,7 @@ loadChristmas(){
 	fclose(file);
 	return PLUGIN_CONTINUE;
 }
-
-
-
-
-
 public granadeSetModel(id){
-	//if(!checkChristmas()) return;
-	
 	new weapon = get_user_weapon(id)
 	if(weapon == CSW_HEGRENADE || weapon == CSW_SMOKEGRENADE || weapon == CSW_FLASHBANG){
 		entity_set_string(id , EV_SZ_viewmodel , modelGranade[CHRISTMAS_V])  
@@ -764,14 +695,10 @@ public granadeSetModel(id){
 }
 
 public soundPrep(){
-	//if(!checkChristmas()) return;
 	if(gTime == timePlayChristmas[randomSoundChristmas] && !gameTime && !clockStop && prepTime){
 		cmd_execute(0, "mp3 play sound/basebuildervt/christmas/%d.mp3", randomSoundChristmas+1);
 	}
 }
-
-
-
 public cmdUnstuckTree(id){
 
 	static Float:origin[3];

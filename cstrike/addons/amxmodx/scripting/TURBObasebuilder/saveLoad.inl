@@ -11,13 +11,7 @@ public loadInt(id){
 	
 	// loadData(id) /* Jest juz w loadStatsSql */
 }
-
 public fVaultLoad(id){
-	
-	//id -= TASK_LOAD
-	//if(is_user_hltv(id) || is_user_bot(id))
-	//	return PLUGIN_CONTINUE;
-
 	
 	new day;
 	date(_,_, day);
@@ -26,18 +20,12 @@ public fVaultLoad(id){
 	new szData[756];
 	if( fvault_get_data(fVAULTFILE, userName[id], szData, sizeof(szData) - 1) ){
 		
-		//new szLevel[3]
-		//new szExp[11]
-		//new szNug[11]
 		new szOption[5]
 		new szAllNugget[11]
 		new szTimeVip[11]
 		new szLuzCoin[11]
 		new szClassHuman[10]
-		/*new szClassHumanLevel[human_TOTAL*7]
-		new szClassHumanLevelOne[human_TOTAL][7]
-		new szClassHumanLevelExp[human_TOTAL*7]
-		new szClassHumanLevelExpOne[human_TOTAL][7]*/
+
 		new szMission[mission_TOTAL*7]
 		new szMissionOne[mission_TOTAL][7];
 		new szMissionSecret[mission_secret_TOTAL*7]
@@ -46,8 +34,7 @@ public fVaultLoad(id){
 		new szPro[TOTAL_PRO*5]
 		new szProOne[TOTAL_PRO][5]
 		new szProSelected[3]
-		
-		//new szReset[5]
+
 		new szHumanSelectNew1[3]
 		new szHumanSelectNew2[3]
 		new szZombieSelectNew1[3]
@@ -94,21 +81,12 @@ public fVaultLoad(id){
 		
 		new szHelpPointAdmin[5];
 		
-		
-		/*new szWeaponKill[TOTALWEAPONS*7]
-		new szWeaponKillOne[TOTALWEAPONS][7]
-		
-		new szWeaponLevel[TOTALWEAPONS*7]
-		new szWeaponLevelOne[TOTALWEAPONS][7]*/
-	
 		new szPointSecret[7]
 		
 		new szLastAwardGot[11]
 		new szLastAwardFree[11]
 		new szLastAwardRow[7]
-		
-		//new szSuggested[3]
-		
+
 		new szChristmasStart[5];
 		new szChristmasMission[5]
 		new szChristmasType[5];
@@ -119,21 +97,15 @@ public fVaultLoad(id){
 		
 		
 		parse(szData,
-			/*szLevel,		sizeof(szLevel),
-			szExp,			sizeof(szExp),
-			szNug,			sizeof(szNug),*/
 			szLuzCoin,		sizeof(szLuzCoin),
 			szTimeVip,		sizeof(szTimeVip),
 			szOption,		sizeof(szOption),
 			szAllNugget,		sizeof(szAllNugget),
 			szClassHuman, 		sizeof(szClassHuman),
-			/*szClassHumanLevel, 	sizeof(szClassHumanLevel),
-			szClassHumanLevelExp, 	sizeof(szClassHumanLevelExp),*/
 			szMission, 		sizeof(szMission),
 			szMissionSecret,	sizeof(szMissionSecret),
 			szPro,			sizeof(szPro),
 			szProSelected,		sizeof(szProSelected),
-			/*szReset,		sizeof(szReset),*/
 			szHumanSelectNew1,	sizeof(szHumanSelectNew1),
 			szHumanSelectNew2,	sizeof(szHumanSelectNew2),
 			szZombieSelectNew1,	sizeof(szZombieSelectNew1),
@@ -166,8 +138,6 @@ public fVaultLoad(id){
 			szMaxHelp,		sizeof(szMaxHelp),
 			szHelpDay,		sizeof(szHelpDay),
 			szHelpPointAdmin,	sizeof(szHelpPointAdmin),
-			/*szWeaponKill,		sizeof(szWeaponKill),
-			szWeaponLevel,		sizeof(szWeaponLevel),*/
 			szPointSecret,		sizeof(szPointSecret),
 			szLastAwardGot,		sizeof(szLastAwardGot),
 			szLastAwardFree,	sizeof(szLastAwardFree),
@@ -184,10 +154,6 @@ public fVaultLoad(id){
 		
 			
 		);
-		
-		//userLevel[id]			=	str_to_num(szLevel);
-		//userExp[id]			=	str_to_float(szExp);
-		//userNugget[id]			=	str_to_num(szNug);
 		timeVip[id] 			= 	str_to_num(szTimeVip);
 		userSaveOption[id]		=	str_to_num(szOption);
 		userNuggetAll[id]		=	str_to_num(szAllNugget);
@@ -195,16 +161,7 @@ public fVaultLoad(id){
 		userLuzCoin[id]			= 	str_to_num(szLuzCoin);
 		
 		userHuman[id]		 = 	str_to_num(szClassHuman)
-		
-		/*explode(szClassHumanLevel	,'_'	,szClassHumanLevelOne	,sizeof(szClassHumanLevelOne)	,sizeof(szClassHumanLevelOne[]))
-		for(new i = 0 ; i < sizeof(szClassHumanLevelOne); i ++ )
-			userHumanLevel[id][i] = str_to_num(szClassHumanLevelOne[i])
-		
-		explode(szClassHumanLevelExp	,'_'	,szClassHumanLevelExpOne	,sizeof(szClassHumanLevelExpOne)	,sizeof(szClassHumanLevelExpOne[]))
-		for(new i = 0 ; i < sizeof(szClassHumanLevelExpOne); i ++ )
-			userExpClass[id][i] = str_to_float(szClassHumanLevelExpOne[i])
-		*/
-		
+
 		explode(szMission	,'_'	,szMissionOne	,sizeof(szMissionOne)	,sizeof(szMissionOne[]))
 		for(new i = 0 ; i < sizeof(szMissionOne); i ++ )
 			userMission[id][i] = str_to_num(szMissionOne[i])
@@ -215,7 +172,6 @@ public fVaultLoad(id){
 			
 		
 		userProSelected[id]			=	str_to_num(szProSelected)
-		//userReset[id]				=	str_to_num(szReset)	
 		userClassHuman[id]			=	str_to_num(szHumanSelectNew1)
 		userNewClassHuman[id]			=	str_to_num(szHumanSelectNew2)
 		userNewClass[id]			=	str_to_num(szZombieSelectNew1)
@@ -274,30 +230,14 @@ public fVaultLoad(id){
 		userAllDmg[id]				=	str_to_num(szAllDmg);
 		
 		userFov[id]				=	str_to_num(szFov);
-		
-		
-		
 				
 		userScrollExp[id]			=	str_to_num(szScrollExp);
 		userScrollNugget[id]			=	str_to_num(szScrollNugget);
 		userBoostMine[id]			=	str_to_num(szBoostMine)
 		
-		
 		userMute[id] 				=	str_to_num(szMute);
 		
 		userHelpPoint[id]			=	str_to_num(szHelpPointAdmin)
-		
-		
-		
-		/*explode(szWeaponKill		,'_'	,szWeaponKillOne	,sizeof(szWeaponKillOne)	,sizeof(szWeaponKillOne[]))
-		for(new i = 0 ; i < sizeof(szWeaponKillOne); i ++ )
-			userWeaponKill[id][i] = str_to_num(szWeaponKillOne[i])
-		
-		explode(szWeaponLevel		,'_'	,szWeaponLevelOne	,sizeof(szWeaponLevelOne)	,sizeof(szWeaponLevelOne[]))
-		for(new i = 0 ; i < sizeof(szWeaponKillOne); i ++ )
-				userWeaponLevel[id][i] = str_to_num(szWeaponLevelOne[i])
-			
-		*/
 		
 		userSecretPoint[id]			=	str_to_num(szPointSecret)
 	
@@ -323,16 +263,8 @@ public fVaultLoad(id){
 		
 		userLoadVault[id]			= 	true;
 		
-		
-		//userSuggestTeam[id] 			= 	str_to_num(szSuggested)
-		
-		//log_amx("[LOAD] - Funkcja PARSE %s ( LVL : %d  |  EXP: %0.2f  | BRYLKI: %d )", userName[id], userLevel[id], userExp[id], userNugget[id]);
-	
-		
 	}else{
-		//userLevel[id]			=	1;
-		//userExp[id]			=	0.00;
-		//userNugget[id]			=	45;
+
 		userNuggetAll[id]		=	0;
 		timeVip[id] 			= 	0;
 		userLuzCoin[id]			= 	0;
@@ -347,18 +279,7 @@ public fVaultLoad(id){
 			if(str_to_num(classesHuman[human_FREE][2]) == 0 )
 				userHuman[id] |= (1<<i)
 		}
-		
-		/*for(new i = 0 ; i < sizeof(userExpClass[]); i ++ )
-			userExpClass[id][i] = 0.00
-		
-		
-		
-		for(new i = 0 ; i < sizeof(userHumanLevel[]); i ++ ){
-			if(str_to_num(classesHuman[human_FREE][2]) == 0 )
-				userHumanLevel[id][human_FREE] = 1;	
-			userHumanLevel[id][i] = 0		
-		}*/
-		
+
 		for(new i = 0 ; i < sizeof(userMission[]); i ++ )
 			userMission[id][i] = 0
 		for(new i = 0 ; i < sizeof(userMissionSecret[]); i ++ )
@@ -413,13 +334,7 @@ public fVaultLoad(id){
 		
 		userHelpPoint[id]		=	0;
 		
-		/*for(new i = 0; i < TOTALWEAPONS; i++){
-			userWeaponKill[id][i] = 0;
-			userWeaponLevel[id][i] = 0;
-		}*/
 		userSecretPoint[id] = 0;
-		
-		
 			
 		userLastAwardGot[id]		=	playedTime(id);
 		userLastAwardFree[id]		=	get_systime();
@@ -434,32 +349,20 @@ public fVaultLoad(id){
 		
 		userSelectHat[id] 		=	-1;
 		userSelectNewHat[id] 		=	-1;
-		
-		//userSuggestTeam[id] 		= 	0
-		//log_amx("[LOAD] - Funkcja USTAW %s", userName[id]);
+
 	}
 	
 	return PLUGIN_CONTINUE;
 }
 public fVaultSave(id){
-	
-	
-	//log_amx("[SAVE] - Zapisuje gracza %s", userName[id]);
-	
+
 	if(!userLoadVault[id]) return PLUGIN_CONTINUE;
 	
 	
 	new szData[756];
 
 	new iLen
-	/*new szClassHumanLevel[human_TOTAL*7]
-	for(new i = 0; i < human_TOTAL; i ++)		iLen += format(szClassHumanLevel[iLen], sizeof(szClassHumanLevel)-iLen-1, "%d%s", userHumanLevel[id][i], i == human_TOTAL-1?"":"_")
-	
-	iLen = 0;
-	new szClassHumanLevelExp[human_TOTAL*7]
-	for(new i = 0; i < human_TOTAL; i ++)		iLen += format(szClassHumanLevelExp[iLen], sizeof(szClassHumanLevelExp)-iLen-1, "%0.2f%s", userExpClass[id][i], i == human_TOTAL-1?"":"_")
-	
-	iLen = 0;*/
+
 	new szMission[mission_TOTAL*7]
 	for(new i = 0; i < mission_TOTAL; i ++)		iLen += format(szMission[iLen], sizeof(szMission)-iLen-1, "%d%s", userMission[id][i], i == mission_TOTAL-1?"":"_")
 	
@@ -478,34 +381,18 @@ public fVaultSave(id){
 	iLen=0
 	new szDigging[mine_TOTAL*7]
 	for(new i = 0; i < mine_TOTAL; i ++)		iLen += format(szDigging[iLen], sizeof(szDigging)-iLen-1, "%d%s", userDigging[id][i], i == mine_TOTAL-1?"":"_")
-	
-	/*iLen=0
-	new szWeaponKill[TOTALWEAPONS*7]
-	for(new i = 0; i <TOTALWEAPONS; i ++)		iLen += format(szWeaponKill[iLen], sizeof(szWeaponKill)-iLen-1, "%d%s", userWeaponKill[id][i], i == TOTALWEAPONS-1?"":"_")
-	
-	iLen=0
-	new szWeaponLevel[TOTALWEAPONS*7]
-	for(new i = 0; i < TOTALWEAPONS; i ++)		iLen += format(szWeaponLevel[iLen], sizeof(szWeaponLevel)-iLen-1, "%d%s", userWeaponLevel[id][i], i == TOTALWEAPONS-1?"":"_")
-	*/
-	
-	
+
 	
 	format(szData, sizeof(szData)-1,"%d %d %d %d %d %s %s %s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %s %s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d", 
-		//userLevel[id],
-		//userExp[id],
-		//userNugget[id],
 		userLuzCoin[id],
 		timeVip[id],
 		userSaveOption[id],
 		userNuggetAll[id],
 		userHuman[id],
-		/*szClassHumanLevel,
-		szClassHumanLevelExp,*/
 		szMission,
 		szMissionSecret,
 		szPro,
 		userProSelected[id],
-		//userReset[id],
 		userClassHuman[id],
 		userNewClassHuman[id],
 		userNewClass[id],
@@ -538,8 +425,6 @@ public fVaultSave(id){
 		userMaxHelp[id],
 		userDayHelp[id],
 		userHelpPoint[id],
-		/*szWeaponKill,
-		szWeaponLevel,*/
 		userSecretPoint[id],
 		userLastAwardGot[id],
 		userLastAwardFree[id],
@@ -557,18 +442,13 @@ public fVaultSave(id){
 		
 	);
 	fvault_set_data(fVAULTFILE, userName[id], szData);
-	//log_amx("[SAVE] - %s %s", userName[id], szData);
 	
 	userLoadVault[id]	= false;
 	
 	return PLUGIN_CONTINUE
 }
 stock explode(const string[],const character,output[][],const maxs,const maxlen){
-
-	new 	iDo = 0,
-		len = strlen(string),
-		oLen = 0;
-
+	new iDo = 0, len = strlen(string), oLen = 0;
 	do{
 		oLen += (1+copyc(output[iDo++],maxlen,string[oLen],character))
 	}while(oLen < len && iDo < maxs)

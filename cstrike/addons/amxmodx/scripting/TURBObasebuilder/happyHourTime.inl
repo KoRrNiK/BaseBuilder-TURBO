@@ -3,15 +3,10 @@
 
 happyStart(){
 	if( random(100)  <= (happyHourChange)){
-		//randomHappyHour = happy_DMG_WEAPON;
-		
 		randomHappyHour = random(happy_TOTAL);
 		hourTime = true;
 	} else hourTime = false;
 }
-
-
-
 public bb_happy_hour(){
 	return randomHappyHour;
 }

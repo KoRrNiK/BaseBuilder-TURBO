@@ -9,8 +9,11 @@
 new activeMultiply;
 new const Float:multiplyDrop = 2.0
 new const Float:dropProcent = 0.1
-
 new freeChest; 
+new const createInfoMenu[][] = {
+	"Kursor",
+	"Gracz"
+}
 
 public Float:dropChest(id){
 	
@@ -20,24 +23,9 @@ public Float:dropChest(id){
 	(( hourTime && bb_happy_hour() == happy_CASE ) ? 2.0 : 1.0);
 	
 }
-
-
 public casePrecache(){
-	
-	//register_clcmd("bc", "createCase");
-	
-	precache_model(caseModel)
-	
-	
-	
-	
+	precache_model(caseModel)	
 }
-
-new const createInfoMenu[][] = {
-	"Kursor",
-	"Gracz"
-}
-
 public menuCreateCase(id){
 	new menu = menu_create("\r[BaseBuilder]\y Menu tworzenia skrzynek", "menuCreateCase_2");
 	
@@ -106,9 +94,6 @@ public menuCreateCase_2(id, menu, item){
 		}
 	}
 }
-
-
-
 public createCase(id, id2){
 	
 	new Float:fOrigin[3];
@@ -124,7 +109,6 @@ public createCase(id, id2){
 
 	
 }
-
 public addCaseEnt(){
 	new slotCase = freeCaseSlot();
 	if( slotCase!=-1){
@@ -196,7 +180,6 @@ public chestThink(ent){
 		set_pev(ent, pev_fuser3, get_gametime())
 	}
 	
-	
 	if((get_gametime() - pev(ent, pev_fuser1) > pev(ent, pev_fuser4)+1.0) && pev(ent, pev_iuser2) == 1){
 		removeChestEnt(ent)
 		
@@ -254,7 +237,6 @@ public caseInfo(id, ent, Float:cordx, Float:cordy){
 			userPressOpen[id] = true;
 		}else userPressOpen[id] = false
 	}
-	
 }
 
 public openChest(id,ent){
@@ -330,7 +312,7 @@ public openChest(id,ent){
 	
 	iLen += format(gText[iLen], sizeof(gText) - 1 - iLen, "Calosc: %d", randomType[3]);
 	iLen += format(gText[iLen], sizeof(gText) - 1 - iLen, "^n--------------------");
-	tutorBB(id, TUTOR_GREEN, "%s", gText);
+	tutorBB(id, TUTOR_YELLOW, "%s", gText);
 	
 	ColorChat(id,GREEN, "%s Ekstra nagroda:^x03 %d Brylek", PREFIXSAY, randomType[3] )
 	
@@ -353,19 +335,15 @@ public freeChestCreate(){
 	
 	new Float:fOrigin[3];
 	pev(freeChest, pev_origin, fOrigin);
-
 	
-	new ct = numPlayers(2, false)
-	new tt = numPlayers(1, false)
+	new ct = numPlayers(2, false);
+	new tt = numPlayers(1, false);
 	
 	if( ct + tt > 4){
 		
-		if(random(100) < 10) createCases(fOrigin)
-	
-	}
-	
+		if(random(100) < 10) createCases(fOrigin);
+	}	
 }
-
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
 */

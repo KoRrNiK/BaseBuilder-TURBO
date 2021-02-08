@@ -9,7 +9,6 @@
 #include <ColorChat>
 #include <fvault>
 
-
 new cloneBlockOffset;
 new szFile[88]
 
@@ -17,19 +16,15 @@ new Float:userBlockConnectOrigin[2][3]
 new userBlockConnect[33]
 new bool:userBlockStart[33][2]
 public cloneOffset(id){
-	if( !has_flag(id, "a") )
-		return PLUGIN_CONTINUE
+	if( !has_flag(id, "a") ) return
 	new szOffset[4]
 	read_argv(1, szOffset, sizeof(szOffset))
 	cloneBlockOffset=str_to_num(szOffset);
 	writeOffsetBlock()
-	adminLockBlock(id)
-	return PLUGIN_CONTINUE
-	
+	adminLockBlock(id)	
 }
 public adminLockBlock(id){
-	if( !has_flag(id, "a" ) )
-		return 0;
+	if( !has_flag(id, "a" ) ) return 0;
 		
 	new gText[128], iLen
 	iLen = format(gText[iLen], sizeof(gText)-iLen-1, "Menu Blokow")
@@ -51,7 +46,6 @@ public adminLockBlock(id){
 	menu_additem(menu, gText)
 	menu_additem(menu, "Usun czas")
 
-	
 	menu_display(id,menu,0)
 	return 1;
 }
@@ -98,8 +92,6 @@ public adminLockBlock_2(id, menu, item){
 					set_task(0.5, "removeColor", ent)
 				}
 			}		
-				
-			
 		}
 		case 1:{
 			new ent, body
@@ -152,9 +144,7 @@ public adminLockBlock_2(id, menu, item){
 			}else{
 				new iOrigin[3]
 				get_user_origin(id, iOrigin, 3)
-			
-				
-				
+
 				if( !userBlockStart[id][1]  ){
 					IVecFVec(iOrigin, userBlockConnectOrigin[0])	
 					userBlockStart[id][1] = true
@@ -176,14 +166,10 @@ public adminLockBlock_2(id, menu, item){
 					entity_set_vector(userBlockConnect[id], EV_VEC_vuser1, fVec)
 					
 					BeamLight(userBlockConnectOrigin[0], userBlockConnectOrigin[1], spriteBeam, 0, 0, 20, 10, 0, 255, 128, 75, 255, 255)
-					
-					//set_pev(ent,pev_rendermode,kRenderTransColor)
-					//set_pev(ent,pev_rendercolor, Float:{128.0, 75.0, 255.0} )
-					
+	
 					ColorChat(id, GREEN, "---^x01 Bloki zostaly polaczone^x04 ---")
 					adminLockBlock(id)
-					
-					
+				
 					userBlockConnect[id] = 0
 					userBlockStart[id][0] = false;
 					userBlockStart[id][1] = false;
@@ -208,8 +194,6 @@ public adminLockBlock_2(id, menu, item){
 			userBlockStart[id][0] = false;
 			userBlockStart[id][1] = false;
 			adminLockBlock(id)
-			
-			
 		}
 		case 8:{
 			if( userBlockConnect[id] == 0){				
@@ -223,9 +207,7 @@ public adminLockBlock_2(id, menu, item){
 			userBlockConnect[id] = 0
 			userBlockStart[id][0] = false;
 			userBlockStart[id][1] = false;
-			adminLockBlock(id)
-			
-			
+			adminLockBlock(id)			
 		}
 		case 9:{
 			extraClone = !extraClone;
@@ -250,9 +232,6 @@ public rotateBlock(id){
 	}
 	
 	if( ent != 0 ){			
-		
-		
-		
 		new entNew 	= entity_get_int(ent, EV_INT_team)
 		if( entNew == 0 ){
 			set_dhudmessage(255, 42, 85, -1.0, 0.65, 0, 6.0, 12.0)
@@ -366,32 +345,21 @@ public loadCloneBlock(){
 				fVec[i]=str_to_float(szVec[i])
 			}
 			switch( str_to_num(szType) ){
-				case 0:{		
-					remove_entity(ent)
-					//entity_set_origin(ent, Float:{-8192.0,-8192.0,-8192.0})
-				}
+				case 0:remove_entity(ent)
 				case 1:{			
 						
-			
-					//set_pev(ent, pev_movetype, MOVETYPE_FLY)
-					//set_pev(ent, pev_solid, SOLID_SLIDEBOX)
-		
 					entity_set_int(ent, EV_INT_team, str_to_num(szRotate))
 					setLock(ent, 2)
 					set_pev(ent ,pev_vuser3, fOrigin)	
 					entity_set_origin(ent, fOrigin)
 					entity_set_vector(ent, EV_VEC_vuser1, fVec)
-					//set_pev(ent,pev_rendermode,kRenderTransTexture)
-					//set_pev(ent,pev_renderamt, 255.0 )
 				}
 				case 2:{
 					entity_set_int(ent, EV_INT_team, str_to_num(szRotate))
 					entity_set_vector(ent, EV_VEC_vuser1, fVec)
-					
 				}
 			}
 		}
-		
 		fclose(file)
 	}
 }

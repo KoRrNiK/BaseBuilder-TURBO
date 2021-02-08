@@ -11,7 +11,6 @@
 
 new userWarningAccept[33];
 
-
 public warningInfo(id){
 	
 	if(!isAdmin(id)) return PLUGIN_CONTINUE;
@@ -38,8 +37,6 @@ public warningInfo(id){
 	
 	show_menu(id, B1 | B2 | B0, gText, -1, "warningInfo"  )
 	return PLUGIN_HANDLED;
-
-	
 }
 
 public warningInfo_2(id, item){
@@ -63,15 +60,9 @@ public warningInfo_2(id, item){
 			}
 			client_print(id, print_center, "Wpisz teraz opis ostrzezenia!");
 			client_cmd(id, "messagemode warning")
-		}
-		
-		
+		}		
 	}	
-	
 }
-
-
-
 public writeWarning(id){
 	
 	new target = userWarningInfo[id];
@@ -92,7 +83,6 @@ public writeWarning(id){
 		warningInfo(id)
 		return ;
 	}
-
 	new globalTime[32], map[33]; 
 	
 	get_time("%d.%m.%Y - %H:%M:%S",globalTime,sizeof(globalTime));
@@ -105,8 +95,6 @@ public writeWarning(id){
 	userWarningAdmin[target] = userName[id];
 
 	warningAddMenu(id)
-
-
 }
 public warningAddMenu(id){
 	
@@ -122,7 +110,6 @@ public warningAddMenu(id){
 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "\y%s^t^t\dMapa:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], userWarningMap[target])
 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "\y%s^t^t\dGodzina:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], userWarningTime[target])
 
-	
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r1.\w Zapisz %s", userWarningAccept[id] ? "\r[POTWIERDZ]":"")
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r2.\y Zmien Opis")
 	
@@ -130,8 +117,6 @@ public warningAddMenu(id){
 	
 	show_menu(id, B1 | B2| B0, gText, -1, "warningAddMenu"  )
 	return PLUGIN_HANDLED;
-
-	
 }
 public warningAddMenu_2(id, item){
 	new target = userWarningInfo[id];
@@ -148,13 +133,9 @@ public warningAddMenu_2(id, item){
 			ColorChat(target, GREEN, "---^x01 Opis:^x03 %s^x04 ---", userWarningName[target]); 
 			ColorChat(id, GREEN, "---^x01 Dales ostrzezenie graczowi:^x03 %s^x04 ---", userName[target]); 
 				
-			
 			userWarningAmount[target] ++;
 			
 			saveWarning(id, target)
-	
-		
-			
 		}
 		case 1:{
 			client_print(id, print_center, "Wpisz teraz opis ostrzezenia");
@@ -162,7 +143,6 @@ public warningAddMenu_2(id, item){
 			client_cmd(id, "messagemode warning")
 		}
 	}
-	
 }
 public warningList_2(id, menu, item){
 	
@@ -176,11 +156,6 @@ public warningList_2(id, menu, item){
 
 	loadDescWarning(id)
 }
-
-
-
-
-
 public loadDescWarning(id){
 	
 	if(is_user_hltv(id)) return PLUGIN_CONTINUE;
@@ -189,7 +164,6 @@ public loadDescWarning(id){
 		log_amx("[SQL-LOG] Brak polaczenia");
 		return PLUGIN_CONTINUE
 	}
-
 	
 	new queryData[512]
 	new tempId[3];
@@ -197,7 +171,6 @@ public loadDescWarning(id){
 	tempId[0] = id;
 	tempId[1] = userWarningInfo[id];
 	tempId[2] = userWarningItem[id];
-
 
 	format(queryData, sizeof(queryData), "\
 		SELECT `warnings`.*, `playerWarning`.`name` AS `gracz`, `adminWarning`.`name` AS `admin`\
@@ -210,16 +183,10 @@ public loadDescWarning(id){
 
 	return PLUGIN_CONTINUE;
 }
-
-
-
 public loadDescWarning_2(failState, Handle:query, error[], errorNum, tempId[], dataSize){
 	
 	new id 		= 	tempId[0]
-	//new target 	= 	tempId[1]
-	//new item 	= 	tempId[2]
 
-	
 	if (failState){
 		if (failState == TQUERY_CONNECT_FAILED){
 			log_amx("[SQL-LOG] Nie mozna polaczyc siê z baz¹ danych SQL. Blad: %s (%d)", error, errorNum)
@@ -261,10 +228,7 @@ public loadDescWarning_2(failState, Handle:query, error[], errorNum, tempId[], d
 	show_menu(id, B1 | B2| B0, gText, -1, "warningDesc")	
 	return PLUGIN_HANDLED;
 }
-
 public warningDesc_2(id, item){
-	
-	
 	switch(item){
 		case 0:{
 			
@@ -289,9 +253,7 @@ public warningDesc_2(id, item){
 			loadDescWarning(id)
 			client_print(id, print_center, "Wpisz teraz nowy opis ostrzezenia!");
 			client_cmd(id, "messagemode change_desc")
-			
 	
-			
 		}
 	}
 }
@@ -325,7 +287,6 @@ public  updateWarning(id){
 		return;
 	}
 	
-	
 	format(queryData, sizeof(queryData), "UPDATE `warnings` SET `desc`='%s' WHERE `idplayer`='%d' AND `idwarning`='%d'", szArg, userSqlId[tempId[1]], tempId[2]);
 	SQL_ThreadQuery(sql, "saveStatsHandlerSql", queryData, tempId, sizeof(tempId));
 	
@@ -336,9 +297,7 @@ public  updateWarning(id){
 	}
 	logBB(id,gText)
 			
-	
 	loadDescWarning(id)
-	
 }
 public  removeWarning(id){
 	
@@ -349,7 +308,6 @@ public  removeWarning(id){
 	tempId[0] = id;
 	tempId[1] = userWarningInfo[id];
 	tempId[2] = userWarningItem[id];
-	
 	
 	if(is_user_connected(tempId[1])){
 		ColorChat(tempId[1], GREEN,"---^x01 Admin^x03 %s^x01 usunal tobie ostrzezenie!^x04 ---", userName[id]);
@@ -375,11 +333,8 @@ public  removeWarning(id){
 	
 	userWarningAccept[id] = false;
 	warningInfo(id)
-	
 }
 public saveWarning(id, target){
-	
-
 	new queryData[256], tempId[2];
 	
 	tempId[0] = id;

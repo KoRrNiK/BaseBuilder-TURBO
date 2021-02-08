@@ -1,9 +1,6 @@
 #include < amxmodx >
 #include < amxmisc >
 
-
-
-
 new const freeAwards[10][]= {
 	"700 Brylek",
 	"200 Expa",
@@ -17,15 +14,7 @@ new const freeAwards[10][]= {
 	"300 Kosci",
 
 }
-
 public menuFreeAward(id){
-	
-	/*new x = true;
-	if(x && (!has_flag(id, "a"))){
-		ColorChat(id, GREEN, "== Chwilowo wylaczone ==")
-		return;
-	}
-	*/
 	
 	if(  get_systime() - userLastAwardFree[id]  > (DAY*2)-HOUR){
 		userLastAwardRow[id] = 0;		
@@ -54,8 +43,6 @@ public menuFreeAward(id){
 	}
 	menu_display(id, menu, 0)
 }
-
-
 public menuFreeAward_2(id, menu, item){
 	if( item == MENU_EXIT ){
 		menu_destroy(menu)
@@ -72,7 +59,6 @@ public menuFreeAward_2(id, menu, item){
 		ColorChat(id, GREEN, "%s Musisz przegrac^x03 %d Minut^x01 aby moc odebrac^x04 nagrode", PREFIXSAY, (HOUR-awardPlay)/MINUTE)
 		return PLUGIN_CONTINUE
 	}
-	
 	switch(item){
 		case 0:{
 			

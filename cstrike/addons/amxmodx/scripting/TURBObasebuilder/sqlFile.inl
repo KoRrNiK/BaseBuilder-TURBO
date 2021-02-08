@@ -34,7 +34,7 @@ public plugin_init_sql(){
 		log_amx("Polaczono z zew. baza danych");
 		superAdminLocalhost = false;
 	} else {
-		sql = SQL_MakeDbTuple("127.0.0.1", "root", "pass", "db");
+		sql = SQL_MakeDbTuple("127.0.0.1", "root", "", "bb");
 		log_amx("Polaczono z localhostem");
 		superAdminLocalhost = true;
 	}
@@ -75,9 +75,9 @@ public plugin_init_sql(){
 		`level` INT NOT NULL DEFAULT 1, \
 		`xp` FLOAT NOT NULL DEFAULT '0.00', \
 		`reset` INT NOT NULL DEFAULT 0, \
-		PRIMARY KEY (`idplayer`));"
+		PRIMARY KEY (`idplayer`)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;"
 	);
-	
+
 
 	query = SQL_PrepareQuery(connection, queryData);
 	SQL_Execute(query);
@@ -102,7 +102,7 @@ public plugin_init_sql(){
 		`cooldown` INT NOT NULL DEFAULT 0, \
 		`goblin` INT NOT NULL DEFAULT 0, \
 		`idmotd` varchar(20) NOT NULL DEFAULT '_', \
-		`upgradetime` INT NOT NULL DEFAULT UNIX_TIMESTAMP(), \
+		`upgradetime` INT NOT NULL DEFAULT 0, \
 		PRIMARY KEY (`idclans`));"
 	);
 	
@@ -164,23 +164,9 @@ public plugin_init_sql(){
 	query = SQL_PrepareQuery(connection, queryData);
 	SQL_Execute(query);
 	
-	/*
-	format(queryData, sizeof(queryData), "CREATE TABLE IF NOT EXISTS `weapon`( `idplayer` INT NOT NULL,");
-	for( new i = 0 ;  i < sizeof(allGuns); i ++){
-
-		add(queryData, charsmax(queryData), formatm("`%s` INT NOT NULL DEFAULT 0,", allGuns[i][0]));
-	}
-	add(queryData, charsmax(queryData), "PRIMARY KEY(`idplayer`));");	
-	
-	
-	query = SQL_PrepareQuery(connection, queryData);
-	SQL_Execute(query);
-	*/
-	
 	SQL_FreeHandle(query);
 	
 	sqlConnected = true;
-
 
 }
 public loadStatsSql(id, typeLoad){
@@ -192,16 +178,12 @@ public loadStatsSql(id, typeLoad){
 		log_amx("[SQL-LOG] Brak polaczenia");
 		return PLUGIN_CONTINUE;
 	}
-
-	
 	new queryData[256]
 	new tempId[2];
 	
 	tempId[0] = id;
 	tempId[1] = typeLoad;
-	
-	// //format(queryData, sizeof(queryData), "SELECT COUNT(*) FROM `players` WHERE `points` >= %d", userPoints[id]) RANK BEZ LICZBY GRACZY
-	
+
 	switch(typeLoad){
 		
 		case 0:{		
@@ -239,7 +221,7 @@ public loadStatsSql(id, typeLoad){
 				ON a.clan = b.idclans \
 				WHERE a.name = '%s'", userName[id])
 		case 5: format(queryData, sizeof(queryData), "\
-			SELECT name, members, kills, level, createDate\
+			SELECT name, members, kills, level, createDate \
 				FROM `clans` \
 				ORDER BY kills \
 				DESC LIMIT 10");
@@ -315,6 +297,7 @@ public loadStatsSql(id, typeLoad){
 				WHERE 1 \
 				ORDER BY `kills` \
 				DESC LIMIT 10")
+		case 19: format(queryData, sizeof(queryData),"SELECT `players`.`discord` FROM `players` WHERE `idplayer`=%d", userSqlId[id])
 	}
 	SQL_ThreadQuery(sql, "loadStatsHandlerSql", queryData, tempId, sizeof(tempId));
 	return PLUGIN_CONTINUE;
@@ -327,14 +310,8 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 
 	
 	if (failState){
-		if (failState == TQUERY_CONNECT_FAILED) {
-			//ColorChat(0, GREEN, "[SQL]^x01 Nie mozna polaczyc siê z baz¹ danych SQL. Blad:^x03 %s (%d)", error, errorNum);
-			log_amx("[SQL-LOG] Nie mozna polaczyc siê z baz¹ danych SQL. Blad: %s (%d)", error, errorNum);
-		}
-		else if (failState == TQUERY_QUERY_FAILED){
-			//ColorChat(0, GREEN, "[SQL]^x01 Zapytanie watkowe nie powiodlo sie. Blad:^x03 %s (%d)", error, errorNum);
-			log_amx("[SQL-LOG] Zapytanie watkowe nie powiodlo sie. Blad: %s (%d)", error, errorNum);
-		}
+		if (failState == TQUERY_CONNECT_FAILED)  log_amx("[SQL-LOG] Nie mozna polaczyc siê z baz¹ danych SQL. Blad: %s (%d)", error, errorNum);
+		else if (failState == TQUERY_QUERY_FAILED)log_amx("[SQL-LOG] Zapytanie watkowe nie powiodlo sie. Blad: %s (%d)", error, errorNum);
 		return PLUGIN_HANDLED;
 	}	
 	
@@ -349,7 +326,7 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 				
 			} else {
 				
-				
+	
 				userTime[id] = playedTime(id)
 				
 				new szPassword[12]
@@ -370,9 +347,7 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 				if( strlen(szPassword) > 1 ){		
 					copy( userPassword[id], sizeof(userPassword[])-1, szPassword)
 						
-					//new szSaved[12]
-					//get_user_info(id, "_pw", szSaved, sizeof(szSaved) )
-					
+				
 					new szSavedIP[MAXBITIP], szSavedSID[MAXBITAUTHID];
 					get_user_ip(id, szSavedIP, sizeof(szSavedIP)-1, 1);
 					get_user_authid(id, szSavedSID, sizeof(szSavedSID)-1);
@@ -443,18 +418,7 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 	
 
 			iLen += format(gText[iLen], sizeText, "<head><link href=^"https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700^" rel=^"stylesheet^"></head>");
-			//iLen += format(gText[iLen], sizeText, "<body style=^"background-image: url('https://i.imgur.com/LcyZ3Uv.png'); background-repeat: no-repeat; background-size: 100%% 100%%; margin:0px;padding:0px; font-size: 16px; font-family: Montserrat; color: white; text-align: center^">");
 			
-		
-				
-			/*iLen += format(gText[iLen], sizeText, "\
-							<style>\
-									*{font-size:16px;font-family:Montserrat;color:white;text-align:center;padding:0;margin:0;}\
-									body{border:1px solid %s; background: #111}\
-			 						b{color:%s;text-shadow: 0 0 5px %s;}\
-									table{margin-top: 20px;margin-left: auto;margin-right: auto;width:710%; border-collapse: collapse;}\
-							</style>",accentMotdColor,accentMotdColor,accentMotdColor);		
-			*/
 			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<style type=^"text/css^">\
 									*{ font-size: 15px; font-family: Montserrat; color: white; text-align: center; padding: 0; margin: 0;}\
 									body{border: 1px solid %s; background: #111}\
@@ -462,8 +426,7 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 								</style>",accentMotdColor,accentMotdColor,accentMotdColor);
 			
 			iLen += format(gText[iLen], sizeText, "<p>TOP 10 graczy!</p><hr size=1 color=%s>",accentMotdColor)
-			//iLen += format(gText[iLen], sizeText, "<table style=^"margin: 20px;width:710%^"></br>");	
-			//iLen += format(gText[iLen], sizeText, "<table>");	
+				
 			iLen += format(gText[iLen], sizeText, "<table style=^"margin-top: 20px;margin-left: auto;margin-right: auto;width:710%^">");	
 			iLen += format(gText[iLen], sizeText, "<tr><td><b>#</b></td><td><b>Nazwa</b></td><td><b>Zabici</b></td><td><b>Zgony</b></td><td><b>Punkty</b></td><td><b>Stosunek</b></td></tr></br>");
 			
@@ -499,8 +462,6 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 			rank = SQL_ReadResult(query, SQL_FieldNameToNum(query, "rank")) + 1;
 			count = SQL_ReadResult(query, SQL_FieldNameToNum(query, "count")); 
     
-			/*new rank = SQL_ReadResult(query, 0)
-			if(rank == 0) rank = 1;*/
 			ColorChat(id, GREEN, "---^x01 Twoj ranking:^x03 %d/%d^x04 |^x01 Twoje punkty:^x03 %d^x04 |^x01 Kile:^x03 %d^x04 /^x01 Dedy:^x03 %d^x04 ---",rank,count,  userPoints[id] ,userKills[id], userDeaths[id] )	
 		}
 		case 3:{
@@ -508,18 +469,7 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 			new gText[2048], iLen=0, top=0;
 	
 			new sizeText = sizeof(gText)-iLen-1;
-	/*
-			iLen += format(gText[iLen], sizeText, "\
-							<style>\
-									*{ font-size: 16px; font-family: Montserrat; color: white; text-align: center; padding: 0; margin: 0;}\
-									body{border: 1px solid #92ea13; background: #111}\
-			 						b{color:#92ea13; text-shadow: 0 0 5px #92ea13;}\
-							</style>");		
-									
-			iLen += format(gText[iLen], sizeText, "<p>TOP 5 graczy!</p><hr size=1 color=#92ea13>")
-			iLen += format(gText[iLen], sizeText, "<table style=^"margin: 20px;width:710%^">");	
-			iLen += format(gText[iLen], sizeText, "<tr><td><b>#</b></td><td><b>Nazwa</b></td><td><b>Czas</b></td></tr></br>");
-			*/
+
 			iLen += format(gText[iLen], sizeText, "<head><link href=^"https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700^" rel=^"stylesheet^"></head>");
 			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<style type=^"text/css^">\
 									*{ font-size: 15px; font-family: Montserrat; color: white; text-align: center; padding: 0; margin: 0;}\
@@ -1122,7 +1072,6 @@ public saveInsert(id, typeSave, typeSlot){
 	tempId[0] = id;
 	tempId[1] = typeSave;
 	tempId[2] = typeSlot;
-
 	
 	switch(typeSave){
 		
@@ -1158,28 +1107,17 @@ public saveInsert(id, typeSave, typeSlot){
 			SQL_ThreadQuery(sql, "saveStatsHandlerSql", queryData, tempId, sizeof(tempId));
 			
 		}
-		
 		default:{}
-		
-		
 	}
 	return PLUGIN_CONTINUE;
 
 }
-
 public saveStatsHandlerSql(failState, Handle:query, error[], errorNum, data[], dataSize){
 	if (failState){
-		if (failState == TQUERY_CONNECT_FAILED) {
-			//ColorChat(0, GREEN, "[SQL]^x01 Nie mozna polaczyc siê z baz¹ danych SQL. Blad:^x03 %s (%d)", error, errorNum);
-			log_amx("[SQL-LOG] Nie mozna polaczyc siê z baz¹ danych SQL. Blad: %s (%d)", error, errorNum);
-		}
-		else if (failState == TQUERY_QUERY_FAILED){
-			//ColorChat(0, GREEN, "[SQL]^x01 Zapytanie watkowe nie powiodlo sie. Blad:^x03 %s (%d)", error, errorNum);
-			log_amx("[SQL-LOG] Zapytanie watkowe nie powiodlo sie. Blad: %s (%d)", error, errorNum);
-		}
+		if (failState == TQUERY_CONNECT_FAILED) log_amx("[SQL-LOG] Nie mozna polaczyc siê z baz¹ danych SQL. Blad: %s (%d)", error, errorNum);
+		else if (failState == TQUERY_QUERY_FAILED) log_amx("[SQL-LOG] Zapytanie watkowe nie powiodlo sie. Blad: %s (%d)", error, errorNum);
 		return PLUGIN_HANDLED;
-	}	
-
+	}
 	return PLUGIN_CONTINUE;
 }
 public save_clan(clan){

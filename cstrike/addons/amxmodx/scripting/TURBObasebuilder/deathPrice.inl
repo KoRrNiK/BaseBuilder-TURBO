@@ -18,7 +18,6 @@ public resetPriceDefault(id){
 	userDeathPrice[id][PRICE_LOST] = false;	
 	userDeathPrice[id][PRICE_START] = false;
 }
-
 public deathPriceMenu(id){
 	
 	if(get_user_team(id) != 2){
@@ -49,11 +48,8 @@ public deathPriceMenu(id){
 		iLen += format(gText[iLen], sizeof(gText) - iLen - 1, "^x04 ---");
 			
 		ColorChat(id, RED, "%s",gText);
-	
-		
 		return;
 	}	
-	
 	new menu = menu_create("\r[BaseBuilder]\y Plac za swoja Smierc!^n\r*\d Jesli wyjdziesz podczas placenia: Stracisz swoje Brylki!", "deathPriceMenu_2");
 	
 	if(userDeathPrice[id][PRICE_DEATH] == 0)
@@ -74,25 +70,18 @@ public deathPriceMenu(id){
 		menu_additem(menu, formatm("\yCzas trawnia:\w %d:%s%d\r ( Minal juz ten czas | Zmien go! )^n",userDeathPrice[id][PRICE_TIME]/60, (userDeathPrice[id][PRICE_TIME]%60 < 10 ? "0" : ""), userDeathPrice[id][PRICE_TIME]%60))
 	else menu_additem(menu, formatm("\yCzas trawnia:\w %d:%s%d^n",userDeathPrice[id][PRICE_TIME]/60, (userDeathPrice[id][PRICE_TIME]%60 < 10 ? "0" : ""), userDeathPrice[id][PRICE_TIME]%60))
 	
-	
 	menu_additem(menu, "\rZATWIERDZ USTAWIENIA")
 	
 	menu_display(id, menu, 0);
 }
-
-
 public deathPriceMenu_2(id, menu, item){
 	
 	if(item == MENU_EXIT){
 		menu_destroy(menu);
 		return;
 	}
-	
 	switch(item){
-		
-		case 0:{
-			cmd_execute(id, "messagemode IlePlaceZaZgona")
-		}
+		case 0: cmd_execute(id, "messagemode IlePlaceZaZgona")
 		case 1:{
 			if (++userDeathPrice[id][PRICE_CLASS] >= sizeof(classesZombies)+1) {
 				userDeathPrice[id][PRICE_CLASS] = 0;
@@ -101,11 +90,7 @@ public deathPriceMenu_2(id, menu, item){
 		case 2:{
 			userDeathPrice[id][PRICE_GOD] =! userDeathPrice[id][PRICE_GOD];
 		}
-		case 3:{
-		
-			cmd_execute(id, "messagemode DoKiedyMozeZabic")
-			
-		}
+		case 3: cmd_execute(id, "messagemode DoKiedyMozeZabic")
 		case 4:{
 			
 			if(userDeathPrice[id][PRICE_DEATH] == 0){
@@ -139,7 +124,6 @@ public deathPriceMenu_2(id, menu, item){
 		}
 	}
 	deathPriceMenu(id);
-	
 }
 
 public deathPlayerPrice(attacker, victim){
@@ -164,32 +148,22 @@ public deathPlayerWin(id){
 		ColorChat(id, GREEN, "---^x01 Otrzymales swoje^x03 brylki^x01 ktore postawiles za swoje zycie!^x04 ---");
 	}	
 }	
-
 public priceDeath(id){
-	
 	new szArg[9]
 	read_argv(1, szArg, sizeof(szArg))
 	remove_quotes(szArg)
 	new value = abs(str_to_num(szArg))
-	
-	
-	
 	userDeathPrice[id][PRICE_DEATH] = value
-	
 	deathPriceMenu(id)
 }
 public timeDeath(id){
-	
 	new szArg[9]
 	read_argv(1, szArg, sizeof(szArg))
 	remove_quotes(szArg)
 	new value = abs(str_to_num(szArg))
-	
 	userDeathPrice[id][PRICE_TIME] = value % gTime
-	
 	deathPriceMenu(id)
 }
-
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
 */

@@ -7,47 +7,33 @@
 #include <fakemeta_util>
 #include <engine>
 
+new bool:granadeMission[33][4];
+
 public shopGlobalMenu(id){
 	userTeamOpen[id] = get_user_team(id)
 			
 	switch(get_user_team(id)){
-		case 1:{
-			shopZombie(id);
-		}
-		case 2:{
-			shopBuilder(id);
-		}
+		case 1:shopZombie(id);
+		case 2:shopBuilder(id);	
 	}
 }
-
 public shopBuilder(id){
-	
-	
 	new gText[128];
 	format(gText, sizeof(gText), "\r[BaseBuilder]\y Sklep Budowniczych:^n^n\y%s^t^t\dPosiadasz:\r %d Brylek", symbolsCustom[SYMBOL_DR_ARROW], userNugget[id])
 	new menu = menu_create(gText, "shopBuilder_2");
 	for(new i = 0; i < sizeof(shopDescBuilder); i++){
 		new cost =  str_to_num(shopDescBuilder[i][3]) + 50 * userReset[id]
-	
-	
 		format(gText, sizeof(gText), "%s%s\d | Cena:\r %d\d | %s%d/%s", userShopBuilder[id][i] >=  str_to_num(shopDescBuilder[i][2]) ? "\d" : "\w", shopDescBuilder[i][0], cost, userShopBuilder[id][i] >=  str_to_num(shopDescBuilder[i][2]) ? "\d" : "\w" , userShopBuilder[id][i], shopDescBuilder[i][2]);
 		menu_additem(menu, gText);
-		
 	}
 	menu_display(id, menu, 0);
 	return PLUGIN_CONTINUE; 
 }
-
-
-new bool:granadeMission[33][4];
-
-
 public shopBuilder_2(id, menu, item){
 	if(item == MENU_EXIT){
 		menu_destroy(menu)
 		return PLUGIN_CONTINUE;
 	}
-	
 	if(buildTime  || roundEnd || !gameTime ){
 		ColorChat(id, GREEN, "%s Za wczesnie na to!", PREFIXSAY);
 		return PLUGIN_CONTINUE;
@@ -62,13 +48,11 @@ public shopBuilder_2(id, menu, item){
 		shopGlobalMenu(id)
 		return PLUGIN_CONTINUE;	
 	}
-
 	new cost = str_to_num(shopDescBuilder[item][3]) + 50 * userReset[id]
 	new weapons[32];
 	new num; 
 	get_user_weapons(id, weapons, num);
 
-	
 	if(userNugget[id] < cost){
 		ColorChat(id, GREEN, "%s Nie posiadasz wystarczajacej ilosci Brylek!", PREFIXSAY);
 		return PLUGIN_CONTINUE;
@@ -78,8 +62,6 @@ public shopBuilder_2(id, menu, item){
 		shopBuilder(id)
 		return PLUGIN_CONTINUE;
 	}
-	
-	
 	switch(item){
 		case shopB_HP:{
 			set_user_health(id, min(userMaxHealth[id], get_user_health(id) + str_to_num(shopDescBuilder[item][1])));
@@ -87,9 +69,7 @@ public shopBuilder_2(id, menu, item){
 			addMission(id, mission_BUYHEALTH, 1);
 			addPro(id, pro_BETON, 1)
 			#if defined CHRISTMAS_ADDON
-		
-				addChristmasMission(id,CH_HEAL, 1);
-							
+				addChristmasMission(id,CH_HEAL, 1);				
 			#endif
 
 		}
@@ -146,9 +126,7 @@ public shopBuilder_2(id, menu, item){
 			granadeMission[id][0] = true;
 			
 			#if defined CHRISTMAS_ADDON
-		
-				addChristmasMission(id,CH_GRANADE, 1);
-							
+				addChristmasMission(id,CH_GRANADE, 1);		
 			#endif
 			
 		}
@@ -267,24 +245,16 @@ public shopBuilder_2(id, menu, item){
 public removeWeapon(id){
 	new weapons[32]; new num; get_user_weapons(id, weapons, num);
 	for(new i = 0; i < num; i++){
-		if (weapons[i] == CSW_G3SG1){
-			takeWeapon(id, "weapon_g3sg1");
-		} else if ( weapons[i] == CSW_SG550 ){
-			takeWeapon(id, "weapon_sg550");
-		} else if ( weapons[i] == CSW_M249 ){
-			takeWeapon(id, "weapon_m249");
-		}
+		if (weapons[i] == CSW_G3SG1)takeWeapon(id, "weapon_g3sg1");
+		else if ( weapons[i] == CSW_SG550 ) takeWeapon(id, "weapon_sg550");
+		else if ( weapons[i] == CSW_M249 ) takeWeapon(id, "weapon_m249");
 	}
 }
-	
-
 public shopZombie(id){
 	
 	new gText[128];
 	format(gText, sizeof(gText), "\r[BaseBuilder]\y Sklep Zobmie:^n^n\y%s^t^t\dPosiadasz:\r %d Brylek",symbolsCustom[SYMBOL_DR_ARROW], userNugget[id])
 	new menu = menu_create(gText, "shopZombie_2");
-	
-
 	for(new i = 0; i < sizeof(shopDescZombie); i++){ 
 		new cost = str_to_num(shopDescZombie[i][3]) + 50 * userReset[id]
 		format(gText, sizeof(gText), "%s%s\d | Cena:\r %d\d | %s%d/%s", userShopZombie[id][i] >=  str_to_num(shopDescZombie[i][2]) ? "\d" : "\w", shopDescZombie[i][0], cost, userShopZombie[id][i] >=  str_to_num(shopDescZombie[i][2]) ? "\d" : "\w" , userShopZombie[id][i], shopDescZombie[i][2]);
@@ -300,8 +270,6 @@ public shopZombie_2(id, menu, item){
 		menu_destroy(menu)
 		return PLUGIN_CONTINUE;
 	}
-	
-	
 	if(buildTime  || roundEnd || !gameTime ){
 		ColorChat(id, GREEN, "%s Za wczesnie na to!", PREFIXSAY);
 		return PLUGIN_CONTINUE;
@@ -311,7 +279,6 @@ public shopZombie_2(id, menu, item){
 		shopGlobalMenu(id)
 		return PLUGIN_CONTINUE;	
 	}
-	
 	new cost = str_to_num(shopDescZombie[item][3]) + 50 * userReset[id]
 	
 	if(userNugget[id] < cost){
@@ -323,7 +290,6 @@ public shopZombie_2(id, menu, item){
 		shopZombie(id)
 		return PLUGIN_CONTINUE;
 	}
-	
 	switch(item){
 		
 		case 0:{
@@ -377,14 +343,12 @@ public shopZombie_2(id, menu, item){
 }
 
 public regenHP(id){
-	if(!is_user_connected(id) || !userHPRegen[id])
-		return PLUGIN_CONTINUE;
+	if(!is_user_connected(id) || !userHPRegen[id]) return;
 		
 	if(is_user_alive(id))
 		set_user_health(id, min(userMaxHealth[id], get_user_health(id) + str_to_num(shopDescZombie[shopZ_REGENERACJA][1])));
 		
 	set_task(1.0, "regenHP", id);
-	return PLUGIN_CONTINUE;
 }
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }

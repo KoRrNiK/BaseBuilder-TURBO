@@ -14,12 +14,8 @@ public mainMenuAccount(id){
 	for(new i = 0;  i < strlen(hideIp); i ++){
 		if (i % 3 || i < 2) hideIp[i] = '*';
 	}
-	
 	if(!userLogged[id] && strlen(userPassword[id]) > 1){
 		format(gText, sizeof(gText), "\r[BaseBuilder]\y System Kont:^n\wZaloguj sie aby kozystac z konta^n")
-		
-		
-	
 	} else {
 		if( 1 >= strlen(userPassword[id])){
 			format(gText, sizeof(gText), "\r[BaseBuilder]\y System Kont:^n\wZarejestruj sie aby kozystac z konta^n")
@@ -29,7 +25,6 @@ public mainMenuAccount(id){
 						  \y%s^t^t\dTwoj Sid:\r %s^n\y%s^t^t\dTwoje ip:\r %s^n\y%s^t^t\dTwoje Haslo:\r %s", userName[id], symbolsCustom[SYMBOL_DR_ARROW], userSid[id],symbolsCustom[SYMBOL_DR_ARROW], hideIp, symbolsCustom[SYMBOL_DR_ARROW],  hidePass)
 		}
 	}
-	
 	new menu = menu_create(gText, "mainMenuAccount_2")
 
 	if(!userLogged[id] && strlen(userPassword[id]) > 1){
@@ -41,7 +36,6 @@ public mainMenuAccount(id){
 			format(gText, sizeof(gText), "Zmien haslo")
 		}
 	}
-	
 	menu_additem(menu, gText)
 	
 	if(playerLogged(id)){
@@ -84,10 +78,6 @@ public mainMenuAccount_2(id, menu, item){
 			logBB(id, gText)
 			
 			ColorChat(id, GREEN, "%s Wylogowales sie!", PREFIXSAY )
-			
-			//set_task(0.0, "startLogin", id+ TASK_LOGIN)
-	
-			
 		}
 		case 2:{
 			settingAccount(id)	
@@ -116,7 +106,6 @@ public mainMenuAccount_2(id, menu, item){
 	}
 	return PLUGIN_HANDLED
 }
-
 public readPassword(id){		
 	
 	new szArg[12];
@@ -135,8 +124,6 @@ public readPassword(id){
 		mainMenuAccount(id)
 		return PLUGIN_CONTINUE;
 	}
-
-
 	if (!userLogged[id] && strlen(userPassword[id]) > 1){
 		if( equal(szArg, userPassword[id]) ){
 			userLogged[id]=true;			
@@ -150,7 +137,6 @@ public readPassword(id){
 			
 			ColorChat(id, GREEN, "%s Zalogowano pomyslnie", PREFIXSAY )
 			mainMenuAccount(id)
-			//removeLogin(id)
 		}else{
 			logType[id] = LOG_ERROR;
 			if(logType[id] == LOG_ERROR){
@@ -169,7 +155,6 @@ public readPassword(id){
 		}logBB(id, gText)
 		copy(userPassword[id], sizeof(userPassword[]), szArg)
 		mainMenuAccount(id)
-		//removeLogin(id)
 	}
 	
 	return PLUGIN_CONTINUE;
@@ -292,8 +277,6 @@ public settingAccount_2(id, menu, item){
 	}
 	return PLUGIN_CONTINUE
 }
-
-
 public startLogin(id){
 		
 	id -= TASK_LOGIN
@@ -301,8 +284,6 @@ public startLogin(id){
 		return;
 			
 	if(!playerLogged(id)){
-		
-		//if(userTestEnt[id] == 0) displayModel(id)
 		if(!is_user_hltv(id)){
 			userSpeedAdmin[id] = 1000.0;
 			
@@ -326,24 +307,12 @@ public startLogin(id){
 		
 			
 	} else {
-		//removeLogin(id)
 		userSpeedAdmin[id] = 0.0;
-		//set_task(0.0,"refreshModel", id+TASK_MODEL)
 		remove_task(id + TASK_LOGIN);
 		
 	}
 	set_task(0.85, "startLogin", id + TASK_LOGIN);
 }
-
-/*
-public removeLogin(id){
-	if(!is_user_connected(id) || !pev_valid(userTestEnt[id]))
-		return
-	
-	remove_entity( userTestEnt[id])
-	userTestEnt[id] = 0;
-}
-*/
 
 new const pointAdd[] = { 1, 3, 5, 10, 15, 25, 255 };
 new userHudAdd[33][4];
@@ -396,7 +365,6 @@ public changeHud_3(id, menu, item) {
 	}	
 	return ITEM_ENABLED;
 }
-
 public changeHud_2(id, menu, item){
 	if (!is_user_connected(id)) return PLUGIN_HANDLED;
 
@@ -407,8 +375,6 @@ public changeHud_2(id, menu, item){
 	}
 	
 	new addHud =  pointAdd[userHudAdd[id][0]];
-	
-	
 	
 	switch (item) {
 		case 0: {
@@ -496,8 +462,6 @@ public changeHud_2(id, menu, item){
 	menu_destroy(menu);
 	return PLUGIN_CONTINUE;
 }
-
-
 public readColor(id){
 
 	new szArg[7]
@@ -512,14 +476,9 @@ public readColor(id){
 	}
 	changeHud(id)
 }
-
-
 public missionHud(id){
-	
 	if(userHud[id][PLAYER_HUD_RED] == 1 && userHud[id][PLAYER_HUD_GREEN] == 1 && userHud[id][PLAYER_HUD_BLUE] == 1 ){
-	
 		addSecretMission(id, mission_secret_COLOR, 1)
-	
 	}
 	
 }

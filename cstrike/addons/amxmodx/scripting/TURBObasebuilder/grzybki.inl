@@ -35,10 +35,6 @@ new que[33]
 new shroomZone;
 new Float:shroomBtn[33]
 
-
-
-
-
 public menuGrzybki(id){
 	new menu=menu_create("Menu Grzybki", "menuGrzybki_2")
 	
@@ -137,8 +133,7 @@ public prepareDigitalCounter(){
 		fOrigin[1]+=40.0;
 		counterEnts[i]=ent;
 	}
-	
-	//loadDataSql(0, 8)
+
 	refreshCounter()
 	return PLUGIN_CONTINUE	
 }
@@ -166,10 +161,8 @@ public grzybekThink(ent){
 			entity_set_int(ent, EV_INT_sequence, 2)
 			entity_set_float(ent, EV_FL_nextthink, get_gametime()+0.7)	
 			if( entity_get_int(ent, EV_INT_skin) == 3 ){
-				//Particles(fOrigin, 2.0, sprite_star, 8, 1, 3, random_num(10,25), 9)				
 				fm_set_rendering(ent, kRenderFxGlowShell, 255, 255 , 255, kRenderNormal, 1)
 			}
-			//Particles(Float:fOrigin[3], Float:random, sprite, count, life, scale, velocity, randompart)
 		}
 		case 2:{
 			
@@ -187,7 +180,6 @@ public grzybekThink(ent){
 			entity_set_int(ent, EV_INT_sequence, 0)
 		}
 	}
-	
 	return PLUGIN_CONTINUE
 }
 public grzybkiPlay(){
@@ -250,7 +242,6 @@ public grzybekDMG(id, ent, Float:damage){
 			set_dhudmessage(255, 255, 85,  -1.0, 0.6, 0, 6.0, 0.4, 0.1, 0.1)
 			show_dhudmessage(id, "+10")	
 
-			
 			#if defined CHRISTMAS_ADDON
 		
 				addChristmasMission(id,CH_GOLDSCHROOM, 1);
@@ -296,8 +287,6 @@ public grzybekDMG(id, ent, Float:damage){
 		
 	}
 	return PLUGIN_CONTINUE
-	
-	
 }
 public turnOffGlowShroom(ent){
 	fm_set_rendering(ent, kRenderFxNone, 255, 255 , 255, kRenderNormal,255)
@@ -355,13 +344,11 @@ public startShroomGame(id){
 		ColorChat(id, GREEN, "---^x01 Nie mozna grac w grzybki :(^x04 ---")
 		return PLUGIN_CONTINUE		
 	}
-	
 	if( shroomPlayer == id ){
 		
 		endGame()
 		return PLUGIN_CONTINUE
 	}
-	
 	new placeInQue = addToQue(id);
 	if(placeInQue != -1 ){
 		if( placeInQue == 0 ){		
@@ -378,7 +365,6 @@ public startShroomGame(id){
 			ColorChat(id, GREEN, "---^x01 Twoje miejsce w kolejce to:^x04 %d ---", placeInQue)
 		}
 	}
-	
 	return PLUGIN_CONTINUE
 }
 public startWithPlayer(){
@@ -409,15 +395,11 @@ public endShroomGameAfk(id){
 		remove_task(shroomTASK)
 		
 	ColorChat(0, GREEN,"---^x01 AFK !^x04 %s^x01 ! Na liczniku^x04 %d^x01, rekord^x04 %d ---", userName[shroomPlayer],totalPointsMooshrom, userShroomPoints[shroomPlayer])
-	
 	endGame()
 }
 public endShroomGame(){
-	if( task_exists(shroomTASK) )
-		remove_task(shroomTASK)
+	if( task_exists(shroomTASK)) remove_task(shroomTASK)
 	ColorChat(0, GREEN,"---^x01 Skucha !^x04 %s^x01 ! Na liczniku^x04 %d^x01, rekord^x04 %d ---", userName[shroomPlayer],totalPointsMooshrom, userShroomPoints[shroomPlayer])
-	
-	
 	endGame();
 }
 public endShroomGameTime(){
@@ -425,8 +407,7 @@ public endShroomGameTime(){
 	endGame();
 }
 public endShroomGameLeft(){
-	if( task_exists(shroomPlayer+TASK_SHROOMAFK) )
-		remove_task(shroomPlayer+TASK_SHROOMAFK)
+	if( task_exists(shroomPlayer+TASK_SHROOMAFK)) remove_task(shroomPlayer+TASK_SHROOMAFK)
 		
 	ColorChat(0, GREEN,"---^x01 Gracz^x04 %s^x01 ! Wyszedl ---", userName[shroomPlayer])
 	endGame();
@@ -469,8 +450,7 @@ public endGame(){
 				createNuggetOrigin(fOrigin, award,award, RED_NUGGET, 	.owner=shroomPlayer)
 				ColorChat(0, GREEN,"---^x01 %s otrzymal^x04 %d^x01 Czerwonych brylek ! Za ustrzelenie^x04 %d^x01 grzybkow^x04 ---", userName[shroomPlayer],award,totalPointsMooshrom)
 			}
-		}
-				
+		}		
 	}
 	totalPointsMooshrom = actualRecord;
 	
@@ -487,7 +467,6 @@ public endGame(){
 	if( ( prepTime ||  buildTime ) ){		
 		startWithPlayer()
 	}
-	
 }
 
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE

@@ -34,9 +34,7 @@ public addShotExp(id, Float:damage){
 	damage += 10 * userReset[id]
 	damage *= isVip(id) ? 0.009 : 0.006
 	damage += 0.01
-	
-	
-	
+
 	if(teamWorks(id)){
 		switch(userTeamExp[id]){
 			case 0: {
@@ -112,8 +110,6 @@ public addExp(id, Float:value){
 	
 	return PLUGIN_CONTINUE;
 }
-
-
 /* BRYLKI */
 public addKillNugget(id, value){
 	
@@ -134,8 +130,6 @@ public addKillNugget(id, value){
 	if(userClassHuman[id] == human_FREE)  addPro(id, pro_LAPCZYWIEC, value)
 	
 	value += userReset[id] * 2
-	
-	
 	
 	userNuggetAll[id] += value
 	
@@ -179,8 +173,6 @@ public addNuggetToFinal(id, value){
 public addFinalNugget(id){
 	id -= TASK_ADDNUGGET;
 	
-	//ColorChat(id, GREEN, "---^x01 Otrzymales:^x03 %d^x01 Brylek^x04 ---", userNuggetShow[id]);
-	
 	if (userNuggetShow[id] >= 750)
 		ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 mial^x04 %d Brylek^x01 na liczniku!^x04 ---", userName[id], userNuggetShow[id]);
 	
@@ -191,7 +183,6 @@ public addFinalNugget(id){
 public addNugget(id, value){
 	userNugget[id] += value;
 	userNuggetCollectedRound[id] += value
-	//update_hud(id)
 	return PLUGIN_CONTINUE;
 }
 /* BONES */
@@ -200,10 +191,7 @@ public addKillBone(id, value){
 	if( !is_user_connected(id) || is_user_bot(id) || is_user_hltv(id))
 		return PLUGIN_CONTINUE;
 	
-
-	
 	addBoneToFinal(id, value)
-	
 	
 	return PLUGIN_CONTINUE;
 }
@@ -219,9 +207,7 @@ public addBoneToFinal(id, value){
 }
 public addFinalBone(id){
 	id -= TASK_ADDBONE;
-	
-	//ColorChat(id, GREEN, "---^x01 Otrzymales:^x03 %d^x01 Brylek^x04 ---", userNuggetShow[id]);
-	
+
 	if (userBoneShow[id] >= 50)
 		ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 mial^x04 %d Kosci^x01 na liczniku!^x04 ---", userName[id], userBoneShow[id]);
 	
@@ -231,35 +217,25 @@ public addFinalBone(id){
 }
 public addBone(id, value){
 	userBone[id] += value;
-	//userNuggetCollectedRound[id] += value
-	//update_hud(id)
 	return PLUGIN_CONTINUE;
 }
 
-public Float:needXp(id, lvl){
-	return float(lvl * 45 + 45 * userReset[id]);
-}
-public addLevel(id, Float:Exp){
-			
+public Float:needXp(id, lvl) return float(lvl * 45 + 45 * userReset[id]);
+
+public addLevel(id, Float:Exp){		
 	userExp[id]+=Exp;
 	while(userExp[id]>=needXp(id, userLevel[id]) ){			
 		userExp[id] -= needXp(id, userLevel[id])
-		
 		if( userLevel[id] < MAXLVL ){
 			userLevel[id] ++;
 			ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 wbil^x03 %d^x01 lv.^x03 [^x04 Postac^x03 ]^x04 ---", userName[id] , userLevel[id]);
 
 		} else {
 			ColorChat(id, GREEN, "---^x01 Posiadasz^x04 maksymalny Lv.^x01 otrzymales w nagrode^x03 + 1 secret Point^x04 ---");
-			userSecretPoint[id] ++;
-			
+			userSecretPoint[id] ++;	
 		}
 	}
 }
-
-
-
-
 public Float:needXpClass(lvl){
 	return float(lvl * 45);
 }

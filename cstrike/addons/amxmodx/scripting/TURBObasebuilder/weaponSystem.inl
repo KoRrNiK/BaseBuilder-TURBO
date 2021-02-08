@@ -10,8 +10,6 @@
 new const costReset = 15000;
 new const costResetMulti = 5000;
 
-
-
 public menuWeapon(id){	
 	
 	if(!playerLogged(id)){
@@ -27,18 +25,6 @@ public menuWeapon(id){
 	
 	new menu = menu_create(gText, "menuWeapon_2");
 	
-	
-	/*for(new i = 0; i < min(sizeof(allGuns), userLevel[id]); i ++){
-		if(str_to_num(allGuns[i][3]) > playedTime(id) || str_to_num(allGuns[i][2]) > userLevel[id]){
-			continue;
-		}
-		
-		format(gText, sizeof(gText), "\w%s\d [\rOdblokowano\d] %s",  allGuns[i][1], ilosc == i-1 ? "^n^nTAK" : "");
-		
-		
-		menu_additem(menu, gText);
-	}*/
-		
 	for( new i = 0; i < sizeof(allGuns); i++ ){
 		if (str_to_num(allGuns[i][3]) > playedTime(id) || str_to_num(allGuns[i][2]) > userLevel[id])	
 			
@@ -63,7 +49,6 @@ public menuWeapon(id){
 	menu_display(id, menu, 0);
 	return PLUGIN_CONTINUE;
 }
-
 public menuWeapon_2(id, menu, item){
 	if(item == MENU_EXIT){
 		menu_destroy(menu)
@@ -81,13 +66,10 @@ public menuWeapon_2(id, menu, item){
 		
 	return PLUGIN_CONTINUE;
 }
-
-
 public selectWeapon(id, item){
 	
 	new gun = userVarMenu[id]
 	new gText[512], iLen
-	
 	
 	new gamePlayUser =  str_to_num(allGuns[gun][3]) - playedTime(id);
 	new gamePlayUser2 = str_to_num(allGuns[gun][3]);
@@ -126,7 +108,6 @@ public selectWeapon_2(id, item){
 				ColorChat(id, GREEN, "%s Najpierw ja oblokuj", PREFIXSAY);
 				return PLUGIN_CONTINUE;
 			}
-			
 			if(buildTime  || roundEnd){
 				ColorChat(id, GREEN, "%s Za wczesnie na to!", PREFIXSAY);
 				return PLUGIN_CONTINUE;
@@ -141,7 +122,6 @@ public selectWeapon_2(id, item){
 				ColorChat(id, GREEN, "%s Musisz byc budowniczym!", PREFIXSAY);
 				return PLUGIN_CONTINUE;
 			}
-			
 			if(userWeaponDamage[id][gun])
 				ColorChat(id, GREEN, "%s Wybrales^x04 %s^x03 (^x01 DMG:^x04 +%0.2f%s^x03 |^x01 LV:^x04 %d^x03 )", PREFIXSAY, allGuns[gun][1], userWeaponDamage[id][gun], "%%", userWeaponLevel[id][gun]);
 			else ColorChat(id, GREEN, "%s Wybrales^x04 %s^x03 (^x01 ...^x03 )", PREFIXSAY, allGuns[gun][1]);
@@ -208,7 +188,6 @@ public upgradeWeapon_2(id, item){
 				upgradeWeapon(id)
 				return
 			}
-			
 			new Float:DAMAGE = random_float(calcDamageWeapon(id, gun, damage_MIN), random(5) == 0 ? calcDamageWeapon(id, gun, damage_MAX) : calcDamageWeapon(id, gun, damage_MAX) * 0.75)
 			userNugget[id] -= calcCostWeapon(id, gun)
 			userWeaponDamage[id][gun] = DAMAGE
@@ -234,7 +213,6 @@ public Float:calcDamageWeapon(id, weapon, type){
 public calcCostWeapon(id, weapon){
 	return floatround((paramWeaponFloat[weapon][1] * (userWeaponDamage[id][weapon]+1 * 0.25 )) * (userWeaponLevel[id][weapon] == 0 ? (userWeaponLevel[id][weapon]+1) : (userWeaponLevel[id][weapon])))
 }
-
 public giveWeapons(id, item){
 	if (!gameTime){
 		ColorChat(id, GREEN, "%s Otrzymasz bron przy wyjsciu zombie!", PREFIXSAY);
@@ -247,18 +225,14 @@ public giveWeapons(id, item){
 	}
 	
 	addMission(id, mission_SOLD, 1)
-	
-	//strip_user_weapons(id);
-	//give_item(id, "weapon_knife");
+
 	StripWeapons(id, Primary);
 	StripWeapons(id, Secondary);
-	
 	
 	giveGranade(id)
 	give_item(id, allGuns[item][0]);
 	giveAmmo(id);
 	#if defined CHRISTMAS_ADDON
-		
 		addChristmasMission(id, CH_WEAPON1, 1);
 		addChristmasMission(id, CH_WEAPON2, 1);
 				
@@ -291,9 +265,7 @@ public giveGranade(id){
 	}
 	StripWeapons(id, Primary);
 	StripWeapons(id, Secondary);
-	//strip_user_weapons(id);
-	//give_item(id, "weapon_knife");
-	
+
 	if (!userGotGrenades[id] || smoke) give_item(id, "weapon_smokegrenade");
 	if (!userGotGrenades[id] || grenade) give_item(id, "weapon_hegrenade");
 
@@ -325,20 +297,15 @@ public MSG_HideWeapon(MsgDEST,MsgID,id){
 		set_msg_arg_int(1,ARG_BYTE,get_msg_arg_int(1) | HUD_HIDE_FLASH );
 	
 	if(!(get_msg_arg_int(1) & HUD_HIDE_TIMER ))
-		set_msg_arg_int(1,ARG_BYTE,get_msg_arg_int(1) | HUD_HIDE_TIMER );
-		
+		set_msg_arg_int(1,ARG_BYTE,get_msg_arg_int(1) | HUD_HIDE_TIMER );	
 	/*if(get_user_team(id) != 2){
 		if(!(get_msg_arg_int(1) & HUD_HIDE_RHA))
 			set_msg_arg_int(1,ARG_BYTE,get_msg_arg_int(1) | HUD_HIDE_RHA);	
 	}
 	*/
-	
 	if(!(get_msg_arg_int(1) & HUD_HIDE_MONEY))
 		set_msg_arg_int(1,ARG_BYTE,get_msg_arg_int(1) | HUD_HIDE_MONEY);	
-	
-	 
 }
-
 public resetMenu(id){
 	
 	if(!playerLogged(id)){
@@ -376,17 +343,13 @@ public resetMenu(id){
 	show_menu(id, B1 | B2 , gText, -1, "resetMenu"  )
 	return PLUGIN_HANDLED;
 
-	
 }
 
 
 public resetMenu_2(id, item){
-	
 	switch(item){
 		case 0:{
-			
 			new price = priceReset(id)
-			
 			if(userNugget[id] <  price){
 				ColorChat(id, GREEN, "---^x01 Brakuje ci Brylek!^x03 [^x04%d - brylek^x03]^x04 ---", price - userNugget[id]);
 				return PLUGIN_CONTINUE;
@@ -404,15 +367,11 @@ public resetMenu_2(id, item){
 			addMission(id, mission_NEW, 1)
 			
 			if(get_user_weapon(id) == CSW_GLOCK18) addSecretMission(id, mission_secret_NEWBEGINNING, 1)
-			
-			
+
 		}
-		
 		case 1:{
 			return PLUGIN_HANDLED;
-		}
-		
-		
+		}	
 	}
 	return PLUGIN_CONTINUE;
 }
@@ -429,11 +388,8 @@ public addLevelKills(id, weapon, headShot){
 		return;
 		
 	}
-	
 	if(equal(allGuns[weapon][0], weapons[get_user_weapon(id)])){
 		while(userWeaponKill[id][weapon] >= needKills(id, weapon, userWeaponLevel[id][weapon])){			
-			//userWeaponKill[id][weapon] -= needKills(id, userWeaponLevel[id][weapon], weapon)
-			
 			if( userWeaponLevel[id][weapon] <  str_to_num(allGuns[userWeaponSelect[id]][4])){
 				userWeaponLevel[id][weapon] ++;
 				ColorChat(id, GREEN, "---^x01 Wbiles^x03 %d Lv.^x01 na broni:^x03 %s^x04 ---" , userWeaponLevel[id][weapon] ,allGuns[userWeaponSelect[id]][1]);

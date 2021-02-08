@@ -109,25 +109,6 @@ stock Create_TE_PLAYERATTACHMENT(id, entity, vOffset, iSprite, life){
 }
 
 public takeWeapon(id, weaponName[]){
-	/*new weaponname[33]; get_weaponname(weapon, weaponname, sizeof(weaponname));
-	if(!((1<< weapon ) & (1<<CSW_HEGRENADE | 1<<CSW_SMOKEGRENADE | 1<<CSW_FLASHBANG)))
-		engclient_cmd(id, "drop", weaponname);
-	*/	
-		
-	/*new dropWeaponName[32];
-
-	if (!strlen(weaponName)) {
-		new weapon = get_user_weapon(id);
-
-		if (!weapon || (1<<CSW_HEGRENADE) | (1<<CSW_SMOKEGRENADE) | (1<<CSW_FLASHBANG) | (1<<CSW_KNIFE) | (1<<CSW_C4) & (1<<weapon)) return;
-
-		get_weaponname(weapon, dropWeaponName, sizeof(dropWeaponName));
-	} else {
-		copy(dropWeaponName, sizeof(dropWeaponName), weaponName);
-	}
-
-	engclient_cmd(id, "drop", dropWeaponName);*/
-	
 	if(!equal(weaponName, "weapon_", 7)) 
 		return 0;
 		
@@ -196,16 +177,6 @@ stock showBeam( fOriginStart[3], fOriginEnd[3], sprite, life, width,noise, red,g
 	write_byte( 0 );
 	message_end();
 }
-/*public refreshStats(id){	
-	message_begin(MSG_ALL, get_user_msgid("ScoreInfo"));
-	write_byte(id);
-	write_short(get_user_frags(id));
-	write_short(cs_get_user_deaths(id));
-	write_short(0);
-	write_short(get_user_team(id));
-	message_end();
-}
-*/
 
 public refreshStats(id){
 	if( !is_user_connected(id) )
@@ -292,8 +263,7 @@ stock Particles(Float:fOrigin[3], Float:randomm, sprite, count, life, scale, vel
 	message_end()
 }
 
-stock makeTrail(id, sprite, life, widht, r, g, b, bright){
-		
+stock makeTrail(id, sprite, life, widht, r, g, b, bright){	
 	message_begin(MSG_BROADCAST, SVC_TEMPENTITY)
 	write_byte(22)	// TE_BEAMFOLLOW
 	write_short(id)
@@ -346,26 +316,6 @@ stock createBarText(gText[], iLen, const symbol[], coolDown, seconds=10){
 stock setGlow(id, r,g,b,d){
 	set_rendering(id, kRenderFxGlowShell, 	r,g,b,	kRenderNormal, 	d)
 }
-
-public bool:accesFlag(id, type){
-	
-	if( type > typeAcces ){
-		ColorChat(id, GREEN, "[DEBUG]^x01 Jesli to widzisz zglos to^x03 Administracji!^x04 |^x03 [ Info: %d ]", type);
-		return false;
-	}
-	if( isVip(id) && type == vip )
-		return true;
-	if( isAdmin(id) && type == admin )
-		return true;
-	if( isSuperAdmin(id) && type == head )
-		return true;
-		
-	ColorChat(id, GREEN, "---^x01 Nie posiadasz dostepu!^x04 |^x01 Potrzebujesz^x03 %s^x04 ---", type == vip ? "VIP'a" : type == admin ? "Admina" : type == head ? "HeadAdmina" : "Blad");
-	return false;
-}
-
-
-
 public removeGlow(id){
 	setGlow(id,0,0,0,0)
 }
@@ -378,17 +328,6 @@ stock addOption(&var, option){
 stock removeOption(&var, option){
 	var &= ~(1<<option)
 }
-
-
-
-stock skillBarMenu(gText[], iLen, type, amount, const symbolOne[], const symbolTwo[]){
-
-	new line = 0;
-	//line = format(gText[line], iLen - line - 1, "\w%s\d ", symbolsCustom[SYMBOL_VERTICAL_LINE]);
-	for(new i = 0; i < type; i++) line += format(gText[line], iLen - line - 1, "\r%s\d", symbolOne);
-	for(new i = 0; i < amount-type; i++)  line += format(gText[line], iLen - line - 1, "%s", symbolTwo);	
-	//line += format(gText[line], iLen - line - 1, "\w %s", symbolsCustom[SYMBOL_VERTICAL_LINE]);	
-}
 stock formatNumber(num){
 	
 	
@@ -400,7 +339,6 @@ stock formatNumber(num){
 	num_to_str(num >= 0 ? num : abs(num),	szVal,sizeof(szVal));
 	
 	new iLen = strlen(szVal);
-	
 	
 	switch(iLen){
 		
@@ -426,10 +364,13 @@ stock formatNumber(num){
 		default: format(szNum, sizeof(szNum), "%s%s", num < 0 ? "-" : "", szVal);
 			
 	}
-	
 	return szNum;
 }
-
+stock skillBarMenu(gText[], iLen, type, amount, const symbolOne[], const symbolTwo[]){
+	new line = 0;
+	for(new i = 0; i < type; i++) line += format(gText[line], iLen - line - 1, "\r%s\d", symbolOne);
+	for(new i = 0; i < amount-type; i++)  line += format(gText[line], iLen - line - 1, "%s", symbolTwo);	
+}
 stock moreBlood(iOrigin[3]){
 	message_begin(MSG_BROADCAST, SVC_TEMPENTITY);
 	write_byte(TE_BLOOD);
@@ -466,8 +407,6 @@ stock infoTabRemove(id){
 	write_byte(0);
 	message_end();
 }
-
-
 stock formatm(const format[], any:...){
 	static gText[256];
 	vformat(gText, sizeof(gText) -1 , format, 2);

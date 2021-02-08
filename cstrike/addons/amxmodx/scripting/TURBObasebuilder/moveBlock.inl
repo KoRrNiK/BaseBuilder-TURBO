@@ -34,7 +34,6 @@ stock bool:canIMoveIt(id,ent){
 	
 }
 public buildingMain(id){	
-	//openMenuNPC(id, ent, body);	
 	buildingInfo(id)
 	buildingBuild(id)
 }
@@ -50,9 +49,6 @@ public buildingInfo(id){
 	new Float:cordy = 0.15;
 	new Float:cordx = -1.0
 	
-
-	//openMenuTree(id, ent, cordx, cordy)
-
 	#if defined CHRISTMAS_ADDON
 		openMenuTree(id, ent, cordx, cordy)
 	#endif
@@ -125,9 +121,6 @@ public buildingInfo(id){
 					show_hudmessage(id, "%s", gText)
 				}
 			}
-			
-			
-			
 			userAimingHud[id] = get_gametime();
 		}
 	}
@@ -137,7 +130,8 @@ public hookEnt(id){
 	new ent, body;
 	get_user_aiming(id, ent, body)
 	
-	if(!buildTime){
+	
+	if(!buildTime && roundGood){
 		if(!userAllowBuild[id])
 		return PLUGIN_CONTINUE;
 	}
@@ -150,17 +144,6 @@ public hookEnt(id){
 	if( canBeMoved(id, ent) && canIMoveIt(id,ent)){
 		
 		if( !isPlayer(ent) ){
-			
-			/*if( Pokolorowany[ ent ] )
-			{
-				set_pev(ent,pev_rendermode,kRenderNormal);
-				Pokolorowany[ ent ] = 0;
-				remove_entity( KolorEnt[ ent ] );
-				hookEnt(id)
-				return PLUGIN_CONTINUE;
-
-			}
-			*/
 			if( getOwner(ent) == 0 || userClone[id] ){
 				if( userBlocksUsed[id] >= (isVip(id) ? maxBlockUseVip : maxBlockUse) ){
 					set_dhudmessage(255, 0, 0, -1.0, 0.40, 0, 6.0, 3.0)
@@ -186,27 +169,19 @@ public hookEnt(id){
 				
 				userClone[id]=false;
 			}
-			
-			
-			
-			
-		
 			if( getOwner(ent) == 0 ){
 				new mover;
 				if (userMoveAs[id])  mover = userMoveAs[id];
 				else mover = id;
 				setOwner(ent, mover)
 			}
-			
 			setMover(ent, id)
-		
 		}
 		userGrab[id] = ent
 		grabEnt(id, ent, body)	
 		emitGameSound(id, sound_MOVESTART)
 		
 	}
-	
 	return PLUGIN_CONTINUE;
 }
 
@@ -244,9 +219,7 @@ public grabEnt(id, ent, body){
 	
 	entity_get_vector(ent, EV_VEC_origin, fOrigin);
 	entity_set_vector(ent, EV_VEC_vuser4, fOrigin)
-	
-	
-	
+
 	fOffset[id][0] = fOrigin[0] - fAiming[0];
 	fOffset[id][1] = fOrigin[1] - fAiming[1];
 	fOffset[id][2] = fOrigin[2] - fAiming[2];
@@ -270,14 +243,11 @@ public grabEnt(id, ent, body){
 public colorBlock(id){
 	new ent = userGrab[id]
 	if(userMoverBlockColor[id] == BLOCK_COLOR){
-		
 		new Float:fColor[3]
 		fColor[0] = random_float(0.0, 255.0);
 		fColor[1] = random_float(0.0, 255.0);
 		fColor[2] = random_float(0.0, 255.0);
-			
-		//set_rendering(ent, kRenderFxPulseFastWide, floatround(colorAmount[color][0]), floatround(colorAmount[color][1]),floatround(colorAmount[color][2]), kRenderTransAdd, floatround(colorAmount[color][3]))	
-			
+	
 		set_pev(ent,pev_renderfx, kRenderFxPulseFast)	
 		set_pev(ent,pev_rendermode,kRenderTransColor)
 		set_pev(ent,pev_rendercolor, fColor )	
@@ -285,7 +255,6 @@ public colorBlock(id){
 		set_pev(ent,pev_renderamt, 200.0 )
 		
 	} else if(userMoverBlockColor[id] == BLOCK_RENDER){
-		
 		set_pev(ent,pev_renderfx, kRenderFxNone)
 		set_pev(ent,pev_rendermode,kRenderTransTexture)
 		set_pev(ent,pev_renderamt, 200.0 )
@@ -293,13 +262,9 @@ public colorBlock(id){
 	} else if(userMoverBlockColor[id] == BLOCK_NORENDER){
 		set_pev(ent,pev_renderfx, kRenderFxNone)
 		set_pev(ent,pev_rendermode,kRenderNormal)	
-	
 	}
 }
 public moveEnt(id){
-
-	
-	
 	new iOrigin[3], iLook[3], Float:fOrigin[3], Float:fLook[3], Float:vMoveTo[3], Float:fLength
 	    
 	get_user_origin(id, iOrigin, 1);
@@ -333,7 +298,6 @@ public stopEnt(id){
 		new ent=userGrab[id];		
 		userGrab[id] = 0
 					
-		
 		if( pev_valid(ent) && !isPlayer(ent)){
 			
 			set_pev(ent,pev_rendermode,kRenderNormal)		
@@ -342,7 +306,6 @@ public stopEnt(id){
 			setLastMover(ent, id)
 		}
 		
-			
 		if( !isPlayer(ent) ){	
 			set_task(0.1, "prev", ent)		
 		}else{
@@ -359,7 +322,6 @@ public prev(ent){
 	if( ent == 0 )
 		return;
 	if( getMover(ent) == 0 ){	
-		
 		set_pev(ent, pev_movetype, MOVETYPE_PUSH)
 		set_pev(ent, pev_solid, SOLID_BSP)		
 	}
@@ -368,7 +330,7 @@ public prev(ent){
 public buildingBuild(id){	
 	
 	if( !userAllowBuild[id] ){
-		if( ( get_user_team(id) != 2 || !buildTime ) )
+		if( ( get_user_team(id) != 2 || ( !buildTime && roundGood )) )
 			return PLUGIN_CONTINUE
 	}
 	if( pev(id, pev_button) & IN_USE ) {	
@@ -413,7 +375,6 @@ public buildingBuild(id){
 				userClone[id]=false;
 			}
 			moveEnt(id)
-			
 		}
 		
 		userCanGrab[id] = true
@@ -453,7 +414,6 @@ public createClone(entView){
 	
 	pev(entView, pev_model, szClassName, sizeof(szClassName))
 	set_pev(ent,pev_model, szClassName)
-	
 	
 	set_pev(ent,pev_solid, pev(entView, pev_solid))
 	set_pev(ent,pev_movetype, pev(entView, pev_movetype))
@@ -499,9 +459,6 @@ public impulsePush(id){
 
 
 public impulseClone(id){
-	
-	
-	//if (1 <= userGrab[id] && userGrab[id] < maxPlayers) return PLUGIN_CONTINUE;
 	if(isPlayer(userGrab[id])) return PLUGIN_CONTINUE;
 	
 	if (!isAdmin(id) && userCloned[id] >= (isVip(id) ? maxBlockUseVip : maxBlockUse)){
@@ -535,8 +492,6 @@ stock getLock(ent)		return pev(ent, pev_iuser4)
 stock delLock(ent)		set_pev(ent, pev_iuser4, 0)
 
 stock getRotateBlock(ent, type)	return pev(ent, pev_team) != type
-
-
 
 public checkRemove(ent){
 	if( !pev_valid(ent) )

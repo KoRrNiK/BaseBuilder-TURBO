@@ -7,8 +7,6 @@
 #include <fakemeta_util>
 #include <engine>
 
-#define offOn* "^xe2^x80^xa2"
-
 new bool:userHelpAdmin[33];
 new userPageHelp[33]
 
@@ -20,46 +18,10 @@ new viewBlock[33]
 new bool:selectBlock[33];
 
 new typeMoveBlock[33];
-/*
-public mainMenuAdmin(id){
-	if(!userAdmin[id]){
-		return PLUGIN_CONTINUE;
-	}
-	new menu = menu_create("\r[\dBaseBuilder\r]\y Admin Menu:", "mainMenuAdmin_2");
-	new gText[128];
-	format(gText, sizeof(gText), "\yNoClip: %s", userNoClip[id] ? "\rON" : "\dOFF");
-	menu_additem(menu,gText);
-	format(gText, sizeof(gText), "\yGodMod: %s", userGodMod[id] ? "\rON" : "\dOFF");
-	menu_additem(menu,gText);
-	format(gText, sizeof(gText), "\yBudowanie: %s^n", userAllowBuild[id] ? "\rON" : "\dOFF");
-	menu_additem(menu,gText);
-	new iNum = 0;
-	for( new i = 1; i < maxPlayers; i ++ ){
-		if( !is_user_connected(i) || !is_user_alive(i) )
-			continue
-		if( !userHelp[i] )	
-			continue
-		iNum++;
-	}
-	format(gText, sizeof(gText), "%sPomoc (%d Graczy)", iNum > 0 ?"\y":"\d", iNum)
-	menu_additem(menu,gText);
-	format(gText, sizeof(gText), "\yUprawnienia");
-	menu_additem(menu,gText);
-	format(gText, sizeof(gText), "\wPrzeszuwasz jako:\r %s^n", userMoveAs[id] ? userName[userMoveAs[id]] : userName[id]);
-	menu_additem(menu,gText);
-	format(gText, sizeof(gText), "\wZmiana druzyny^n");
-	menu_additem(menu,gText);
-	
-	menu_additem(menu,"1");
-	menu_additem(menu,"2");
-	
-	if(isSuperAdmin(id)){
-		menu_additem(menu,"\yHasla!^n");
-	}
-	
-	menu_display(id, menu, 0);
-	return PLUGIN_CONTINUE;
-}*/
+
+new lightCharacter[] = "abcdefghijklmnopqrstuvwxyz";
+new lightType[2];
+
 
 public mainMenuAdmin(id){
 	
@@ -71,29 +33,7 @@ public mainMenuAdmin(id){
 	new gText[1756], iLen
 
 	iLen = format(gText[iLen], sizeof(gText)-iLen-1, "\r[BaseBuilder]\y Menu Admina:^n")
-	/*
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r1.\y Zmiana druzyny^n");
-	
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r2.\w Zaznacz Gracza");
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r3.\w Wybierz Gracza^n");
-	
-	if (viewBlock[id]){
-		new copyName[11];
-		copy(copyName, sizeof(copyName)-1, userName[viewBlock[id]]);
-	
-		iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\d[--------\w %s\d --------]^n", strlen(userName[viewBlock[id]]) >= 10 ?  copyName : userName[viewBlock[id]]);
-		
-		iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\r4.\y Podswietl bloki:\w [ %s%s\w ]^n", selectBlock[id] ? "\r" : "\d", symbolsCustom[SYMBOL_DOT]);
-		iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\r5.\w Usun bloki\w (\d Wszystkie\w )^n");
-		iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\r6.\w Usun blok\w (\d Jeden\w )^n");
-		
-		iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\r7.\w Anuluj^n");
 
-		
-	}
-	*/
-	
-	
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r1.\y NoClip:\w [ %s%s\w ]", userNoClip[id] ? "\r" : "\d", symbolsCustom[SYMBOL_DOT]);
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r2.\y GodMod:\w [ %s%s\w ]", userGodMod[id] ? "\r" : "\d", symbolsCustom[SYMBOL_DOT]);
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r3.\y Budowanie:\w [ %s%s\w ]", userAllowBuild[id] ? "\r" : "\d",symbolsCustom[SYMBOL_DOT]);
@@ -129,75 +69,6 @@ public mainMenuAdmin(id){
 public mainMenuAdmin_2(id, item){
 	
 	switch(item){
-		/*
-		case 0: {
-			userMenuPlayer[id] = MENU_CHANGE_TEAM
-			choosePlayer(id, 0)
-			return PLUGIN_CONTINUE
-		}
-		case 1:{
-			
-			
-			
-			new ent; 
-			get_user_aiming(id, ent)
-		
-			if(getOwner(ent) == 0 || !canBeMoved(id, ent)){
-				ColorChat(id, GREEN, "%s Nie mozesz tego zaznaczyc!", PREFIXSAY);
-				mainMenuAdmin(id)
-				return PLUGIN_CONTINUE;	
-			}
-			selectBlock[id] = false;
-			viewBlock[id] = getOwner(ent);
-		}
-		case 2:{
-			userMenuPlayer[id] = MENU_SELECT_PLAYER
-			choosePlayer(id, 0)	
-			return PLUGIN_CONTINUE;
-		}
-		
-		
-		case 3:{
-			
-			selectBlock[id] =! selectBlock[id]
-			selectAllBlock(id)
-				
-			
-		}
-		
-		case 4:{
-			if (viewBlock[id]){
-				if(selectBlock[id]){
-					selectBlock[id] = false;
-					selectAllBlock(id)
-					adminResetBlock(2, viewBlock[id], viewBlock[id])
-				} else ColorChat(id, GREEN, "%s Zaznacz najpierw a potem usuwaj!", PREFIXSAY);
-			}
-		}
-		case 5:{
-			if (viewBlock[id]){
-				new ent; 
-				get_user_aiming(id, ent)
-			
-				if(getOwner(ent) == 0 || !canBeMoved(id, ent) || getOwner(ent) != viewBlock[id] || !pev_valid(ent)){
-					ColorChat(id, GREEN, "%s Nie mozesz tego usunac!", PREFIXSAY);
-					mainMenuAdmin(id)
-					return PLUGIN_CONTINUE;	
-				}
-				
-				ColorChat(id, GREEN, "---^x01 Usunales ENT:^x03 [^x04%d^x03]^x04 ---", ent);
-				remove_entity(ent);
-			}
-		}
-		case 6:{
-			if (viewBlock[id]){
-				selectBlock[id] = false;
-				selectAllBlock(id)
-				viewBlock[id] = 0;
-			}
-		}
-		default:{return PLUGIN_HANDLED;}*/
-		
 		case 0:{
 			userNoClip[id] =! userNoClip[id]
 			set_user_noclip(id, userNoClip[id]);
@@ -260,7 +131,6 @@ public mainMenuAdmin_2(id, item){
 		
 		default:{return PLUGIN_HANDLED;}
 	}
-	//mainMenuAdmin(id)
 	
 	if(userNoClip[id] || userGodMod[id] || userAllowBuild[id] || userPush[id]){
 		set_rendering(id, kRenderFxGlowShell, accentColorHud[0], accentColorHud[1], accentColorHud[2], kRenderNormal, 5);		
@@ -296,14 +166,8 @@ public selectAllBlock(id){
 			set_pev(ent,pev_rendermode,kRenderNormal)
 			set_pev(ent,pev_rendercolor,0.0,0.0,0.0)
 			set_pev(ent,pev_renderamt,255.0)
-		}
-						
-							
-					
+		}			
 	}
-	
-	
-	
 }
 
 
@@ -316,9 +180,7 @@ public settingAdmin(id){
 	
 	format(gText, sizeof(gText), "Odliczanie: %s^n^n", !clockStop ? "\rNormalne" : "\dZatrzymane");
 	menu_additem(menu, gText)
-	
 
-	
 	if(isSuperAdmin(id)){
 	
 		menu_additem(menu, "Bloki gracza")
@@ -354,13 +216,6 @@ public settingAdmin_2(id, menu, item){
 			settingAdmin(id)
 		}
 		case 3:{
-			new x = true;
-			if(!x){
-				ColorChat(id, GREEN, "--^x01 Jeszcze nie dziala^x04 ---");
-				mainMenuAdmin(id)
-				return PLUGIN_CONTINUE;	
-			}
-			
 			if(!isSuperAdmin(id)){
 				mainMenuAdmin(id)
 				return PLUGIN_CONTINUE;	
@@ -369,7 +224,6 @@ public settingAdmin_2(id, menu, item){
 			new ent; 
 			get_user_aiming(id, ent)
 		
-			
 			if(getOwner(ent) == 0){
 				ColorChat(id, GREEN, "%s Nie mozesz tego zaznaczyc!", PREFIXSAY);
 				settingAdmin(id)
@@ -408,26 +262,10 @@ new timeHelpGod = 20;
 
 public menuPerrmissions(id){
 	
-	new gText[512]/*, iLen*/
+	new gText[512]
 
 	new target = userMoveAs[id];
-	
-	/*iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\dGracz:\r %s^n", userName[target]);
-	
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r1.\y NoClip: %s", userNoClip[target] ? "\rON" : "\dOFF");
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r2.\y GodMod: %s", userGodMod[target] ? "\rON" : "\dOFF");
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r3.\y Budowanie: %s", userAllowBuild[target] ? "\rON" : "\dOFF");
-	
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n^n\d[ Twoje Atrybuty ]");
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r4.\y NoClip: %s", userNoClip[id] ? "\rON" : "\dOFF");
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r5.\y GodMod: %s", userGodMod[id] ? "\rON" : "\dOFF");
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r6.\y Budowanie: %s", userAllowBuild[id] ? "\rON" : "\dOFF");
 
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n^n\r8.\w Wylacz Wszystko");
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r9.\w Zakoncz pomoc!");
-	
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n^n\r0.\y Wyjdz")
-	*/
 	format(gText, sizeof(gText), "\r[BaseBuilder]\y Pomagasz graczowi:\r %s\d", userName[target]);
 	
 	new menu = menu_create(gText, "menuPerrmissions_2");
@@ -471,18 +309,12 @@ public menuPerrmissions_2(id, menu, item){
 	
 	
 	if(!is_user_connected(target)){
-			
 		stopHelp(id)
 		mainMenuAdmin(id)
-		
 		ColorChat(id, GREEN, "---^x01 Gracz ktoremu pomagales wyszedl z serwera!^x04 ---");
-		
 		menu_destroy(menu);
-		
 		return PLUGIN_CONTINUE;
-		
 	}
-	
 	
 	if(item == MENU_EXIT){
 		menu_destroy(menu);
@@ -589,15 +421,6 @@ public menuPerrmissions_2(id, menu, item){
 			
 		}
 		case 10:{
-			/*selectAimingMoveAs(id);
-			if (id != userMoveAs[id] && userMoveAs[id]){
-				menuPerrmissions(id);
-			}else{
-				ColorChat(id, GREEN, "---^x01 Pierw najedz na gracza lub na blok gracza!^x04 ---", PREFIXSAY);
-				mainMenuAdmin(id);
-			}*/
-			
-			
 			
 			if(is_user_connected(target)){
 				userAllowBuild[target] 	=	false;
@@ -616,11 +439,6 @@ public menuPerrmissions_2(id, menu, item){
 				ColorChat(target, GREEN, "---^x01 Admin^x03 %s^x01 konczy tobie pomagac^x04 ---", userName[id])
 				ColorChat(id, GREEN, "---^x01 Konczysz pomagac graczowi^x03 %s^x04 ---", userName[target])
 			}
-			
-			
-	
-			
-
 		} 
 		default:{}
 	}
@@ -642,8 +460,7 @@ public stopHelp(id){
 }
 
 public offHelp(id){
-	if( task_exists(id+TASK_PUSH) && userPush[id] )
-		remove_task(id+TASK_PUSH)
+	if( task_exists(id+TASK_PUSH) && userPush[id] ) remove_task(id+TASK_PUSH)
 	
 	userPush[id] = false;
 	userGodMod[id] = false;
@@ -751,12 +568,7 @@ public choosePlayer(id, item){
 			case MENU_CASE_CREATE:{
 				format(gText, sizeof(gText), "%s", userName[i])
 			}
-			
-			
 		}
-		
-
-		
 		menu_additem(menu, gText)
 		userPlayerList[id][x++] = i
 		players++;
@@ -831,8 +643,8 @@ public choosePlayer_2(id, menu, item){
 				ColorChat(id, 		GREEN, 	"%s Zresetowales nagrode gracza^x04 %s!", PREFIXSAY, userName[target] ) 
 				ColorChat(target, 	GREEN, 	"%s Twoja nagroda zostala zresetowana przez Admina^x04 %s!", PREFIXSAY, userName[id] ) 
 				format(gText, sizeof(gText), "zresetowal nagrode [%s]", userName[target])
+				logBB(id, gText)
 			}
-			logBB(id, gText)
 		}
 		case MENU_PLAYER_STAMINA:{
 			if(!unlockCave[target]) {
@@ -846,8 +658,8 @@ public choosePlayer_2(id, menu, item){
 				ColorChat(id, 		GREEN, 	"%s Zresetowales wyczerpanie gracza^x04 %s!", PREFIXSAY, userName[target] ) 
 				ColorChat(target, 	GREEN, 	"%s Twoje wyczerpanie zostala zresetowana przez Admina^x04 %s!", PREFIXSAY, userName[id] ) 
 				format(gText, sizeof(gText), "zresetowal wyczerpanie [%s]", userName[target])
+				logBB(id, gText)
 			}
-			logBB(id, gText)
 		}
 		case MENU_PLAYER_MUTE:{
 			
@@ -868,7 +680,6 @@ public choosePlayer_2(id, menu, item){
 			return PLUGIN_CONTINUE;
 			
 		}
-		
 		case MENU_PLAYER_CAMP:{
 			adminResetBlock(4, id, target)
 			userCheckCamp[target] = false;
@@ -876,7 +687,6 @@ public choosePlayer_2(id, menu, item){
 		}
 		case MENU_SELECT_PLAYER:{
 			viewBlock[id] = target;
-			//ColorChat(0, GREEN, "---^x01 Admin^x03 %s^x01 przenosi klocki jako^x03 %s!^x04 ---", userName[id], userName[target]);
 			mainMenuAdmin(id)
 			return PLUGIN_CONTINUE;
 		}
@@ -901,8 +711,7 @@ new Float:saveEntOrigin[1024][3];
 public adminResetBlock(type, id1, id2){
 	new szClass[10], szTarget[7];
 	new Float:fOrigin[3]	
-	for(new ent=maxPlayers+1; ent<maxEnts;ent ++)
-	{
+	for(new ent=maxPlayers+1; ent<maxEnts;ent ++){
 		if( !pev_valid(ent) )
 			continue;
 		
@@ -954,10 +763,7 @@ public adminResetBlock(type, id1, id2){
 			engfunc( EngFunc_SetOrigin, ent, saveEntOrigin[ent] );	
 				
 			setOwner(ent, id1)
-			setLastMover(ent, id1)
-			
-			
-			
+			setLastMover(ent, id1)	
 		}
 	}	
 }
@@ -997,8 +803,6 @@ public adminCommands(id, szMessage[]){
 			set_user_health(target, get_user_health(target) + gValue);			
 			ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 dostal^x04 %dHP^x01 od^x03 %s^x04 ---", userName[target], gValue, userName[id])
 			return PLUGIN_HANDLED
-		
-			
 		}
 		if( 0 <= contain(szMessage, "/tp")){
 			new szName[33], szCommand[10]
@@ -1090,8 +894,6 @@ public adminCommands(id, szMessage[]){
 			return PLUGIN_HANDLED;
 		}
 	}
-	
-	
 	if(equal(szMessage, "/warn")||equal(szMessage, "/ostrzez", 8)){	
 		userMenuPlayer[id] = MENU_PLAYER_WARNING
 		choosePlayer(id, 0)
@@ -1185,7 +987,6 @@ public adminCommands(id, szMessage[]){
 			ColorChat(target, GREEN, "%s Zostales^x04 odciszony^x01! [Admin:^x04 %s^x01]", PREFIXSAY, userName[id]);
 			ColorChat(id, GREEN, "%s Gracz^x04 %s^x01 zostal^x04 odciszony", PREFIXSAY, userName[target]);
 			userMute[target] = 0;
-			
 		}
 		return PLUGIN_HANDLED
 	}
@@ -1222,7 +1023,6 @@ public strFix(szString[], szName[]){
 			i++
 			continue
 		}
-		//client_print(0, print_chat,"%c %d", szString[i], szString[i])
 		szString[i] = szName[x++]
 	}
 }
@@ -1270,18 +1070,15 @@ public menuSpecifyUser_2(id, menu, item){
 
 
 public adminHelp(id){
-	if (!prepTime)
-	{
+	if (!prepTime){
 		ColorChat(id, GREEN, "%s Poczekaj na czas przygotowania", PREFIXSAY);
 		return 1;
 	}
-	if (gameTime)
-	{
+	if (gameTime){
 		ColorChat(id, GREEN, "%s Juz minal czas na pomoc!", PREFIXSAY);
 		return 1;
 	}
-	if (get_user_team(id) != 2)
-	{
+	if (get_user_team(id) != 2){
 		ColorChat(id, GREEN, "%s Musisz byc w budowniczych", PREFIXSAY);
 		return 1;
 	}
@@ -1301,15 +1098,12 @@ public adminHelp(id){
 		return 1;
 		
 	}
-	
 	userHelp[id] 		= 	true;
 	needHelp[space] 		= 	id 
 	ColorChat(id, GREEN, "%s Jeszcze tylko^x04 %d^x01 razy mozesz prosic dzis o pomoc", PREFIXSAY, userMaxHelp[id]);
 	ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 prosi o pomoc!", PREFIXSAY, userName[id]);
-	
 	return 0;
 }
-
 public bool:isInHelp(id){
 	
 	for( new i = 0 ; i< sizeof( needHelp ) ; i ++ ){
@@ -1357,7 +1151,6 @@ public menuAdminHelp(id){
 	
 	return target;
 }
-
 public menuAdminHelp_2(id,menu,item){
 	if( item == MENU_EXIT ){
 		menu_destroy(menu)
@@ -1386,15 +1179,10 @@ public menuAdminHelp_2(id,menu,item){
 	set_user_godmode(id, userGodMod[id])
 		
 	ColorChat(0, GREEN, "---^x01 Admin^x03 %s^x01 pomaga graczowi^x03 %s^x04 ---", userName[id], userName[target])
-	menuPerrmissions(id)
-		
+	menuPerrmissions(id)	
 	
 	return
 }
-
-new lightCharacter[] = "abcdefghijklmnopqrstuvwxyz";
-new lightType[2];
-
 public light(id){
 	new gText[256], bar[256];
 	if(!lightType[0] ) format(gText, sizeof(gText),"\dSwiatlo:\r Zwyczajne");
@@ -1408,7 +1196,6 @@ public light(id){
 		
 	menu_display(id, menu, 0);
 }	
-
 public light_2(id, menu, item){
 	if(item == MENU_EXIT){
 		menu_destroy(menu);
@@ -1440,10 +1227,6 @@ stock barMenu(gText[], iLen, type, amount, const symbolOne[], const symbolTwo[])
 	for(new i = 0; i < type; i++) line += format(gText[line], iLen - line - 1, "\y%s\d", symbolOne);
 	for(new i = 0; i < amount-type; i++)  line += format(gText[line], iLen - line - 1, "%s", symbolTwo);        
 } 
-
-
-
-
 public  selectAllBlockMenu(id){
 	
 	new menu = menu_create(formatm("\r[BaseBuilder]\y Boki Gracza:\w %s", userName[viewBlock[id]]), "selectAllBlockMenu_2");
@@ -1463,28 +1246,18 @@ public  selectAllBlockMenu(id){
 		menu_additem(menu, "Przesuwanie\r Y+")
 		menu_additem(menu, "Przesuwanie\r Gora")
 	}
-	
-	
-	
 	menu_display(id, menu, 0);
 }
 public selectAllBlockMenu_2(id, menu, item){
 	if(item == MENU_EXIT){
-		/*selectBlock[id] = false;
-		selectAllBlock(id);
-		viewBlock[id] = 0;*/
 		menu_destroy(menu);
 		return;
 	}
 
 	switch(item){
 		case 0:{
-			
 			selectBlock[id] =! selectBlock[id]
-			
 			selectAllBlock(id);
-				
-			
 		}
 		case 1:{
 			new ent; 
@@ -1543,17 +1316,13 @@ public selectAllBlockMenu_2(id, menu, item){
 					if(typeMoveBlock[id]) fOrigin[2] -= 10.0;
 					else fOrigin[2] += 10.0;
 				}
-				entity_set_vector(ent, EV_VEC_origin, fOrigin)
-				
-									
-							
+				entity_set_vector(ent, EV_VEC_origin, fOrigin)				
 			}
 			selectAllBlockMenu(id)
 		}
 		
 	}
-	selectAllBlockMenu(id)
-		
+	selectAllBlockMenu(id)	
 }	
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
