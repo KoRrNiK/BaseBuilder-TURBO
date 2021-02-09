@@ -1,5 +1,5 @@
 new const PLUGIN[] 	= 	"BaseBuilder TURBO"
-new const VERSION[] 	= 	"v1.3"
+new const VERSION[] 	= 	"v1.3.1"
 new const AUTHOR[] 	= 	"KoRrNiK" 		// Dzieki Zuzza za pomoc przy kilku rzeczach :)
 new const PREFIXSAY[] 	=  	"^xc2^xa6 BaseBuilder ^xc2^xa6^x01"
 new const fVAULTFILE[]	=	 "TURBOBB";
@@ -259,24 +259,12 @@ new truckMine		=	1000;		// + ILE MA DODAWAC WUZKA ZA LVL
 new Float:boostAmount	=	2.0		// ILE RAZY MA SZYBCIEJ KOPAC
 
 new userUpgradeMine[33][up_TOTAL]
-
-	
-	/*
-		new Float:userLastTimeDealDmg[33];
-		new userLastDealDmg[33];
-		new Float:userLastTimeGetDmg[33];
-		new userLastGetDmg[33];
-	*/
-	
-	new userSaveOption[33]
-	
-	enum {  PLAYER_HUD_RED, PLAYER_HUD_GREEN, PLAYER_HUD_BLUE , PLAYER_TOTAL }
-	new userHud[33][PLAYER_TOTAL]
-
-	
-	enum{save_TEAM,save_SPRAY,save_MODELS, save_CAVE, save_INVIS, save_SOUND, save_TOTAL}
-	enum { MENU_VIEW_BLOCK = 0, MENU_CHANGE_TEAM, MENU_PASSWORD, MENU_GIVING_VIP, MENU_GIVING_NUGGET, MENU_GIVING_LUZCOIN, MENU_GIVING_LVL, MENU_GIVING_SKILLPOINT , MENU_GIVING_TIME, MENU_GIVING_RESET, MENU_GIVING_EXP, MENU_PLAYER_NUGGET, MENU_PLAYER_AWARD, MENU_PLAYER_STAMINA, MENU_PLAYER_MUTE, MENU_PLAYER_WARNING, MENU_PLAYER_CAMP, MENU_SELECT_PLAYER, MENU_GIVING_BONES, MENU_CASE_CREATE}
-	enum ( <<= 1 ){B1 = 1, B2, B3, B4, B5, B6, B7, B8, B9, B0 };
+new userSaveOption[33]
+enum {  PLAYER_HUD_RED, PLAYER_HUD_GREEN, PLAYER_HUD_BLUE , PLAYER_TOTAL }
+new userHud[33][PLAYER_TOTAL]	
+enum{save_TEAM,save_SPRAY,save_MODELS, save_CAVE, save_INVIS, save_SOUND, save_TOTAL}
+enum { MENU_VIEW_BLOCK = 0, MENU_CHANGE_TEAM, MENU_PASSWORD, MENU_GIVING_VIP, MENU_GIVING_NUGGET, MENU_GIVING_LUZCOIN, MENU_GIVING_LVL, MENU_GIVING_SKILLPOINT , MENU_GIVING_TIME, MENU_GIVING_RESET, MENU_GIVING_EXP, MENU_PLAYER_NUGGET, MENU_PLAYER_AWARD, MENU_PLAYER_STAMINA, MENU_PLAYER_MUTE, MENU_PLAYER_WARNING, MENU_PLAYER_CAMP, MENU_SELECT_PLAYER, MENU_GIVING_BONES, MENU_CASE_CREATE}
+enum ( <<= 1 ){B1 = 1, B2, B3, B4, B5, B6, B7, B8, B9, B0 };
 
 new const flagVip[]	=	"t";
 public bool:isSuperAdmin(id)	return (!!(has_flag(id, "a")));
@@ -417,7 +405,6 @@ new const LEVELUP[]		=	"sprites/basebuildervt/pousprite.spr";
 new const EXPLODEFIREBALL[]	=	"sprites/basebuildervt/explo.spr";
 new const EXPLODICEBOLT[]	=	"sprites/basebuildervt/iceboltexplode.spr";
 new const POUICEBOLT[]		=	"sprites/basebuildervt/iceBoltPou.spr"
-
 new const SHROOMSLEEP[]		=	"sprites/basebuildervt/sleepshroom.spr"
 
 new const modelPoison[]		=	"models/basebuildervt/bottle.mdl";
@@ -678,11 +665,6 @@ new randomHappyHour;
 new bool:hourTime;
 new nextColorsHappy;
 new const happyHourChange 	=	15;
-
-	/*----------------------*\
---------| TEAM			 |
-	\*----------------------*/
-
 enum { happy_EXP, happy_NUGGETS, happy_2XDMG, happy_DMG_PISTOL, happy_DMG_WEAPON,  happy_ALL_EXP_NUGGET,happy_CASE, happy_TOTAL }
 new const happyHourDesc[happy_TOTAL][2][] = {
 	  { "Dwa razy wiecej EXP'a" ,							"2x EXP"}
@@ -694,6 +676,11 @@ new const happyHourDesc[happy_TOTAL][2][] = {
 	,{ "Szansa na zdobycie skrzynki jest dwa razy wieksza",				"2x DROP CASE" }
 		
 }
+
+	/*----------------------*\
+--------| TEAM			 |
+	\*----------------------*/
+
 new typeExpParty[5][2][] = {
 	  { "Nie oddawaj", "nie oddaje^x04 EXP'a" }
 	,{ "25%",	 "oddaje^x04 25%% EXP'a" }
@@ -889,6 +876,8 @@ new const teamNames[4][2][]={
 	{"Spect",		"Spect"}
 }
 
+
+
 new logType[33];
 enum { 	LOG_BUY,LOG_ADD, LOG_LOGOUT, LOG_LOGIN, LOG_REGISTER, LOG_ERROR, LOG_TRANSFER, LOG_ROULETTE, LOG_DELETEACCOUNT, LOG_AWARD,LOG_MISSION,LOG_CLASS,LOG_MUTE, LOG_AFK, LOG_CAVE, LOG_CONNECT,
 	LOG_CHAT, LOG_CLAN_ADD,LOG_CLAN_PROMOTION, LOG_CLAN_CREATE, LOG_CLAN_DELETE,LOG_CLAN_UPGRADE , LOG_CLAN_DEPOSIT, LOG_CLAN_RESET, LOG_CLAN_LEAVE, LOG_CLAN_MANAGE, LOG_HAT_REMOVE, LOG_HAT_ADD, LOG_WARNING_ADD, LOG_WARNING_REMOVE, LOG_WARNING_CHANGE, LOG_TOTAL }
@@ -1013,9 +1002,6 @@ new blood2
 
 enum { RED_NUGGET,  GREEN_NUGGET, YELLOW_NUGGET, BLUE_NUGGET, PINK_NUGGET, BLACK_NUGGET, TOTAL_NUGET}
 
-
-//enum { BLUE_NUGGET,  GREEN_NUGGET, YELLOW_NUGGET, RED_NUGGET, PINK_NUGGET, BLACK_NUGGET, TOTAL_NUGET}
-
 new const Float:delayEffectNugget[] ={ 0.75, 0.7, 0.1, 0.2, 0.2, 1.0 }
 new listNuggetOnFloor[MAXNUGGETSFLOOR]
 
@@ -1033,7 +1019,6 @@ new const caseModel[] 	= 	"models/basebuildervt/chest.mdl";
 
 
 new const colorNugget[TOTAL_NUGET][3] = {
-	
 	  { 255, 0 ,     4 }
 	,{ 10,   255 , 22 }
 	,{ 255, 242 , 0 }
@@ -1059,7 +1044,6 @@ new userHat[33][4];
 
 
 	#if defined CHRISTMAS_ADDON
-	
 
 		new firstDayDecember  =  1606777200//1606780800;
 		new const timePlayChristmas[] = {  15,14,12,17,14,18,9,16,14,17,18,17,17,16,16,16,16,15,18,19,16,15}

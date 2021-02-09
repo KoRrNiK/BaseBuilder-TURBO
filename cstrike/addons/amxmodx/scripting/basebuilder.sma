@@ -73,7 +73,7 @@ public plugin_precache(){
 	team_spr 		= 	precache_model(TEAMSPRITE);
 	sprite_bluez 		= 	precache_model(BLUEZSPRITE);
 	spriteBeam 		= 	precache_model(LASERSPRITE);
-	thunder 			= 	precache_model(THUNDER);
+	thunder			= 	precache_model(THUNDER);
 	sprite_explode		= 	precache_model(EXPLODE); 
 	sprite_pouFire		=	precache_model(LEVELUP);
 	sprite_expFireball	= 	precache_model(EXPLODEFIREBALL); 
@@ -135,7 +135,7 @@ public plugin_init(){
 	freeChest 	= 	find_ent_by_tname(-1, "freechest");
 	gBarrier 	= 	find_ent_by_tname(-1, "barrier" );
 	
-	register_clcmd("Haslo", 			"readPassword");
+	register_clcmd("Haslo",		                "readPassword");
 	register_clcmd("say", 	   		"cmdSay");
 	register_clcmd("say_team",		"cmdSayClan");
 	register_clcmd( "+jetpack", 		"userJetPackOn" );
@@ -144,7 +144,7 @@ public plugin_init(){
 	register_clcmd("jointeam", 		"cmdChangeTeam");
 	register_clcmd("lastinv", 		"rotateBlock");
 	register_clcmd("KodZwrotny", 		"codeCheck");
-	register_clcmd("Ilosc", 			"addValue");
+	register_clcmd("Ilosc",		                "addValue");
 	register_clcmd("Ilosc_Brylek", 		"addValueTransfer");
 	register_clcmd("WartoscKoloruHud",	"readColor");
 	register_clcmd("chat", 			"ChatOff");
@@ -154,7 +154,7 @@ public plugin_init(){
 	register_clcmd("PodajNazweKlanu", 	"createClanHandle");
 	register_clcmd("IloscBrylekKlan", 	"depositNuggetHandle");
 	register_clcmd("Ogloszenie_Klanu", 	"updateInfo");
-	register_clcmd("Potwierdz_Nazwe_Klanu", 	"checkNameClan");
+	register_clcmd("Potwierdz_Nazwe_Klanu",  "checkNameClan");
 	register_clcmd("Kod_Motd_Klanu", 	"checkCodeMotd");
 	register_clcmd("IlePlaceZaZgona", 	"priceDeath");
 	register_clcmd("DoKiedyMozeZabic", 	"timeDeath");
@@ -2387,7 +2387,7 @@ public blockCommand(id){
 	return PLUGIN_HANDLED;
 }
 public blockJumpOnHead(id, target){
-	if(get_user_team(id) != get_user_team(target)/* || get_user_team(id) == 2 || get_user_team(id) == 1*/){
+	if(get_user_team(id) != get_user_team(target)){
 		
 		new Float:fOrigin[3], Float:fOriginTarget[3];
 		pev(id, pev_origin, fOrigin);
@@ -2573,11 +2573,11 @@ public cmdSay(id){
 				return PLUGIN_HANDLED;
 			}
 			if(equal(szMessage, "/komendy")){
-				show_motd(id, "komendy.txt", "Komendy");
+				show_motd(id, "motd/commands.txt", "Komendy");
 				return PLUGIN_HANDLED;
 			}
 			if(equal(szMessage, "/bind",5)){
-				show_motd(id, "bindy.txt", "Bindy");
+				show_motd(id, "motd/binds.txt", "Bindy");
 				return PLUGIN_HANDLED;
 			}
 			if(equal(szMessage, "/regulamin")){	
@@ -2762,10 +2762,10 @@ public regulamin_2(id, menu, item){
 		return PLUGIN_CONTINUE;
 	}
 	switch(item){
-		case 0:show_motd(id, "regulaminOgolny.txt", "Regulamin Ogolny");
-		case 1:show_motd(id, "regulaminBudowniczych.txt", "Regulamin Budowniczych");
-		case 2:show_motd(id, "regulaminZombie.txt", "Regulamin Zombi");
-		case 3:show_motd(id, "regulaminAdmin.txt", "Regulamin Admina");
+		case 0:show_motd(id, "motd/reg_global.txt", "Regulamin Ogolny");
+		case 1:show_motd(id, "motd/reg_human.txt", "Regulamin Budowniczych");
+		case 2:show_motd(id, "motd/reg_zombie.txt", "Regulamin Zombi");
+		case 3:show_motd(id, "motd/reg_admin.txt", "Regulamin Admina");
 	}
 	regulamin(id);
 	return PLUGIN_CONTINUE;
@@ -3192,10 +3192,8 @@ public maxFPS(id, const cvar[], const val[]){
 	new fps = str_to_num(val);
 	new dot = 0;
 	
-	new i = 0;
-	while(i < strlen(val)){
+	for(new i = 0; i < strlen(val); i ++){
 		if(val[i] == '.' ) dot ++;
-		i++;
 	}
 	
 	if( fps > 101 || dot >= 2) userExtraFps[id] = true;
