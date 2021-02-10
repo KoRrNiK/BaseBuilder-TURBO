@@ -48,7 +48,6 @@ stock bool:is_hull_vacant(const Float:origin[3], hull,id) {
 	
 	if (!get_tr2(tr, TR_StartSolid) || !get_tr2(tr, TR_AllSolid)) //get_tr2(tr, TR_InOpen))
 		return true
-	
 	return false
 }
 stock BeamCylinder(Float:fOrigin[3], Float:height, sprite, startframe, framerate,life,width,noise,red,green,blue,bright,speed){
@@ -179,8 +178,7 @@ stock showBeam( fOriginStart[3], fOriginEnd[3], sprite, life, width,noise, red,g
 }
 
 public refreshStats(id){
-	if( !is_user_connected(id) )
-		return;
+	if( !is_user_connected(id) ) return;
 
 	message_begin(MSG_ALL, get_user_msgid("ScoreInfo"));
 	write_byte(id);
@@ -370,30 +368,6 @@ stock skillBarMenu(gText[], iLen, type, amount, const symbolOne[], const symbolT
 	new line = 0;
 	for(new i = 0; i < type; i++) line += format(gText[line], iLen - line - 1, "\r%s\d", symbolOne);
 	for(new i = 0; i < amount-type; i++)  line += format(gText[line], iLen - line - 1, "%s", symbolTwo);	
-}
-stock moreBlood(iOrigin[3]){
-	message_begin(MSG_BROADCAST, SVC_TEMPENTITY);
-	write_byte(TE_BLOOD);
-	write_coord(random_num(-8, 8) + iOrigin[0]);
-	write_coord(random_num(-8, 8) + iOrigin[1]);
-	write_coord(iOrigin[2]);
-	write_coord(random_num(-360, 360));
-	write_coord(random_num(-360, 360));
-	write_coord(-10);
-	write_byte(70)
-	write_byte(random_num(15, 35));
-	message_end() 
-	
-	message_begin(MSG_BROADCAST,SVC_TEMPENTITY)
-	write_byte(TE_BLOODSPRITE)
-	write_coord(random_num(-8, 8) + iOrigin[0]);
-	write_coord(random_num(-8, 8) + iOrigin[1]);
-	write_coord(iOrigin[2]);
-	write_short(blood2)
-	write_short(blood)
-	write_byte(0xE5)
-	write_byte(random_num(5,35));
-	message_end()
 }
 stock infoTabRemove(id){
 	if (!is_user_alive(id)) return;

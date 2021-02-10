@@ -8,21 +8,17 @@
 #include <engine>
 
 stock canBeMoved(id, ent){
-	if( ent == gBarrier )
-		return 0
-	if( !pev_valid(ent)  )
-		return 0
-		
-	
+	if(ent == gBarrier) return 0
+	if(!pev_valid(ent)) return 0
 		
 	new szClass[14], szTarget[7];
 	entity_get_string(ent, EV_SZ_classname, szClass, sizeof(szClass));
 	entity_get_string(ent, EV_SZ_targetname, szTarget, sizeof(szTarget));
 	if( isAdmin(id) ){
-		if( isPlayer(ent) || ( equal(szClass, "func_wall") && containi(szTarget, "ignore")==-1 &&  !equal(szTarget, "barrier") && !equal(szTarget, "JUMP")))
+		if( isPlayer(ent) || ( equal(szClass, "func_wall") && containi(szTarget, "ignore")==-1 &&  !equal(szTarget, "barrier") && !equal(szTarget, "JUMP"))) 
 			return ent
 	}else 
-		if( equal(szClass, "func_wall") && containi(szTarget, "ignore")==-1 &&  !equal(szTarget, "barrier") && !equal(szTarget, "JUMP") )
+		if( equal(szClass, "func_wall") && containi(szTarget, "ignore")==-1 &&  !equal(szTarget, "barrier") && !equal(szTarget, "JUMP") ) 
 			return ent
 	return 0;		
 }
@@ -30,8 +26,6 @@ stock bool:canIMoveIt(id,ent){
 	if( getOwner(ent) == 0 || getOwner(ent) == id || userClone[id] || ( isAdmin(id) && userAllowBuild[id] ) || userTeam[id] == getOwner(ent))
 		return true;
 	return false;
-
-	
 }
 public buildingMain(id){	
 	buildingInfo(id)
@@ -40,9 +34,8 @@ public buildingMain(id){
 public buildingInfo(id){	
 	new gText[256], iLen
 	
-	if(!playerLogged(id)){
-		return PLUGIN_CONTINUE;
-	}
+	if(!playerLogged(id)) return PLUGIN_CONTINUE;
+	
 	new ent;
 	get_user_aiming(id, ent)
 
@@ -69,31 +62,21 @@ public buildingInfo(id){
 				}else{
 					if( getMover(ent) == 0 ){
 						iLen += format(gText[iLen], sizeof(gText)-1-iLen, "[ %s ]", userName[getOwner(ent)])
-						
 						iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n[ %s ]", userName[getLastMover(ent)])
 					}else{
-						if( !isPlayer(ent) && getRotateBlock(ent, 0)){							
+						if( !isPlayer(ent) && getRotateBlock(ent, 0))					
 							iLen += format(gText[iLen], sizeof(gText)-1-iLen, "Kliknij 'Q' aby obrocic^n")
-						}
 						iLen += format(gText[iLen], sizeof(gText)-1-iLen, "[ %s ]", userName[getMover(ent)])
 					}
 				}
-				if( userClone[id] ){
-					iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n[ Kopiujesz ]", userName[getMover(ent)])
-				}	
+				if( userClone[id] ) iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n[ Kopiujesz ]", userName[getMover(ent)])
+				
 				new speed[32]; format(speed, sizeof(speed), "%d razy wolniej", floatround(userPushBlock[id]))
 				if(userPushBlock[id]) iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n[ %s ]", userPushBlock[id] > 0 ? speed : "");
-				
-				if( userBlocksUsed[id] > 0 && buildTime){
-					iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n[ %d/%d ]", userBlocksUsed[id], isVip(id) ? maxBlockUseVip : maxBlockUse)
-				}
-				
-						
-				
+				if( userBlocksUsed[id] > 0 && buildTime) iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n[ %d/%d ]", userBlocksUsed[id], (isSVip(id) ? bbCvar[cvarMoveMaxBlockSVip] : isVip(id) ? bbCvar[cvarMoveMaxBlockVip] : bbCvar[cvarMoveMaxBlock]))
+		
 				set_hudmessage(userHud[id][PLAYER_HUD_RED], userHud[id][PLAYER_HUD_GREEN], userHud[id][PLAYER_HUD_BLUE], cordx, cordy, 0, 0.1, 0.1, 0.1, 0.1)
 				show_hudmessage(id, "%s", gText)
-				
-				
 			}
 			if(isPlayer(ent)){
 				if( is_user_connected( ent) && is_user_alive( ent)){
@@ -107,8 +90,6 @@ public buildingInfo(id){
 						
 					iLen += format(gText[iLen], sizeof(gText)-iLen-1, "[ %s: %s | Zycie: %d ]^n%s", isVip(ent) ? "Vip" : "Gracz", userName[ent], get_user_health(ent), get_user_team( ent) == 1 ? zombie : human);
 					if(has_flag(id, "a")) iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n~ [AFK: %0.2f%%] ~^n", userAfkValue[ ent ]);
-						 
-					
 					if(userDeathPrice[ent][PRICE_START] && !userDeathPrice[ent][PRICE_LOST]){
 						iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n[ Placi: %d Brylek | Godowanie: %s ]^n", userDeathPrice[ent][PRICE_DEATH], userDeathPrice[ent][PRICE_GOD] ? "Tak" : "Nie");
 						if(userDeathPrice[ent][PRICE_CLASS] == class_TOTAL)
@@ -132,8 +113,7 @@ public hookEnt(id){
 	
 	
 	if(!buildTime && roundGood){
-		if(!userAllowBuild[id])
-		return PLUGIN_CONTINUE;
+		if(!userAllowBuild[id]) return PLUGIN_CONTINUE;
 	}
 	
 	if (id != userMoveAs[id] && userMoveAs[id] && userAllowBuild[id]){
@@ -142,19 +122,16 @@ public hookEnt(id){
 	
 	
 	if( canBeMoved(id, ent) && canIMoveIt(id,ent)){
-		
 		if( !isPlayer(ent) ){
 			if( getOwner(ent) == 0 || userClone[id] ){
-				if( userBlocksUsed[id] >= (isVip(id) ? maxBlockUseVip : maxBlockUse) ){
+				if( userBlocksUsed[id] >= (isSVip(id) ? bbCvar[cvarMoveMaxBlockSVip] : isVip(id) ? bbCvar[cvarMoveMaxBlockVip] : bbCvar[cvarMoveMaxBlock]) ){
 					set_dhudmessage(255, 0, 0, -1.0, 0.40, 0, 6.0, 3.0)
 					show_dhudmessage(id, "--- Uzyto maxymalna ilosc blokow ---")					
 					return PLUGIN_CONTINUE;
 				}
 				if(!isSuperAdmin(id) && buildTime)
 					userBlocksUsed[id] ++ 
-
 			}
-			
 			if( userClone[id] || getLock(ent) == 2 ||  extraClone ){
 				new cloneEnt = createClone(ent)
 				if( pev_valid(cloneEnt) ){	
@@ -165,8 +142,6 @@ public hookEnt(id){
 					addMission(id, mission_CLONE, 1);
 					ent = cloneEnt					
 				}
-				
-				
 				userClone[id]=false;
 			}
 			if( getOwner(ent) == 0 ){
@@ -180,7 +155,6 @@ public hookEnt(id){
 		userGrab[id] = ent
 		grabEnt(id, ent, body)	
 		emitGameSound(id, sound_MOVESTART)
-		
 	}
 	return PLUGIN_CONTINUE;
 }
@@ -286,11 +260,8 @@ public moveEnt(id){
 		vecMoved[0]	=	fOriginSave[id][0]+((vMoveTo[0]-fOriginSave[id][0])/userPushBlock[id])
 		vecMoved[1]	=	fOriginSave[id][1]+((vMoveTo[1]-fOriginSave[id][1])/userPushBlock[id])
 		vecMoved[2]	=	fOriginSave[id][2]+((vMoveTo[2]-fOriginSave[id][2])/userPushBlock[id])
-		
 		entity_set_origin(userGrab[id], vecMoved)
 	}else entity_set_origin(userGrab[id], vMoveTo);
-	
-	
 }
 public stopEnt(id){
 	if( userGrab[id] != 0 ){
@@ -306,10 +277,8 @@ public stopEnt(id){
 			setLastMover(ent, id)
 		}
 		
-		if( !isPlayer(ent) ){	
-			set_task(0.1, "prev", ent)		
-		}else{
-			
+		if( !isPlayer(ent) ) set_task(0.1, "prev", ent)		
+		else{
 			userHudMoving[ent] = 0
 			set_user_noclip(ent, 0)
 		}
@@ -317,10 +286,8 @@ public stopEnt(id){
 	}
 }
 public prev(ent){
-	if( !pev_valid(ent) )
-		return;
-	if( ent == 0 )
-		return;
+	if(!pev_valid(ent)) return;
+	if(ent == 0) return;
 	if( getMover(ent) == 0 ){	
 		set_pev(ent, pev_movetype, MOVETYPE_PUSH)
 		set_pev(ent, pev_solid, SOLID_BSP)		
@@ -342,7 +309,7 @@ public buildingBuild(id){
 			
 			if( userClone[id] && !isPlayer(userGrab[id])){
 				
-				if( userBlocksUsed[id] >= (isVip(id) ? maxBlockUseVip : maxBlockUse)){
+				if( userBlocksUsed[id] >= (isSVip(id) ? bbCvar[cvarMoveMaxBlockSVip] : isVip(id) ? bbCvar[cvarMoveMaxBlockVip] : bbCvar[cvarMoveMaxBlock])){
 					set_dhudmessage(255, 0, 0, -1.0, 0.40, 0, 6.0, 3.0)
 					show_dhudmessage(id, "--- Uzyto maxymalna ilosc blokow ---")	
 				}else {
@@ -376,17 +343,13 @@ public buildingBuild(id){
 			}
 			moveEnt(id)
 		}
-		
 		userCanGrab[id] = true
 	}else{
 		userCanGrab[id] = false
-		if (userGrab[id] != 0 ){
-			stopEnt(id)
-		}
+		if (userGrab[id] != 0 ) stopEnt(id)
 	}
 	if( (pev(id, pev_button)& IN_RELOAD) ){
-		if( userGrab[id] != 0 )
-			userLength[id] = 150.0;
+		if( userGrab[id] != 0 ) userLength[id] = 150.0;
 	}
 	if( (pev(id, pev_button)& IN_ATTACK) ){
 		if( userGrab[id] != 0 ){
@@ -401,13 +364,11 @@ public buildingBuild(id){
 		}
 	}
 	return PLUGIN_CONTINUE
-
 }
 public createClone(entView){
 	new ent=create_entity("func_wall")
-	if( !pev_valid(ent) ){
-		return -1;
-	}
+	if( !pev_valid(ent) ) return -1;
+	
 	new szClassName[16]
 	pev(entView, pev_classname, szClassName, sizeof(szClassName))
 	set_pev(ent,pev_classname, szClassName)
@@ -447,12 +408,10 @@ public createClone(entView){
 
 public impulsePush(id){
 	userPushBlock[id] += 2.0;
-	if(userPushBlock[id] > 6.0)
+	if(userPushBlock[id] > 6.0){
 		userPushBlock[id]  = 0.0;
-	
-	if(userPushBlock[id]  == 0.0)
 		ColorChat(id, GREEN, "---^x01 Przesuwasz klocki normalnie ^x04 ---");
-	else ColorChat(id, GREEN, "---^x01 Przesuwasz klocki wolniej o^x03 %d razy^x04 ---", floatround(userPushBlock[id]));
+	} else ColorChat(id, GREEN, "---^x01 Przesuwasz klocki wolniej o^x03 %d razy^x04 ---", floatround(userPushBlock[id]));
 	
 	return PLUGIN_HANDLED;
 }
@@ -461,7 +420,7 @@ public impulsePush(id){
 public impulseClone(id){
 	if(isPlayer(userGrab[id])) return PLUGIN_CONTINUE;
 	
-	if (!isAdmin(id) && userCloned[id] >= (isVip(id) ? maxBlockUseVip : maxBlockUse)){
+	if (!isAdmin(id) && userCloned[id] >= (isSVip(id) ? bbCvar[cvarMoveMaxBlockSVip] : isVip(id) ? bbCvar[cvarMoveMaxBlockVip] : bbCvar[cvarMoveMaxBlock])){
 		ColorChat(id, GREEN, "%s Osiagnales juz limit blokow!", PREFIXSAY);
 		return PLUGIN_HANDLED;
 	}

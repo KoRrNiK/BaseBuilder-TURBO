@@ -12,7 +12,6 @@ public menuTeamOption(id){
 	new gText[256], iLen = 0;
 	if(userTeam[id] == 0){
 		ColorChat(id, GREEN, "---^x01 Nie posiadasz z tym graczem juz teamu!^x04 ---");
-		userTeam[id] ++;
 		return;	
 	}
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\r[BaseBuilder]\y Menu Druzyny^n^n");
@@ -109,8 +108,7 @@ public menuTeam(id){
 	
 	new x = 1
 	for( new i = 1; i < maxPlayers; i++ ){
-		if( !is_user_connected(i) || !is_user_alive(i) || i == id || userRoundTeam[id] != userRoundTeam[i] || userTeamBlock[i] || hasOption(userSaveOption[i], save_TEAM)|| userTeam[i] != 0 || get_user_team(id) != get_user_team(i)) 
-			continue
+		if( !is_user_connected(i) || !is_user_alive(i) || i == id || userRoundTeam[id] != userRoundTeam[i] || userTeamBlock[i] || hasOption(userSaveOption[i], save_TEAM)|| userTeam[i] != 0 || get_user_team(id) != get_user_team(i))  continue;
 		
 		format(gText, sizeof(gText), "%s", userName[i] )
 		menu_additem(menu, gText)
@@ -198,9 +196,7 @@ public menuConfirmationTeam_2(id,menu,item){
 				menuTeamOption(id)
 				menuTeamOption(target)
 				
-			} else {
-				ColorChat(id, GREEN,"---^x01 Posiadasz juz team^x04 ---")
-			}
+			} else  ColorChat(id, GREEN,"---^x01 Posiadasz juz team^x04 ---")
 		}
 		case 1:{
 			ColorChat(id, GREEN,"---^x01 Druzyna od^x04 %s^x01 zostala odrzucona^x04 ---", userName[target])
@@ -214,7 +210,7 @@ public leaveParty(id){
 	new target = userTeam[id]
 	if( target == 0 ) return;
 	userTeam[id] 		= 0 ;
-	userTeam[target] 	= 0
+	userTeam[target] 	= 0;
 	reWriteBlocksParty(id, target)
 	ColorChat(target, GREEN,"---^x01 Druzyna rozlaczona^x04 ---")
 }

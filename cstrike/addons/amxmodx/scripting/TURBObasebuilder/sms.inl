@@ -56,9 +56,15 @@ public addValueMenu(id){
 	menu_additem(menu, "Dodaj Reset");
 	menu_additem(menu, "Dodaj EXP'a");
 	menu_additem(menu, "\dZresetuj nagrode");
-	//menu_additem(menu, "\dZresetuj stamine");
 	menu_additem(menu, "Dodaj Kosci");
 	menu_additem(menu, "Skrzynki");
+	
+	menu_additem(menu, "Dodaj wszystkim EXP'a");
+	menu_additem(menu, "Dodaj wszystkim Kosci");
+	menu_additem(menu, "Dodaj wszystkim Brylki");
+	menu_additem(menu, "Dodaj wszystkim VIP'a");
+	menu_additem(menu, "Dodaj wszystkim SIP'a");
+	
 	
 	menu_display(id, menu, 0);
 }
@@ -106,16 +112,33 @@ public addValueMenu_2(id, menu, item){
 			userMenuPlayer[id] = MENU_PLAYER_AWARD
 			choosePlayer(id, 0)
 		}
-		/*case 8:{
-			userMenuPlayer[id] = MENU_PLAYER_STAMINA
-			choosePlayer(id, 0)
-		}*/
 		case 8:{
 			userMenuPlayer[id] = MENU_GIVING_BONES
 			choosePlayer(id, 0)
 		}
 		case 9:{
 			menuCreateCase(id);
+		}
+		case 10:{
+			
+			userMenuPlayer[id] = MENU_GIVING_EXP_ALL
+			cmd_execute(id, "messagemode Ilosc")
+		}
+		case 11:{
+			userMenuPlayer[id] = MENU_GIVING_BONES_ALL
+			cmd_execute(id, "messagemode Ilosc")
+		}
+		case 12:{
+			userMenuPlayer[id] = MENU_GIVING_NUGGET_ALL
+			cmd_execute(id, "messagemode Ilosc")
+		}
+		case 13:{
+			userMenuPlayer[id] = MENU_GIVING_VIP_ALL
+			cmd_execute(id, "messagemode Ilosc")
+		}
+		case 14:{
+			userMenuPlayer[id] = MENU_GIVING_SVIP_ALL
+			cmd_execute(id, "messagemode Ilosc")
 		}
 	}
 	return PLUGIN_CONTINUE;
@@ -175,16 +198,20 @@ public yourBuyService(id){
 	new iLen;
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\dWitaj\r %s\d oto twoj czas uslug^n^n", szName)
 	
-	new daysLeft = (timeVip[id] - get_systime())	
-	
-	if( daysLeft > 0 || isVip(id) ){
-		if( has_flag(id, flagVip)){
-			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\dPozostalo\y [Bez Limitu Vip]^n")
-		} else {
-			iLen += format(gText[iLen], sizeof(gText)-iLen-1,"\dPozostalo\y [%d:%s%d:%s%d]\d Vipa^n",( daysLeft / HOUR ),(daysLeft / MINUTE % MINUTE)<10?"0":"", ( daysLeft / MINUTE % MINUTE ), (daysLeft%MINUTE)<10?"0":"", ( daysLeft %MINUTE ))
-		}
-	} else iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\dPozostalo\y [Brak Vipa]^n")
-	
+	new daysLeft = 0;
+	if(!isSVip(id)){
+		daysLeft = (timeVip[id] - get_systime())	
+		if( daysLeft > 0 || isVip(id) ){
+			if( has_flag(id, flagVip)) iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\dPozostalo\y [Bez Limitu Vip]^n")
+			else iLen += format(gText[iLen], sizeof(gText)-iLen-1,"\dPozostalo\y [%d:%s%d:%s%d]\d Vipa^n",( daysLeft / HOUR ),(daysLeft / MINUTE % MINUTE)<10?"0":"", ( daysLeft / MINUTE % MINUTE ), (daysLeft%MINUTE)<10?"0":"", ( daysLeft %MINUTE ))	
+		} else iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\dPozostalo\y [Brak Vipa]^n")
+	} else {
+		daysLeft = (timeSVip[id] - get_systime())	
+		if( daysLeft > 0 || isSVip(id) ){
+			if( has_flag(id, flagSVip)) iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\dPozostalo\y [Bez Limitu SVip]^n")
+			else iLen += format(gText[iLen], sizeof(gText)-iLen-1,"\dPozostalo\y [%d:%s%d:%s%d]\d SVipa^n",( daysLeft / HOUR ),(daysLeft / MINUTE % MINUTE)<10?"0":"", ( daysLeft / MINUTE % MINUTE ), (daysLeft%MINUTE)<10?"0":"", ( daysLeft %MINUTE ))	
+		} else iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\dPozostalo\y [Brak SVipa]^n")
+	}
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r0.\w Wyjscie")	
 	show_menu(id,  B0  , gText, -1, "yourBuyService"  )
 	
@@ -219,10 +246,9 @@ public addValue(id){
 					choosePlayer(id, 0)
 					return PLUGIN_CONTINUE;
 				}
-				
 				timeVip[target] = max( timeVip[target] + (value*60), get_systime() + (value*60) )
 				new daysLeft = (timeVip[target] - get_systime())	
-				userVip[id ] = !!(daysLeft>0);
+				userVip[target] = !!(daysLeft>0);
 				
 				ColorChat(id, GREEN, "---^x01 Dodales^x04 [^x03%d min VIP'a^x04][^x03Graczowi %s^x04] ---", value, userName[target])
 				ColorChat(target, GREEN, "---^x01 Otrzymales^x04 [^x03%d min VIP'a^x04][^x03Od Admina %s^x04] ---", value, userName[id])
@@ -251,7 +277,6 @@ public addValue(id){
 			}
 			case MENU_GIVING_TIME:{
 				userTime[target] += value *60
-				//userTime[target] += value*60
 				ColorChat(id, GREEN, "---^x01 Dodales^x04 [^x03%d min Czasu Gry^x04][^x03Graczowi %s^x04] ---", value, userName[target])				
 				ColorChat(target, GREEN, "---^x01 Otrzymales^x04 [^x03%d min Czasu Gry^x04][^x03Od Admina %s^x04] ---", value, userName[id])
 				format(gText, sizeof(gText), "dodal Czas Gry [%s] na [%d min]", userName[target], value)
@@ -263,18 +288,67 @@ public addValue(id){
 				format(gText, sizeof(gText), "dodal Reset [%s] ilosc [%d]", userName[target], value)
 			}
 			case MENU_GIVING_EXP:{
-				
 				addExpToFinal(target, float(value));
 				//userExp[target] += float(value);
 				ColorChat(id, GREEN, "---^x01 Dodales^x04 [^x03%d Xp.^x04][^x03Graczowi %s^x04] ---",value, userName[target])
 				ColorChat(target, GREEN, "---^x01 Otrzymales^x04 [^x03%d Xp.^x04][^x03Od Admina %s^x04] ---", value, userName[id])
-				format(gText, sizeof(gText), "dodal Xp. [%s] ilosc [%d ]", userName[target], value)
+				format(gText, sizeof(gText), "dodal Xp. [%s] ilosc [%d]", userName[target], value)
 			}
 			case MENU_GIVING_BONES:{
 				userBone[target] += value
 				ColorChat(id, GREEN, "---^x01 Dodales^x04 [^x03%d Kosci^x04][^x03Graczowi %s^x04] ---", value, userName[target])
 				ColorChat(target, GREEN, "---^x01 Otrzymales^x04 [^x03%d Kosci^x04][^x03Od Admina %s^x04] ---", value, userName[id])
 				format(gText, sizeof(gText), "dodal Kosci [%s] ilosc [%d]", userName[target], value)	
+			}
+			case MENU_GIVING_EXP_ALL, MENU_GIVING_BONES_ALL, MENU_GIVING_NUGGET_ALL, MENU_GIVING_VIP_ALL, MENU_GIVING_SVIP_ALL:{
+				for(new i = 1; i < maxPlayers; i ++){
+					if(!is_user_connected(i) || is_user_bot(i) || is_user_hltv(i)) continue;
+					
+					if(userMenuPlayer[id] == MENU_GIVING_EXP_ALL)
+						addExpToFinal(i, float(value));
+					else if(userMenuPlayer[id] == MENU_GIVING_BONES_ALL)
+						addBoneToFinal(i, value);
+					else if(userMenuPlayer[id] == MENU_GIVING_NUGGET_ALL)
+						addNuggetToFinal(i, value);
+					else if(userMenuPlayer[id] == MENU_GIVING_VIP_ALL){
+						if(!has_flag(i, flagVip)){
+							timeVip[i] = max( timeVip[i] + (value*60), get_systime() + (value*60) )
+							new daysLeft = (timeVip[i] - get_systime())	
+							userVip[i] = !!(daysLeft>0);
+						}
+					} else if(userMenuPlayer[id] == MENU_GIVING_SVIP_ALL){
+						if(!has_flag(i, flagSVip)){
+							timeSVip[i] = max( timeSVip[i] + (value*60), get_systime() + (value*60) )
+							new daysLeft = (timeSVip[i] - get_systime())	
+							userSVip[i] = !!(daysLeft>0);
+						}
+					}
+						
+				}
+				if(userMenuPlayer[id] == MENU_GIVING_EXP_ALL){
+					ColorChat(0, GREEN, "---^x01 Wszyscy otrzymali^x04 [^x03%d Xp.^x04][^x03Od Admina %s^x04] ---", value, userName[id]);
+					format(gText, sizeof(gText), "dodal Xp. [%s] ilosc [%d]", "Wszystkim", value);
+				}
+				else if(userMenuPlayer[id] == MENU_GIVING_BONES_ALL){
+					ColorChat(0, GREEN, "---^x01 Wszyscy otrzymali^x04 [^x03%d Kosci^x04][^x03Od Admina %s^x04] ---", value, userName[id]);
+					format(gText, sizeof(gText), "dodal Kosci [%s] ilosc [%d]", "Wszystkim", value);
+				}
+				else if(userMenuPlayer[id] == MENU_GIVING_NUGGET_ALL){
+					ColorChat(0, GREEN, "---^x01 Wszyscy otrzymali^x04 [^x03%d Brylki^x04][^x03Od Admina %s^x04] ---", value, userName[id]);
+					format(gText, sizeof(gText), "dodal Brylek [%s] ilosc [%d]", "Wszystkim", value);
+				}
+				else if(userMenuPlayer[id] == MENU_GIVING_VIP_ALL){
+					ColorChat(0, GREEN, "---^x01 Wszyscy otrzymali^x04 [^x03%dmin VIP'a^x04][^x03Od Admina %s^x04] ---", value, userName[id]);
+					format(gText, sizeof(gText), "dodal VIP'a [%s] ilosc [%d min]", "Wszystkim", value);
+				}
+				else if(userMenuPlayer[id] == MENU_GIVING_SVIP_ALL){
+					ColorChat(0, GREEN, "---^x01 Wszyscy otrzymali^x04 [^x03%dmin SVIP'a^x04][^x03Od Admina %s^x04] ---", value, userName[id]);
+					format(gText, sizeof(gText), "dodal SVIP'a [%s] ilosc [%d min]", "Wszystkim", value);
+				}
+				
+				logBB(id, gText);
+				addValueMenu(id);
+				return PLUGIN_CONTINUE;
 			}
 		}
 		logBB(id, gText)
@@ -332,9 +406,12 @@ public codeCheck(id){
 	
 	lastBuyer=id;
 	
+	new API[33]
+	get_cvar_string("bb_api_cssetti", API, sizeof(API));
+	
 	ColorChat(id, GREEN, "[SKLEP]^x01 Luzaczki sprawdzaja kod, prosze czekac...")
 	new szLink[512]	
-	format(szLink, sizeof(szLink), "http://cssetti.pl/Api/SmsApiV2CheckCode.php?UserId=%s&Code=%s", APISMS, szSmsCode);
+	format(szLink, sizeof(szLink), "http://cssetti.pl/Api/SmsApiV2CheckCode.php?UserId=%s&Code=%s", API, szSmsCode);
 
 	HTTP2_Download(szLink, _, _, "checkCodeSmsSeti");
 	return PLUGIN_CONTINUE	
@@ -407,17 +484,20 @@ public luzaczkiShop(id){
 	}
 	
 	new gText[128]
-	new daysLeft = (timeVip[id] - get_systime())	
 	
-	
-	
-	if( daysLeft > 0 ||isVip(id)){
-		if(has_flag(id, flagVip)){
-			format(gText, sizeof(gText), "\dPosiadasz\r %d\d Luzaczkow^nPozostalo\y [Bez Limitu Vip]", userLuzCoin[id])
-		} else {
-			format(gText, sizeof(gText), "\dPosiadasz\r %d\d Luzaczkow^nPozostalo\y %d:%s%d:%s%d\d Vipa",userLuzCoin[id], ( daysLeft / HOUR ),(daysLeft / MINUTE % MINUTE)<10?"0":"", ( daysLeft / MINUTE % MINUTE ), (daysLeft%MINUTE)<10?"0":"", ( daysLeft %MINUTE ))
-		}
-	} else  format(gText, sizeof(gText), "\dPosiadasz\r %d\d Luzaczkow^nPozostalo\y [Brak Vipa]", userLuzCoin[id])
+	if(!isSVip(id)){
+		new daysLeft = (timeVip[id] - get_systime())	
+		if( daysLeft > 0 ||isVip(id)){
+			if(has_flag(id, flagVip)) format(gText, sizeof(gText), "\dPosiadasz\r %d\d Luzaczkow^nPozostalo\y [Bez Limitu Vip]", userLuzCoin[id])
+			else format(gText, sizeof(gText), "\dPosiadasz\r %d\d Luzaczkow^nPozostalo\y %d:%s%d:%s%d\d Vipa",userLuzCoin[id], ( daysLeft / HOUR ),(daysLeft / MINUTE % MINUTE)<10?"0":"", ( daysLeft / MINUTE % MINUTE ), (daysLeft%MINUTE)<10?"0":"", ( daysLeft %MINUTE ))
+		} else  format(gText, sizeof(gText), "\dPosiadasz\r %d\d Luzaczkow^nPozostalo\y [Brak Vipa]", userLuzCoin[id])
+	} else {
+		new daysLeft = (timeSVip[id] - get_systime())	
+		if( daysLeft > 0 ||isSVip(id)){
+			if(has_flag(id, flagSVip)) format(gText, sizeof(gText), "\dPosiadasz\r %d\d Luzaczkow^nPozostalo\y [Bez Limitu SVip]", userLuzCoin[id])
+			else format(gText, sizeof(gText), "\dPosiadasz\r %d\d Luzaczkow^nPozostalo\y %d:%s%d:%s%d\d SVipa",userLuzCoin[id], ( daysLeft / HOUR ),(daysLeft / MINUTE % MINUTE)<10?"0":"", ( daysLeft / MINUTE % MINUTE ), (daysLeft%MINUTE)<10?"0":"", ( daysLeft %MINUTE ))
+		} else  format(gText, sizeof(gText), "\dPosiadasz\r %d\d Luzaczkow^nPozostalo\y [Brak SVipa]", userLuzCoin[id])
+	}
 
 	
 	new menu = menu_create(gText, "luzaczkiShop_2")
@@ -479,8 +559,11 @@ public luzaczkiFinal_2(id, item){
 	switch(item){
 		case 0:{
 			timeVip[id]	= 	max( timeVip[id] + (DAY*30), get_systime() + (DAY*30) )
-		}		
+		}	
 		case 1:{
+			timeSVip[id]	= 	max( timeSVip[id] + (DAY*30), get_systime() + (DAY*30) )
+		}
+		case 2:{
 			new newLeftExp  =  userScrollExp[id] - playedTime(id);
 			if(newLeftExp <= 0){
 				userScrollExp[id] = playedTime(id)
@@ -488,7 +571,7 @@ public luzaczkiFinal_2(id, item){
 			} else userScrollExp[id] += (HOUR*6)		
 	
 		}
-		case 2:{
+		case 3:{
 			new newLeftNugget  =  userScrollNugget[id] - playedTime(id);
 			if(newLeftNugget <= 0){
 				userScrollNugget[id] = playedTime(id)
@@ -496,7 +579,7 @@ public luzaczkiFinal_2(id, item){
 			} else userScrollNugget[id] += (HOUR*6)		
 			
 		}
-		case 3:{
+		case 4:{
 			
 			new newLeftMine  =  userBoostMine[id] - playedTime(id);
 			if(newLeftMine <= 0){

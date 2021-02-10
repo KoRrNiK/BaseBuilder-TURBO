@@ -30,11 +30,8 @@ public mainMenuAccount(id){
 	if(!userLogged[id] && strlen(userPassword[id]) > 1){
 		format(gText, sizeof(gText), "Zaloguj")
 	} else {
-		if( 1 >= strlen(userPassword[id])){
-			format(gText, sizeof(gText), "Zarejestruj")
-		} else {
-			format(gText, sizeof(gText), "Zmien haslo")
-		}
+		if( 1 >= strlen(userPassword[id])) format(gText, sizeof(gText), "Zarejestruj")
+		else format(gText, sizeof(gText), "Zmien haslo")
 	}
 	menu_additem(menu, gText)
 	
@@ -74,8 +71,8 @@ public mainMenuAccount_2(id, menu, item){
 			logType[id] = LOG_LOGOUT;
 			if(logType[id] == LOG_LOGOUT){
 				format(gText, sizeof(gText), "wylogowal sie !!")
+				logBB(id, gText)
 			} 
-			logBB(id, gText)
 			
 			ColorChat(id, GREEN, "%s Wylogowales sie!", PREFIXSAY )
 		}

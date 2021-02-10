@@ -27,11 +27,9 @@ public menuWeapon(id){
 	
 	for( new i = 0; i < sizeof(allGuns); i++ ){
 		if (str_to_num(allGuns[i][3]) > playedTime(id) || str_to_num(allGuns[i][2]) > userLevel[id])	
-			
+	
 			format(gText, sizeof(gText), "\d%s\d [Niedostepna] - %s", allGuns[i][1],  allGuns[i][2])
-		
-			
-			
+
 		else if (str_to_num(allGuns[i][2]) <= userLevel[id] ) {	
 			if(userWeaponDamage[id][i])
 				format(gText, sizeof(gText), "\w%s\d [\rDMG:\y +%0.2f%%\d |\r LV:\y%d\d ]",  allGuns[i][1], userWeaponDamage[id][i], userWeaponLevel[id][i]);
@@ -81,10 +79,10 @@ public selectWeapon(id, item){
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\r[BaseBuilder]\y Informacje o Broni!^n^n")
 	
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\y%s^t^t\dBron:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], allGuns[gun][1])
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\y%s^t^t\dPoziom:\r %s %s^n", symbolsCustom[SYMBOL_DR_ARROW], allGuns[gun][2], (str_to_num(allGuns[gun][2]) > userLevel[id]) ? availableWeaponLevel : "\w| \yWymaganie spelnione!")
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\y%s^t^t\dGodziny:\r %dh %s%dm %s%ds %s^n",symbolsCustom[SYMBOL_DR_ARROW], gamePlayUser2/HOUR, (gamePlayUser2/MINUTE)<10?"0":"",gamePlayUser2/MINUTE%MINUTE, gamePlayUser2%MINUTE<10?"0":"", gamePlayUser2%MINUTE, (str_to_num(allGuns[gun][3]) >  playedTime(id)) ? availableWeaponHour : "\w| \yWymaganie spelnione!")
-	
-	
+	if(str_to_num(allGuns[gun][2]) != 0 && str_to_num(allGuns[gun][3]) != 0){
+		iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\y%s^t^t\dPoziom:\r %s %s^n", symbolsCustom[SYMBOL_DR_ARROW], allGuns[gun][2], (str_to_num(allGuns[gun][2]) > userLevel[id]) ? availableWeaponLevel : "\w| \yWymaganie spelnione!")
+		iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\y%s^t^t\dGodziny:\r %dh %s%dm %s%ds %s^n",symbolsCustom[SYMBOL_DR_ARROW], gamePlayUser2/HOUR, (gamePlayUser2/MINUTE)<10?"0":"",gamePlayUser2/MINUTE%MINUTE, gamePlayUser2%MINUTE<10?"0":"", gamePlayUser2%MINUTE, (str_to_num(allGuns[gun][3]) >  playedTime(id)) ? availableWeaponHour : "\w| \yWymaganie spelnione!")
+	}
 	if(str_to_num(allGuns[item][3]) > playedTime(id) ||  str_to_num(allGuns[item][2]) > userLevel[id]){
 		iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\d1. Wybierz")
 		iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\d2. Ulepsz")	
@@ -232,10 +230,10 @@ public giveWeapons(id, item){
 	giveGranade(id)
 	give_item(id, allGuns[item][0]);
 	giveAmmo(id);
+	
 	#if defined CHRISTMAS_ADDON
 		addChristmasMission(id, CH_WEAPON1, 1);
-		addChristmasMission(id, CH_WEAPON2, 1);
-				
+		addChristmasMission(id, CH_WEAPON2, 1);		
 	#endif
 	
 	userGotGrenades[id] = 1;
@@ -255,13 +253,9 @@ public giveGranade(id){
 	new weapons[32];
 	new num;
 	get_user_weapons(id, weapons, num);
-	new i;
-	while (i < num){
-		if (weapons[i] == CSW_SMOKEGRENADE)
-			smoke = true;
-		else if (weapons[i] == CSW_HEGRENADE)
-			grenade = true;
-		i++;
+	for(new i = 0; i < num; i++){
+		if (weapons[i] == CSW_SMOKEGRENADE) smoke = true;
+		else if (weapons[i] == CSW_HEGRENADE) grenade = true;
 	}
 	StripWeapons(id, Primary);
 	StripWeapons(id, Secondary);
@@ -283,12 +277,11 @@ public giveAmmo(id){
 	new weapons[32];
 	new num;
 	get_user_weapons(id, weapons, num);
-	new i;
-	while (i < num){
+	
+	for(new i = 0; i < num; i++){
 		if (blockWeapon(weapons[i])){
 			cs_set_user_bpammo(id, weapons[i], 200);
 		}
-		i++;
 	}
 	return PLUGIN_CONTINUE;
 }
@@ -298,11 +291,12 @@ public MSG_HideWeapon(MsgDEST,MsgID,id){
 	
 	if(!(get_msg_arg_int(1) & HUD_HIDE_TIMER ))
 		set_msg_arg_int(1,ARG_BYTE,get_msg_arg_int(1) | HUD_HIDE_TIMER );	
+	
 	/*if(get_user_team(id) != 2){
 		if(!(get_msg_arg_int(1) & HUD_HIDE_RHA))
 			set_msg_arg_int(1,ARG_BYTE,get_msg_arg_int(1) | HUD_HIDE_RHA);	
-	}
-	*/
+	}*/
+	
 	if(!(get_msg_arg_int(1) & HUD_HIDE_MONEY))
 		set_msg_arg_int(1,ARG_BYTE,get_msg_arg_int(1) | HUD_HIDE_MONEY);	
 }
@@ -342,9 +336,7 @@ public resetMenu(id){
 	
 	show_menu(id, B1 | B2 , gText, -1, "resetMenu"  )
 	return PLUGIN_HANDLED;
-
 }
-
 
 public resetMenu_2(id, item){
 	switch(item){
@@ -384,10 +376,8 @@ public addLevelKills(id, weapon, headShot){
 	userWeaponKill[id][weapon] ++;
 	if(headShot) userWeaponHs[id][weapon] ++;
 	
-	if(userWeaponLevel[id][weapon] ==  str_to_num(allGuns[weapon][4])){
-		return;
+	if(userWeaponLevel[id][weapon] ==  str_to_num(allGuns[weapon][4])) return;
 		
-	}
 	if(equal(allGuns[weapon][0], weapons[get_user_weapon(id)])){
 		while(userWeaponKill[id][weapon] >= needKills(id, weapon, userWeaponLevel[id][weapon])){			
 			if( userWeaponLevel[id][weapon] <  str_to_num(allGuns[userWeaponSelect[id]][4])){

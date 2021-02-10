@@ -7,8 +7,7 @@
 #include < fakemeta_util > 
 
 new activeMultiply;
-new const Float:multiplyDrop = 2.0
-new const Float:dropProcent = 0.1
+
 new freeChest; 
 new const createInfoMenu[][] = {
 	"Kursor",
@@ -17,7 +16,7 @@ new const createInfoMenu[][] = {
 
 public Float:dropChest(id){
 	
-	return ((activeMultiply ? dropProcent*multiplyDrop : dropProcent ) +
+	return ((bbCvar[cvarNightMultiplyEnable] && activeMultiply ? bbCvar[cvarDropPercentCase]*bbCvar[cvarNightMultiply] : bbCvar[cvarDropPercentCase] ) +
 	(userClassHuman[id] == human_SEARCH ? str_to_float(paramClassesHuman[human_SEARCH][0])* userHumanLevel[id][human_SEARCH] : 0.0) +
 	(userClassHuman[id] == human_SEARCH  && didPro(id, pro_CASE) ? 0.5 : 0.0 ) ) *
 	(( hourTime && bb_happy_hour() == happy_CASE ) ? 2.0 : 1.0);

@@ -18,17 +18,18 @@
 public plugin_init_sql(){
 	
 	
-	new host[64], user[64], pass[64], db[64], szIp[33], error[128], errorNum;
+	new ipserver[64], host[64], user[64], pass[64], db[64], szIp[33], error[128], errorNum;
 	
-	host	=	DB_HOST;
-	user	=	DB_USER;
-	pass	=	DB_PASS;
-	db	=	DB_NAME;
+
+	get_cvar_string("bb_sql_host", host, sizeof(host));
+	get_cvar_string("bb_sql_user", user, sizeof(user));
+	get_cvar_string("bb_sql_pass", pass, sizeof(pass));
+	get_cvar_string("bb_sql_db", db, sizeof(db));
+	get_cvar_string("bb_ip_server", ipserver, sizeof(ipserver));
 	
 	get_user_ip(0, szIp, sizeof(szIp));
-	
 		
-	if(equal(szIp, "91.224.117.226:27015")){
+	if(equal(szIp, ipserver)){
 		sql = SQL_MakeDbTuple(host, user, pass, db);
 		log_amx("Polaczono z zew. baza danych");
 		superAdminLocalhost = false;
@@ -98,7 +99,6 @@ public plugin_init_sql(){
 		`damagePlayer` INT NOT NULL DEFAULT 0, \
 		`damageClass` INT NOT NULL DEFAULT 0, \
 		`cooldown` INT NOT NULL DEFAULT 0, \
-		`goblin` INT NOT NULL DEFAULT 0, \
 		`idmotd` varchar(20) NOT NULL DEFAULT '_', \
 		`upgradetime` INT NOT NULL DEFAULT 0, \
 		PRIMARY KEY (`idclans`));"
@@ -538,7 +538,6 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 					bbClan[CLAN_NUGGETDROP] 		= 		SQL_ReadResult(query, SQL_FieldNameToNum(query, "nuggetDrop"));
 					
 					bbClan[CLAN_COOLDOWN] 		= 		SQL_ReadResult(query, SQL_FieldNameToNum(query, "cooldown"));
-					bbClan[CLAN_GOBLIN] 		= 		SQL_ReadResult(query, SQL_FieldNameToNum(query, "goblin"));
 					
 					bbClan[CLAN_MEMBERS] 		= 		SQL_ReadResult(query, SQL_FieldNameToNum(query, "members"));
 					bbClan[CLAN_STATUS] 		= 		_:TrieCreate();
@@ -1128,8 +1127,8 @@ public save_clan(clan){
 	
 	format(queryData, sizeof(queryData), "\
 	UPDATE `clans`\
-		SET name = '%s', info = '%s', level = '%d', points = '%d', nugget = '%d', kills = '%d', members = '%d', health = '%d', damagePlayer = '%d', damageClass = '%d', critic = '%d', expDrop = '%d', nuggetDrop = '%d', goblin = '%d', cooldown = '%d', idmotd='%s', upgradetime='%d' \
-		WHERE name = '%s'", safeClanName,safeClanInfo, bbClan[CLAN_LEVEL], bbClan[CLAN_POINTS], bbClan[CLAN_NUGGET], bbClan[CLAN_KILLS], bbClan[CLAN_MEMBERS], bbClan[CLAN_HEALTH], bbClan[CLAN_DAMAGEPLAYER], bbClan[CLAN_DAMAGECLASS], bbClan[CLAN_CRITIC], bbClan[CLAN_EXPDROP],bbClan[CLAN_NUGGETDROP],bbClan[CLAN_GOBLIN],bbClan[CLAN_COOLDOWN],safeClanMotd,bbClan[CLAN_UPGRADETIME] ,  safeClanName);
+		SET name = '%s', info = '%s', level = '%d', points = '%d', nugget = '%d', kills = '%d', members = '%d', health = '%d', damagePlayer = '%d', damageClass = '%d', critic = '%d', expDrop = '%d', nuggetDrop = '%d', cooldown = '%d', idmotd='%s', upgradetime='%d' \
+		WHERE name = '%s'", safeClanName,safeClanInfo, bbClan[CLAN_LEVEL], bbClan[CLAN_POINTS], bbClan[CLAN_NUGGET], bbClan[CLAN_KILLS], bbClan[CLAN_MEMBERS], bbClan[CLAN_HEALTH], bbClan[CLAN_DAMAGEPLAYER], bbClan[CLAN_DAMAGECLASS], bbClan[CLAN_CRITIC], bbClan[CLAN_EXPDROP],bbClan[CLAN_NUGGETDROP],bbClan[CLAN_COOLDOWN],safeClanMotd,bbClan[CLAN_UPGRADETIME] ,  safeClanName);
 	
 	SQL_ThreadQuery(sql, "saveStatsHandlerSql", queryData);
 }

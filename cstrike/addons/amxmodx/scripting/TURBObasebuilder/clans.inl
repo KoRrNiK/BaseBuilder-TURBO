@@ -3,35 +3,6 @@
 #include <colorchat>
 #include <regex>
 
-
-new gClanNugget		=	100000;
-new gClanLevel		=	10;	
-new gClanLuzaczki	=	15;
-
-new gClanStartMenber	=	5;
-
-new gClanMaxLevel	=	30;
-
-new gClanLevelCost	=	2925;
-new gClanLevelNextCost	=	1550;
-
-new gClanLevelKill	=	100;
-new gClanLevelNextKill	=	200;
-
-
- new gClanLevelTime	=	1800;		// SEC    30MIN
-
-new gClanUpExp 		= 	12
-new gClanUpNugget 	= 	12
-new gClanUpHealth	=	12
-new gClanUpCrit 		= 	4
-new gClanUpDamageP 	= 	5
-new gClanUpDamageC 	= 	5
-new gClanUpCoolDown 	= 	10//5
-//new gClanUpGoblin 	= 	0//5
-
-new gClanRestoreUp	=	20000;
-	
 new maxSymbolClan = 12;
 new minSymbolClan = 3;
 	
@@ -61,9 +32,9 @@ public createClanMenu(id){
 	new gText[512], iLen = 0;	
 	new availableNugget[256], availableLevel[256], availableLuzaczki[256]; 
 	
-	format(availableNugget, 		sizeof(availableNugget),  	"\w|\d Potrzebujesz jeszcze:\r %d Brylek!", 	gClanNugget-userNugget[id]);
-	format(availableLevel,		sizeof(availableLevel),  	"\w|\d Potrzebujesz jeszcze:\r %d Level!", 	gClanLevel-userLevel[id]);
-	format(availableLuzaczki, 	sizeof(availableLuzaczki),  	"\w|\d Potrzebujesz jeszcze:\r %d Luzaczkow!", 	gClanLuzaczki-userLuzCoin[id]);
+	format(availableNugget, 		sizeof(availableNugget),  	"\w|\d Potrzebujesz jeszcze:\r %d Brylek!", 	bbCvar[cvarClansCostNugget]-userNugget[id]);
+	format(availableLevel,		sizeof(availableLevel),  	"\w|\d Potrzebujesz jeszcze:\r %d Level!", 	bbCvar[cvarClansCostLevel]-userLevel[id]);
+	format(availableLuzaczki, 	sizeof(availableLuzaczki),  	"\w|\d Potrzebujesz jeszcze:\r %d Luzaczkow!", 	bbCvar[cvarClansCostLuzaczki]-userLuzCoin[id]);
 	
 	iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "\r[BaseBuilder]\y Stworz klan:^n");
 	iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y-^t^t\dNazwa klanu musi miec co najmniej\r %d\d znaki", minSymbolClan)
@@ -71,9 +42,9 @@ public createClanMenu(id){
 	iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y-^t^t\dZakaz\r obrazliwych\d nazw klanow")
 	iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y-^t^t\dDozwolone znaki\r [A-Z0-9_]^n")
 	
-	iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y%s^t^t\dBrylki:\r %d %s",symbolsCustom[SYMBOL_DR_ARROW], gClanNugget, (gClanNugget > userNugget[id]) ? availableNugget : "\w| \yWymaganie spelnione!");
-	iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y%s^t^t\dPoziom:\r %d %s", symbolsCustom[SYMBOL_DR_ARROW], gClanLevel, (gClanLevel > userLevel[id]) ? availableLevel : "\w| \yWymaganie spelnione!");
-	iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y%s^t^t\dLuzaczki:\r %d %s", symbolsCustom[SYMBOL_DR_ARROW], gClanLuzaczki, (gClanLuzaczki > userLuzCoin[id]) ? availableLuzaczki : "\w| \yWymaganie spelnione!");
+	if(bbCvar[cvarClansCostNugget]) 		iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y%s^t^t\dBrylki:\r %d %s",symbolsCustom[SYMBOL_DR_ARROW], bbCvar[cvarClansCostNugget], (bbCvar[cvarClansCostNugget] > userNugget[id]) ? availableNugget : "\w| \yWymaganie spelnione!");
+	if(bbCvar[cvarClansCostLevel]) 		iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y%s^t^t\dPoziom:\r %d %s", symbolsCustom[SYMBOL_DR_ARROW], bbCvar[cvarClansCostLevel], (bbCvar[cvarClansCostLevel] > userLevel[id]) ? availableLevel : "\w| \yWymaganie spelnione!");
+	if(bbCvar[cvarClansCostLuzaczki]) 	iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y%s^t^t\dLuzaczki:\r %d %s", symbolsCustom[SYMBOL_DR_ARROW], bbCvar[cvarClansCostLuzaczki], (bbCvar[cvarClansCostLuzaczki] > userLuzCoin[id]) ? availableLuzaczki : "\w| \yWymaganie spelnione!");
 
 	iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n^n\r1.\w Stworz Klan");
 	iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n\r2.\w Top 10 Klanow");
@@ -88,15 +59,15 @@ public createClanMenu_2(id, item){
 	
 	switch(item){
 		case 0: {
-			if (userNugget[id] < gClanNugget) {
+			if (userNugget[id] < bbCvar[cvarClansCostNugget]) {
 				ColorChat(id, GREEN, "%s Brakuje Ci Brylek!", PREFIXSAY);
 				return;
 			}
-			if(userLevel[id] < gClanLevel){
+			if(userLevel[id] < bbCvar[cvarClansCostLevel]){
 				ColorChat(id, GREEN, "%s Brakuje Ci Poziomu!", PREFIXSAY);
 				return;
 			}
-			if(userLuzCoin[id] < gClanLuzaczki){
+			if(userLuzCoin[id] < bbCvar[cvarClansCostLuzaczki]){
 				ColorChat(id, GREEN, "%s Brakuje Ci Luzaczkow!", PREFIXSAY);
 				return;
 			}
@@ -172,7 +143,7 @@ public loadClanInfoDesc_2(failState, Handle:query, error[], errorNum, tempId[], 
 
 	new skillbar[256];
 	
-	skillBarMenu(skillbar, sizeof(skillbar), level, gClanMaxLevel, symbolsCustom[SYMBOL_SMALL_DOT], symbolsCustom[SYMBOL_SMALL_DOT])	
+	skillBarMenu(skillbar, sizeof(skillbar), level, bbCvar[cvarClansLevelMax], symbolsCustom[SYMBOL_SMALL_DOT], symbolsCustom[SYMBOL_SMALL_DOT])	
 	
 	iLen = format(gText[iLen], sizeof(gText)-iLen-1, "\r[BaseBuilder]\y Informacje o Klanie!^n")
 	
@@ -180,7 +151,7 @@ public loadClanInfoDesc_2(failState, Handle:query, error[], errorNum, tempId[], 
 	
 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\y%s^t^t\dNazwa Klanu:\r %s", symbolsCustom[SYMBOL_DR_ARROW], szName)
 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\y%s^t^t\dPrzywodca Klanu:\r %s", symbolsCustom[SYMBOL_DR_ARROW], szLider)
-	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\y%s^t^t\dCzlonkowie:\r %d/%d", symbolsCustom[SYMBOL_DR_ARROW], members,(  level / 3 ) + gClanStartMenber);
+	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\y%s^t^t\dCzlonkowie:\r %d/%d", symbolsCustom[SYMBOL_DR_ARROW], members,(  level / 3 ) + bbCvar[cvarClansStartMember]);
 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\y%s^t^t\dZabojstwa:\r %d", symbolsCustom[SYMBOL_DR_ARROW], kills)
 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\y%s^t^t\dPoziom:\r %d^n", symbolsCustom[SYMBOL_DR_ARROW], level)
 	
@@ -344,7 +315,7 @@ public showClanMenu(id, next){
 	new skillbar[256];
 	ArrayGetArray(bbClans, get_clan_id(clan[id]), bbClan);
 		
-	skillBarMenu(skillbar, sizeof(skillbar), bbClan[CLAN_LEVEL], gClanMaxLevel, symbolsCustom[SYMBOL_SMALL_DOT], symbolsCustom[SYMBOL_SMALL_DOT])	
+	skillBarMenu(skillbar, sizeof(skillbar), bbClan[CLAN_LEVEL], bbCvar[cvarClansLevelMax], symbolsCustom[SYMBOL_SMALL_DOT], symbolsCustom[SYMBOL_SMALL_DOT])	
 	
 	iLen 	+= 	format(gText[iLen], sizeof(gText) - iLen - 1, "\r[BaseBuilder]\y Menu Klanu\d [\w %s/2\d ]^n", !next ? "1" : "2");
 	
@@ -353,17 +324,17 @@ public showClanMenu(id, next){
 		iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y%s^t\dOgloszenie:\r %s",symbolsCustom[SYMBOL_DR_ARROW],bbClan[CLAN_INFO]);
 	
 		iLen 	+= 	format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y%s^t\dNazwa:\r %s", symbolsCustom[SYMBOL_DR_ARROW], bbClan[CLAN_NAME]);
-		iLen 	+= 	format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y%s^t\dCzlonkowie:\r %d/%d",symbolsCustom[SYMBOL_DR_ARROW],  bbClan[CLAN_MEMBERS],(  bbClan[CLAN_LEVEL] / 3 ) + gClanStartMenber);
+		iLen 	+= 	format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y%s^t\dCzlonkowie:\r %d/%d",symbolsCustom[SYMBOL_DR_ARROW],  bbClan[CLAN_MEMBERS],(  bbClan[CLAN_LEVEL] / 3 ) + bbCvar[cvarClansStartMember]);
 		iLen 	+= 	format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y%s^t\dPoziom:\r %d",symbolsCustom[SYMBOL_DR_ARROW], bbClan[CLAN_LEVEL]);
 		iLen 	+= 	format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y%s^t\dBrylki:\r %s",symbolsCustom[SYMBOL_DR_ARROW],formatNumber(bbClan[CLAN_NUGGET]));
 		iLen 	+= 	format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y%s^t\dZabojstwa:\r %s",symbolsCustom[SYMBOL_DR_ARROW],formatNumber(bbClan[CLAN_KILLS]));
 	
 		
 		if (get_user_status(id) > STATUS_MEMBER){
-			if(bbClan[CLAN_LEVEL] >= gClanMaxLevel ) iLen += format(gText[iLen], sizeof(gText) - iLen - 1, "^n^n\d1. Awansuj: Maksymalny Poziom");
+			if(bbClan[CLAN_LEVEL] >= bbCvar[cvarClansLevelMax] ) iLen += format(gText[iLen], sizeof(gText) - iLen - 1, "^n^n\d1. Awansuj: Maksymalny Poziom");
 			else iLen += format(gText[iLen], sizeof(gText) - iLen - 1, "^n^n\r1.\w Awansuj");
 		} else {
-			if(bbClan[CLAN_LEVEL] >= gClanMaxLevel ) iLen += format(gText[iLen], sizeof(gText) - iLen - 1, "^n^n\d[ Awans Klanu: Maksymalny Poziom ]");
+			if(bbClan[CLAN_LEVEL] >= bbCvar[cvarClansLevelMax] ) iLen += format(gText[iLen], sizeof(gText) - iLen - 1, "^n^n\d[ Awans Klanu: Maksymalny Poziom ]");
 			else iLen += format(gText[iLen], sizeof(gText) - iLen - 1, "^n^n\w[\d Awans Klanu");
 		}
 		
@@ -465,8 +436,8 @@ public avansClanMenu(id){
 	
 	new bbClan[clanInfo], gText[1536], iLen;
 	ArrayGetArray(bbClans, get_clan_id(clan[id]), bbClan);
-	new costNugget = (gClanLevelCost + gClanLevelNextCost * bbClan[CLAN_LEVEL]);
-	new killsClan =  (gClanLevelKill + gClanLevelNextKill * bbClan[CLAN_LEVEL]);
+	new costNugget = (bbCvar[cvarClansCostLuzaczki] + bbCvar[cvarClansStartMember] * bbClan[CLAN_LEVEL]);
+	new killsClan =  (bbCvar[cvarClansLevelKill] + bbCvar[cvarClansLevelKillNext] * bbClan[CLAN_LEVEL]);
 	new timeUpgrade =  calcAvansClan(id)
 
 	new availableNugget[256], availableKill[256]; 
@@ -483,7 +454,7 @@ public avansClanMenu(id){
 	
 	new upgradeLeft = (bbClan[CLAN_UPGRADETIME] - get_systime())
 			
-	if(bbClan[CLAN_LEVEL] < gClanMaxLevel){
+	if(bbClan[CLAN_LEVEL] < bbCvar[cvarClansLevelMax]){
 		
 		iLen 	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "^n^n\w- Potrzebne wymagania do Awansu Klanu");
 		
@@ -505,8 +476,8 @@ public avansClanMenu(id){
 		iLen 	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "^n^n\w[ Twoj klan jest juz ulepszony Maksymalnie ]");
 	}
 	
-	if(upgradeLeft > 0 || bbClan[CLAN_LEVEL] >= gClanMaxLevel)
-		iLen 	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "^n^n\d1. Zacznij Ulepszac %s", upgradeLeft > 0 ? "[ ODCZEKAJ ]" : bbClan[CLAN_LEVEL] >= gClanMaxLevel ? "[ MAX ]" : "");
+	if(upgradeLeft > 0 || bbClan[CLAN_LEVEL] >= bbCvar[cvarClansLevelMax])
+		iLen 	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "^n^n\d1. Zacznij Ulepszac %s", upgradeLeft > 0 ? "[ ODCZEKAJ ]" : bbClan[CLAN_LEVEL] >= bbCvar[cvarClansLevelMax] ? "[ MAX ]" : "");
 	else iLen 	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "^n^n\r1.\w Zacznij Ulepszac");
 	
 	
@@ -524,7 +495,7 @@ public avansClanMenu_2(id, item){
 			ArrayGetArray(bbClans, get_clan_id(clan[id]), bbClan);
 			new upgradeLeft = 0;
 			
-			if (bbClan[CLAN_LEVEL] >= gClanMaxLevel) {
+			if (bbClan[CLAN_LEVEL] >= bbCvar[cvarClansLevelMax]) {
 				ColorChat(id, GREEN, "%s Twoj klan ma juz maksymalny Poziom.", PREFIXSAY);
 				avansClanMenu(id)
 				return;
@@ -547,8 +518,8 @@ public avansClanMenu_2(id, item){
 				avansClanMenu(id)
 				return
 			}	
-			new costNugget = bbClan[CLAN_NUGGET] - (gClanLevelCost + gClanLevelNextCost * bbClan[CLAN_LEVEL]);
-			new killsClan = bbClan[CLAN_KILLS] - (gClanLevelKill + gClanLevelNextKill * bbClan[CLAN_LEVEL]);
+			new costNugget = bbClan[CLAN_NUGGET] - (bbCvar[cvarClansCostLuzaczki] + bbCvar[cvarClansStartMember] * bbClan[CLAN_LEVEL]);
+			new killsClan = bbClan[CLAN_KILLS] - (bbCvar[cvarClansLevelKill] + bbCvar[cvarClansLevelKillNext] * bbClan[CLAN_LEVEL]);
 					
 			if (costNugget < 0) {		
 				ColorChat(id, GREEN, "%s Twoj klan nie ma wystarczajacej ilosci Brylek." ,PREFIXSAY );
@@ -602,21 +573,21 @@ public avansClanMenu_2(id, item){
 public calcAvansClan(id){
 	new bbClan[clanInfo];
 	ArrayGetArray(bbClans, get_clan_id(clan[id]), bbClan);
-	return (gClanLevelTime * (bbClan[CLAN_LEVEL]+1))
+	return (bbCvar[cvarClansLevelTimeUpgrade] * (bbClan[CLAN_LEVEL]+1))
 }
 public createClanHandle(id){
 	if (!is_user_connected(id)  ||  !playerLogged(id) || clan[id]) return;
 		
 	
-	if (userNugget[id] < gClanNugget) {
+	if (userNugget[id] < bbCvar[cvarClansCostNugget]) {
 		ColorChat(id, GREEN, "%s Brakuje Ci Brylek!", PREFIXSAY);
 		return;
 	}
-	if(userLevel[id] < gClanLevel){
+	if(userLevel[id] < bbCvar[cvarClansCostLevel]){
 		ColorChat(id, GREEN, "%s Brakuje Ci Poziomu!", PREFIXSAY);
 		return;
 	}
-	if(userLuzCoin[id] < gClanLuzaczki){
+	if(userLuzCoin[id] < bbCvar[cvarClansCostLuzaczki]){
 		ColorChat(id, GREEN, "%s Brakuje Ci Luzaczkow!", PREFIXSAY);
 		return;
 	}
@@ -700,8 +671,8 @@ public createClanHandle(id){
 	ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 zalozyl klan:^x04 [^x03 %s^x04 ] ---", userName[id], clanName);
 	
 	
-	userNugget[id] -= gClanNugget
-	userLuzCoin[id] -= gClanLuzaczki
+	userNugget[id] -= bbCvar[cvarClansCostNugget]
+	userLuzCoin[id] -= bbCvar[cvarClansCostLuzaczki]
 	
 	globalClanMenu(id);
 
@@ -805,7 +776,7 @@ public leaderMenu(id){
 	menu_additem(menu, "\wZapros Gracza");
 	menu_additem(menu, "\wZarzadzaj Czlonkami");
 	
-	format(gText, sizeof(gText), "\wZresetuj Umiejetnosci:\d [\r %d Brylek\d ] %s", gClanRestoreUp, userAcceptRestore[id] ? "\r[POTWIERDZ]" : "");
+	format(gText, sizeof(gText), "\wZresetuj Umiejetnosci:\d [\r %d Brylek\d ] %s", bbCvar[cvarClansRestore], userAcceptRestore[id] ? "\r[POTWIERDZ]" : "");
 	menu_additem(menu, gText);
 	
 	menu_additem(menu, "Ogloszenie Klanowe\d (\r MAX 42 symbole\d )");
@@ -844,13 +815,13 @@ public leaderMenu_2(id, menu, item){
 				
 				if(userAcceptRestore[id]){
 				
-					if(bbClan[CLAN_NUGGET] < gClanRestoreUp){
+					if(bbClan[CLAN_NUGGET] < bbCvar[cvarClansRestore]){
 						ColorChat(id, GREEN, "%s Brakuje Brylek", PREFIXSAY);
 						userAcceptRestore[id] = false;
 						return;
 					}
 					
-					bbClan[CLAN_NUGGET] -= gClanRestoreUp
+					bbClan[CLAN_NUGGET] -= bbCvar[cvarClansRestore]
 					bbClan[CLAN_POINTS] = bbClan[CLAN_LEVEL] * 2
 					
 					bbClan[CLAN_HEALTH] = 0;
@@ -1065,15 +1036,13 @@ public upgradeClanMenu(id){
 	iLen	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "\y%s^t^t\dPunkty:\r %d\w^n^n", symbolsCustom[SYMBOL_DR_ARROW], bbClan[CLAN_POINTS]);
 
 
-	iLen	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "\r1.\w Exp\r [\d%d/%d\r]^n", bbClan[CLAN_EXPDROP], gClanUpExp);
-	iLen	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "\r2.\w Brylki\r [\d%d/%d\r]^n", bbClan[CLAN_NUGGETDROP], gClanUpNugget);
-	iLen	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "\r3.\w HP\r [\d%d/%d\r]^n", bbClan[CLAN_HEALTH], gClanUpHealth);
-	iLen	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "\r4.\w Kryt\r [\d%d/%d\r]^n",  bbClan[CLAN_CRITIC], gClanUpCrit);
-	iLen	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "\r5.\w DMG\r [\d%d/%d\r]^n", bbClan[CLAN_DAMAGEPLAYER], gClanUpDamageP);
-	iLen	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "\r6.\w DMG Klasy\r [\d%d/%d\r]^n",  bbClan[CLAN_DAMAGECLASS], gClanUpDamageC);
-	iLen	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "\r7.\w CoolDown\r [\d%d/%d\r] ^n", bbClan[CLAN_COOLDOWN], gClanUpCoolDown);
-	
-	//iLen += format(gText[iLen], sizeof(gText) - iLen - 1, "\r8.\w Dodatkowy Goblin\y |\d %d/%d^n", bbClan[CLAN_GOBLIN], gClanUpGoblin);
+	iLen	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "\r1.\w Exp\r [\d%d/%d\r]^n", bbClan[CLAN_EXPDROP], bbCvar[cvarClansUpgradeExp]);
+	iLen	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "\r2.\w Brylki\r [\d%d/%d\r]^n", bbClan[CLAN_NUGGETDROP], bbCvar[cvarClansUpgradeNugget]);
+	iLen	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "\r3.\w HP\r [\d%d/%d\r]^n", bbClan[CLAN_HEALTH], bbCvar[cvarClansUpgradeHealth]);
+	iLen	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "\r4.\w Kryt\r [\d%d/%d\r]^n",  bbClan[CLAN_CRITIC], bbCvar[cvarClansUpgradeCritic]);
+	iLen	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "\r5.\w DMG\r [\d%d/%d\r]^n", bbClan[CLAN_DAMAGEPLAYER], bbCvar[cvarClansUpgradeDamagePlayer]);
+	iLen	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "\r6.\w DMG Klasy\r [\d%d/%d\r]^n",  bbClan[CLAN_DAMAGECLASS], bbCvar[cvarClansUpgradeDamageClass]);
+	iLen	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "\r7.\w CoolDown\r [\d%d/%d\r] ^n", bbClan[CLAN_COOLDOWN], bbCvar[cvarClansUpgradeCoolDown]);
 	
 	iLen	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "^n\r0.\y Wyjscie");
 	
@@ -1095,7 +1064,7 @@ public upgradeClanMenu_2(id, item){
 	switch (item) {
 		case 0: {
 			upgradedSkill = CLAN_EXPDROP;
-			if (bbClan[upgradedSkill] == gClanUpExp) {
+			if (bbClan[upgradedSkill] == bbCvar[cvarClansUpgradeExp]) {
 				ColorChat(id, GREEN, "%s Twoj klan ma juz maksymalny poziom tej umiejetnosci", PREFIXSAY);
 				upgradeClanMenu(id);
 				return;
@@ -1107,7 +1076,7 @@ public upgradeClanMenu_2(id, item){
 		}
 		case 1: {
 			upgradedSkill = CLAN_NUGGETDROP;
-			if (bbClan[upgradedSkill] == gClanUpNugget) {
+			if (bbClan[upgradedSkill] == bbCvar[cvarClansUpgradeNugget]) {
 				ColorChat(id, GREEN, "%s Twoj klan ma juz maksymalny poziom tej umiejetnosci", PREFIXSAY);
 				upgradeClanMenu(id);
 				return;
@@ -1119,7 +1088,7 @@ public upgradeClanMenu_2(id, item){
 		}
 		case 2: {
 			upgradedSkill = CLAN_HEALTH;
-			if (bbClan[upgradedSkill] == gClanUpHealth) {
+			if (bbClan[upgradedSkill] == bbCvar[cvarClansUpgradeHealth]) {
 				ColorChat(id, GREEN, "%s Twoj klan ma juz maksymalny poziom tej umiejetnosci", PREFIXSAY);
 				upgradeClanMenu(id);
 				return;
@@ -1131,7 +1100,7 @@ public upgradeClanMenu_2(id, item){
 		}
 		case 3: {
 			upgradedSkill = CLAN_CRITIC;
-			if (bbClan[upgradedSkill] == gClanUpCrit) {
+			if (bbClan[upgradedSkill] == bbCvar[cvarClansUpgradeCritic]) {
 				ColorChat(id, GREEN, "%s Twoj klan ma juz maksymalny poziom tej umiejetnosci", PREFIXSAY);
 				upgradeClanMenu(id);
 				return;
@@ -1143,7 +1112,7 @@ public upgradeClanMenu_2(id, item){
 		}
 		case 4: {
 			upgradedSkill = CLAN_DAMAGEPLAYER;
-			if (bbClan[upgradedSkill] == gClanUpDamageP) {
+			if (bbClan[upgradedSkill] == bbCvar[cvarClansUpgradeDamagePlayer]) {
 				ColorChat(id, GREEN, "%s Twoj klan ma juz maksymalny poziom tej umiejetnosci", PREFIXSAY);
 				upgradeClanMenu(id);
 				return;
@@ -1155,7 +1124,7 @@ public upgradeClanMenu_2(id, item){
 		}
 		case 5: {
 			upgradedSkill = CLAN_DAMAGECLASS;
-			if (bbClan[upgradedSkill] == gClanUpDamageC) {
+			if (bbClan[upgradedSkill] == bbCvar[cvarClansUpgradeDamageClass]) {
 				ColorChat(id, GREEN, "%s Twoj klan ma juz maksymalny poziom tej umiejetnosci", PREFIXSAY);
 				upgradeClanMenu(id);
 				return;
@@ -1167,7 +1136,7 @@ public upgradeClanMenu_2(id, item){
 		}
 		case 6: {
 			upgradedSkill = CLAN_COOLDOWN;
-			if (bbClan[upgradedSkill] == gClanUpCoolDown) {
+			if (bbClan[upgradedSkill] == bbCvar[cvarClansUpgradeCoolDown]) {
 				ColorChat(id, GREEN, "%s Twoj klan ma juz maksymalny poziom tej umiejetnosci", PREFIXSAY);
 				upgradeClanMenu(id);
 				return;
@@ -1177,19 +1146,7 @@ public upgradeClanMenu_2(id, item){
 
 			ColorChat(id, GREEN, "%s Ulepszyles umiejetnosc^x03 %s^x01 na^x03 %d^x01 poziom!", PREFIXSAY, upgradedSkillName, bbClan[upgradedSkill]);
 		}
-		/*case 7: {
-			upgradedSkill = CLAN_GOBLIN;
-			if (bbClan[upgradedSkill] == gClanUpGoblin) {
-				ColorChat(id, GREEN, "%s Twoj klan ma juz maksymalny poziom tej umiejetnosci", PREFIXSAY);
-				upgradeClanMenu(id);
-				return;
-			}
-			upgradedSkillName = "Dodatkowy Goblin";
-			bbClan[upgradedSkill]++;
-
-			ColorChat(id, GREEN, "%s Ulepszyles umiejetnosc^x03 %s^x01 na^x03 %d^x01 poziom!", PREFIXSAY, upgradedSkillName, bbClan[upgradedSkill]);
-		}
-		*/
+		
 		default:{
 			return;
 		}
@@ -1296,7 +1253,7 @@ public inviteConfirmMenu_2(id, menu, item){
 				return;
 			}
 		
-			if (((get_clan_info(clan[target], CLAN_LEVEL) / 3 ) + gClanStartMenber) <= get_clan_info(clan[target], CLAN_MEMBERS)) {
+			if (((get_clan_info(clan[target], CLAN_LEVEL) / 3 ) + bbCvar[cvarClansStartMember]) <= get_clan_info(clan[target], CLAN_MEMBERS)) {
 				ColorChat(id, GREEN, "%s Niestety, w tym klanie nie ma juz wolnego miejsca.", PREFIXSAY);
 				return;
 			}
@@ -1526,11 +1483,9 @@ public depositNuggetHandle(id){
 	if(logType[id] == LOG_CLAN_DEPOSIT){
 		
 		get_clan_info(clan[id], CLAN_NAME, clanName, sizeof(clanName));	
-		format(logText, sizeof(logText), "wplacil [ %d Brylek ( Aktualnie: %d ) ] | klan: %s", nuggetAmount, get_clan_info(clan[id], CLAN_NUGGET), clanName);
-					
-		
+		format(logText, sizeof(logText), "wplacil [ %d Brylek ( Aktualnie: %d ) ] | klan: %s", nuggetAmount, get_clan_info(clan[id], CLAN_NUGGET), clanName);	
+		logBB(id, logText)
 	}
-	logBB(id, logText)
 	return PLUGIN_HANDLED;
 }
 

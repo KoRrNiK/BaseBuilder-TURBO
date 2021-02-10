@@ -1,26 +1,13 @@
-new const PLUGIN[] 	= 	"BaseBuilder TURBO"
-new const VERSION[] 	= 	"v1.3.1"
-new const AUTHOR[] 	= 	"KoRrNiK" 		// Dzieki Zuzza za pomoc przy kilku rzeczach :)
-new const PREFIXSAY[] 	=  	"^xc2^xa6 BaseBuilder ^xc2^xa6^x01"
+new const PLUGIN[] 	= 	"BaseBuilder TURBO";
+new const VERSION[] 	= 	"v1.3.2";
+new const AUTHOR[] 	= 	"KoRrNiK";
+new const PREFIXSAY[] 	=  	"^xc2^xa6 BaseBuilder ^xc2^xa6^x01";
 new const fVAULTFILE[]	=	 "TURBOBB";
-new const APISMS[]	=	"16103";
-
-new const DB_HOST[]	=	"127.0.0.1"
-new const DB_USER[]	=	"user"
-new const DB_PASS[]	=	"pass"
-new const DB_NAME[]	=	"db"
 
 new bool:superAdminLocalhost = false;
 
 new const accentMotdColor[]	=	"#ff003c";
-new const accentColorHud[]	=	{ 120, 250, 50 }
-
-new Float:gExpForWillSurvive	=	3.0
-new Float:gExpForWillSurviveVip	=	5.0
-new gNuggetWillSurvive		=	20
-new gNuggetWillSurviveVip	=	30
-
-new maxHelpCount			=	8;
+new const accentColorHud[]	=	{ 120, 250, 50 };
 
 
 #define DAY 				86400
@@ -43,21 +30,22 @@ new maxHelpCount			=	8;
 #define forPlayer(%1) 			for(new %1 = 1; %1 < maxPlayers; %1++)
 #define forArray(%1,%2) 		for(new %1 = 0; %1 < sizeof(%2); %1++)
 
-native bb_set_in_fire(id, victim, duration)
+native bb_set_in_fire(id, victim, duration);
 native bb_set_in_ice(id, victim, duration);
-native bool:bb_is_in_barrier(id)
+native bool:bb_is_in_barrier(id);
 
 	/*----------------------*\
 --------| SMS			 |
 	\*----------------------*/
 
 
-new timeVip[33]
-new Float:fCodeCheckTime
-new szSmsCode[14]
-new lastBuyer
-new userService[33]
-new userLuzCoin[33]
+new timeVip[33];
+new timeSVip[33];
+new Float:fCodeCheckTime;
+new szSmsCode[14];
+new lastBuyer;
+new userService[33];
+new userLuzCoin[33];
 
 #define TOTAL_BUY_SMSSHOP_PRICES 10
 new const pricesMenu[TOTAL_BUY_SMSSHOP_PRICES][5][]={
@@ -71,16 +59,17 @@ new const pricesMenu[TOTAL_BUY_SMSSHOP_PRICES][5][]={
 	{"SKLEP", "91900",	"23,37",	"9.50",		"76"	},	//11
 	{"SKLEP", "92022",	"24,60",	"10.00",	"80"	},	//11
 	{"SKLEP", "92521",	"30,75",	"12.50",	"100"	}	//12
-}
+};
 
-#define TOTAL_BUY_SMSSHOP 4
+#define TOTAL_BUY_SMSSHOP 5
 new const itemsShop[TOTAL_BUY_SMSSHOP][3][]={
 	// NAZWA							| CENA		| OPIS
 	  {"Luzacki Vip [30 Dni]", 					"18",		"Otrzymujesz Luzackiego Vipa ( Wiecej pod /vip )"}
+	 ,{"Super Luzacki Vip [30 Dni]", 					"27",		"Otrzymujesz Super Luzackiego Vipa ( Wiecej pod /vip )"}
 	,{"Zwoj Doswiadczenia (2x Exp) [6 Godziny]", 			"12",		"Otrzymujesz dwa razy wiecej EXP'a za strzelanie"}
 	,{"Zwoj Szczescia (2x Brylki) [6 Godziny]", 			"12",		"Otrzymujesz dwa razy wiecej Brylek za zabicie"}
 	,{"Boost - Kopalnia (2x Szybciej) [55 Minut]",			"7",		"Gobliny kopia 2 razy szybciej!"}
-}
+};
 
 	/*----------------------*\
 --------| TASK			 |
@@ -109,11 +98,11 @@ enum ( += 100){
 	TASK_DAMAGEDEAL,
 	TASK_EXPLODETORPED,
 	TASK_TUTORFINAL
-}
+};
 
 
-new userPoisonKiller[33]
-new userPoison[33]
+new userPoisonKiller[33];
+new userPoison[33];
 
 	/*----------------------*\
 --------| USER			 |
@@ -122,67 +111,68 @@ new userPoison[33]
 	#define MAXBITAUTHID 35
 	#define MAXBITIP 32
 	
-	new userClone[33]
-	new userCloned[33]
-	new userNoClip[33]
-	new userGodMod[33]
-	new userAllowBuild[33]
-	new userAdmin[33]
-	new userVip[33]
-	new userConnected[33]
-	new bool:userJetPack[33]
-	new userName[33][33]
+	new userClone[33];
+	new userCloned[33];
+	new userNoClip[33];
+	new userGodMod[33];
+	new userAllowBuild[33];
+	new userAdmin[33];
+	new userVip[33];
+	new userSVip[33];
+	new userConnected[33];
+	new bool:userJetPack[33];
+	new userName[33][33];
 	new userIp[33][MAXBITIP];
 	new userSid[33][MAXBITAUTHID];
-	new userTeam[33]
-	new userMenuId
-	new userTeamMenu[33]
-	new userTeamSend[33]
-	new Float:userTimeConnectServer[33]
+	new userTeam[33];
+	new userMenuId;
+	new userTeamMenu[33];
+	new userTeamSend[33];
+	new Float:userTimeConnectServer[33];
 	new userPlayerConnected[33];
 	new userTime[33];
 	new userMoveAs[33];
-	new Float:userPushBlock[33] 
-	new userPlayerList[33][33]
+	new Float:userPushBlock[33] ;
+	new userPlayerList[33][33];
 	new userMenuPlayer[33];
-	new bool:userReconnected[33]
-	new userRoundTeam[33]
+	new bool:userReconnected[33];
+	new userRoundTeam[33];
 	new userGotGrenades[33];
-	new userLevel[33]
+	new userLevel[33];
 	new Float:userExp[33];
 	new Float:userExpShow[33];
-	new Float:userLastExpDealt[33]
+	new Float:userLastExpDealt[33];
 	new userNugget[33];
 	new userNuggetShow[33];
-	new Float:userLastNuggetDealt[33]
+	new Float:userLastNuggetDealt[33];
 	new userBone[33];
 	new userBoneShow[33];
-	new Float:userLastBoneDealt[33]
-	new userGrab[33]
-	new userHudMoving[33]
-	new Float:userAimingHud[33]
-	new userBlocksUsed[33]
-	new Float:userLength[33]
-	new userVarList[33][33]
+	new Float:userLastBoneDealt[33];
+	new userGrab[33];
+	new userHudMoving[33];
+	new Float:userAimingHud[33];
+	new userBlocksUsed[33];
+	new Float:userLength[33];
+	new userVarList[33][33];
 	new userVarMenu[33];
 	new bool:userCanGrab[33];
 	new Float:userTeamLine[33];
 	new userTeamBlock[33];
 	new userTeamExp[33];
 	new userTeamNugget[33];
-	new userHudDeal[33]
+	new userHudDeal[33];
 	new userHudGet[33];
 	new userNuggetCollectedRound[33];
-	new userTeamOpen[33]
+	new userTeamOpen[33];
 	new userSelectWeapon[33];
-	new userFirstSpawn[33]
-	new bool:userExtraFps[33]
-	new Float:userInfoFps[33]
+	new userFirstSpawn[33];
+	new bool:userExtraFps[33];
+	new Float:userInfoFps[33];
 	new userReset[33];
 	new userNuggetAll[33];
 	new userJetpackSpeed[33] = 500;
 	new userLastAwardTime[33];
-	enum { BLOCK_COLOR, BLOCK_RENDER, BLOCK_NORENDER }
+	enum { BLOCK_COLOR, BLOCK_RENDER, BLOCK_NORENDER };
 	new userMoverBlockColor[33];
 	new userSqlId[33];
 	new userAllDmg[33];
@@ -190,7 +180,6 @@ new userPoison[33]
 	new userMaxDmg[33];
 	new userFov[33];
 	new Float:userAfkValue[33];
-	enum _:typeAcces{ vip, admin, head }
 	new userScrollExp[33];
 	new userScrollNugget[33];
 	new userBoostMine[33];
@@ -203,7 +192,7 @@ new userPoison[33]
 	new userHelpPoint[33];
 	new Float:userSpeedAdmin[33];
 	new userFirstLogin[33][33];
-	new userSecretPoint[33]
+	new userSecretPoint[33];
 	new userLastAwardFree[33];
 	new userLastAwardRow[33];
 	new userLastAwardGot[33];
@@ -213,7 +202,7 @@ new userPoison[33]
 	new bool:jumpBlock[33];
 
 new userStaminaDayRefresh[33];
-new userLastStaminaTime[33]
+new userLastStaminaTime[33];
 new bool:userMinePayGoblin[33];
 
 new userLastUpgradeTime[33];
@@ -223,7 +212,7 @@ new startUpgrade[33];
 	
 new userMineNugget[33];
 //new Float:userInfoMine[33];
-enum { mine_STONE = 0, mine_COAL, mine_IRON, mine_GOLD, mine_DIAMOND, mine_TOTAL }
+enum { mine_STONE = 0, mine_COAL, mine_IRON, mine_GOLD, mine_DIAMOND, mine_TOTAL };
 new const mineOre[mine_TOTAL][2][] = {
 	// NAZWA	| TWARDOSC
 	  { "Kamien" ,	"100"}
@@ -233,10 +222,10 @@ new const mineOre[mine_TOTAL][2][] = {
 	,{ "Diament",	"250"}
 	
 };
-new userDigging[33][mine_TOTAL]
-new userTypeMine[33]
+new userDigging[33][mine_TOTAL];
+new userTypeMine[33];
 
-enum { up_PICKAXE, up_STAMINA, up_LUCK, up_GOBLIN,up_POWER, up_SEARCH,up_TRUCK, up_TOTAL }
+enum { up_PICKAXE, up_STAMINA, up_LUCK, up_GOBLIN,up_POWER, up_SEARCH,up_TRUCK, up_TOTAL };
 new const upgradeMine[up_TOTAL][4][] = {
 	// NAZWA		| OPIS								| POZIOM	| CENA
 	  { "Kilof" ,		"Umozliwia wykopanie wiekszej ilosci Mineralow ( Bonus )",	"10",		"2500"}
@@ -246,50 +235,56 @@ new const upgradeMine[up_TOTAL][4][] = {
 	,{ "Koncowka Kilofa" ,	"Zwieksza Moc kopania",						"5",		"2250"}
 	,{ "Szukanie" ,		"Pozwala Ci znajdywac wiecej rodzajow Mineralow",		"4",		"1750"}
 	,{ "Wozek" ,		"Posiadasz wiekszy wozek ( Wiekszy magazyn Mineralow )",	"2",		"1500"}
-}
+};
 
 new costMiner		=	15000;		// CENA KUPNA KOPALNI
 new levelMiner 		=	10;		// POTRZEBNY LVL DO KUPNA KOPALNI
 new staminaTime 		= 	3600;		// PODSTAWOWY CZAS STAMINY GOBLINOW
-new powerMine 		=	 2		// PO ILE MA DODAWAC MOC KOPANIA ZA LVL
+new powerMine 		=	2;		// PO ILE MA DODAWAC MOC KOPANIA ZA LVL
 new Float:speedMine 	= 	15.0;		// ILE SEKUND TRWA JEDENO UDEZENIE W MINERAL
-new mineralMax 		= 	3000		// STANDARDOWA WARTOSC WUZKA W KOPALNI
+new mineralMax 		= 	3000;		// STANDARDOWA WARTOSC WUZKA W KOPALNI
 new upgradeCave 		= 	5400;		// CZAS ILE SIE KUPUJE KOPALNIA
 new truckMine		=	1000;		// + ILE MA DODAWAC WUZKA ZA LVL
-new Float:boostAmount	=	2.0		// ILE RAZY MA SZYBCIEJ KOPAC
+new Float:boostAmount	=	2.0;		// ILE RAZY MA SZYBCIEJ KOPAC
 
-new userUpgradeMine[33][up_TOTAL]
-new userSaveOption[33]
-enum {  PLAYER_HUD_RED, PLAYER_HUD_GREEN, PLAYER_HUD_BLUE , PLAYER_TOTAL }
-new userHud[33][PLAYER_TOTAL]	
-enum{save_TEAM,save_SPRAY,save_MODELS, save_CAVE, save_INVIS, save_SOUND, save_TOTAL}
-enum { MENU_VIEW_BLOCK = 0, MENU_CHANGE_TEAM, MENU_PASSWORD, MENU_GIVING_VIP, MENU_GIVING_NUGGET, MENU_GIVING_LUZCOIN, MENU_GIVING_LVL, MENU_GIVING_SKILLPOINT , MENU_GIVING_TIME, MENU_GIVING_RESET, MENU_GIVING_EXP, MENU_PLAYER_NUGGET, MENU_PLAYER_AWARD, MENU_PLAYER_STAMINA, MENU_PLAYER_MUTE, MENU_PLAYER_WARNING, MENU_PLAYER_CAMP, MENU_SELECT_PLAYER, MENU_GIVING_BONES, MENU_CASE_CREATE}
+new userUpgradeMine[33][up_TOTAL];
+new userSaveOption[33];
+enum {  PLAYER_HUD_RED, PLAYER_HUD_GREEN, PLAYER_HUD_BLUE , PLAYER_TOTAL };
+new userHud[33][PLAYER_TOTAL];	
+enum{save_TEAM,save_SPRAY,save_MODELS, save_CAVE, save_INVIS, save_SOUND, save_TOTAL};
+enum { 
+	MENU_VIEW_BLOCK = 0, MENU_CHANGE_TEAM, MENU_PASSWORD, MENU_GIVING_VIP, MENU_GIVING_NUGGET, MENU_GIVING_LUZCOIN, MENU_GIVING_LVL, MENU_GIVING_SKILLPOINT , MENU_GIVING_TIME, MENU_GIVING_RESET,
+	MENU_GIVING_EXP, MENU_PLAYER_NUGGET, MENU_PLAYER_AWARD, MENU_PLAYER_STAMINA, MENU_PLAYER_MUTE, MENU_PLAYER_WARNING, MENU_PLAYER_CAMP, MENU_SELECT_PLAYER, MENU_GIVING_BONES, MENU_CASE_CREATE,
+	MENU_GIVING_EXP_ALL, MENU_GIVING_BONES_ALL, MENU_GIVING_NUGGET_ALL,MENU_GIVING_VIP_ALL, MENU_GIVING_SVIP_ALL
+};
 enum ( <<= 1 ){B1 = 1, B2, B3, B4, B5, B6, B7, B8, B9, B0 };
 
 new const flagVip[]	=	"t";
+new const flagSVip[]	=	"s";
 public bool:isSuperAdmin(id)	return (!!(has_flag(id, "a")));
 public bool:isAdmin(id)		return (!!(has_flag(id, "b")));
 public bool:isVip(id)		return (!!(has_flag(id, flagVip)) || userVip[id]  || (timeVip[id] - get_systime() > 0));
+public bool:isSVip(id)		return (!!(has_flag(id, flagSVip)) || userSVip[id]  || (timeSVip[id] - get_systime() > 0));
 	
 #define MAXHUDDEAL 5
 new const Float:hudPosHit[9][1] = {
 	0.4, 0.44, 0.48, 0.52, 0.56, 0.60, 0.64, 0.68, 0.72
-}
+};
 	
-new reconnectTable[33][33]
-new Float:reconnectTableTime[33]
-new Float:fOriginSave[33][3]
-new Float:fOffset[33][3]	
-new bool:extraClone
+new reconnectTable[33][33];
+new Float:reconnectTableTime[33];
+new Float:fOriginSave[33][3];
+new Float:fOffset[33][3];
+new bool:extraClone;
 
-new userFPS[33]
+new userFPS[33];
 
 new gTime;
-new gBarrier
-new bool:buildTime
-new bool:prepTime
-new bool:roundEnd
-new bool:gameTime
+new gBarrier;
+new bool:buildTime;
+new bool:prepTime;
+new bool:roundEnd;
+new bool:gameTime;
 new bool:roundGood;
 new bool:clockStop;
 
@@ -298,15 +293,16 @@ new gBuildTime 		= 	145;
 new gPrepTime 		= 	40;
 
 
-new const hpVipHuman	=	30
-new const hpVipZombi	=	500
+new const hpSVipHuman	=	40;
+new const hpSVipZombi	=	800;
+
+new const hpVipHuman	=	25;
+new const hpVipZombi	=	500;
 
 
-new const userAwardTime	=	18000
-new const maxBlockUse 	= 	25
-new const maxBlockUseVip 	= 	30
+new const userAwardTime	=	18000;
 	
-new maxEnts 		= 	1024	
+new maxEnts 		= 	1024;	
 
 	/*----------------------*\
 --------| WEAPON		 |
@@ -317,10 +313,10 @@ new maxEnts 		= 	1024
 new userWeaponSelect[33];
 
 	
-new userWeaponHs[33][TOTALWEAPONS]
-new userWeaponKill[33][TOTALWEAPONS]
-new userWeaponLevel[33][TOTALWEAPONS]
-new Float:userWeaponDamage[33][TOTALWEAPONS]
+new userWeaponHs[33][TOTALWEAPONS];
+new userWeaponKill[33][TOTALWEAPONS];
+new userWeaponLevel[33][TOTALWEAPONS];
+new Float:userWeaponDamage[33][TOTALWEAPONS];
 
 new const weapons[][] = { 
 	"", "weapon_p228", "", "weapon_scout", "weapon_hegrenade", "weapon_xm1014", "weapon_c4", "weapon_mac10",
@@ -329,7 +325,7 @@ new const weapons[][] = {
 	"weapon_tmp", "weapon_g3sg1", "weapon_flashbang", "weapon_deagle", "weapon_sg552", "weapon_ak47", "weapon_knife", "weapon_p90" 
 };
 
-new const MAXLVL		=	60
+new const MAXLVL		=	60;
 new const allGuns[TOTALWEAPONS][6][]={
 	// GIVE			| NAME			| LEVEL		| TIME		| MAX LV: 	| KILLS
 	  {"weapon_glock18", 	"Glock",		"0",		"0",		"10",		"100"   }
@@ -356,7 +352,7 @@ new const allGuns[TOTALWEAPONS][6][]={
 	,{"weapon_sg550",   	"SG550",    		"50",		"72000",	"8",		"700" 	}
 	,{"weapon_g3sg1",   	"G3SG1",    		"55",		"90000",	"8",		"700" 	}
 	,{"weapon_m249",    	"M249",    	 	"60",		"126000",	"10",		"1000" 	}
-}
+};
 
 new Float:paramWeaponFloat[TOTALWEAPONS][] = {
 	// MAX DMG	| COST		| MIN * ( lvl * 0.5 ) - MAX * ( lvl * 2):
@@ -386,10 +382,10 @@ new Float:paramWeaponFloat[TOTALWEAPONS][] = {
 	,{ 25.5,		100.0,		0.5 }		// M249
 	
 	
-}
+};
 
-new const g_MaxClipAmmo[] = {0,13,0,10,0,7,0,30,30,0,15,20,25,30,35,25,12,20,10,30,100,8,30,30,20,0,7,30,30,0,50}
-new bool:userWeaponBool[33]
+new const g_MaxClipAmmo[] = {0,13,0,10,0,7,0,30,30,0,15,20,25,30,35,25,12,20,10,30,100,8,30,30,20,0,7,30,30,0,50};
+new bool:userWeaponBool[33];
 
 
 	/*----------------------*\
@@ -404,8 +400,8 @@ new const EXPLODE[]		=	"sprites/basebuildervt/poison.spr";
 new const LEVELUP[]		=	"sprites/basebuildervt/pousprite.spr";
 new const EXPLODEFIREBALL[]	=	"sprites/basebuildervt/explo.spr";
 new const EXPLODICEBOLT[]	=	"sprites/basebuildervt/iceboltexplode.spr";
-new const POUICEBOLT[]		=	"sprites/basebuildervt/iceBoltPou.spr"
-new const SHROOMSLEEP[]		=	"sprites/basebuildervt/sleepshroom.spr"
+new const POUICEBOLT[]		=	"sprites/basebuildervt/iceBoltPou.spr";
+new const SHROOMSLEEP[]		=	"sprites/basebuildervt/sleepshroom.spr";
 
 new const modelPoison[]		=	"models/basebuildervt/bottle.mdl";
 new const modelField[]		=	"models/basebuildervt/field.mdl";
@@ -415,7 +411,8 @@ new const modelBomb[]		=	"models/basebuildervt/bomb.mdl";
 new const modelIce[]		=	"models/basebuildervt/icebonus.mdl";
 new const modelFire[]		=	"models/basebuildervt/firebonus.mdl";
 new const modelTrapBomb[]	=	"models/basebuildervt/bombertrap.mdl";
-new const modelRocket[] 		= 	"models/basebuildervt/rocket.mdl"
+new const modelRocket[] 		= 	"models/basebuildervt/rocket.mdl";
+new const modelRocketDefault[] 	= 	"models/rpgrocket.mdl";
 
 new const classPoison[]		=	"poisonClass";
 new const classField[]		=	"electricClass";
@@ -425,7 +422,7 @@ new const classFireBall[]	=	"fireBallClass";
 new const classIceBolt[]		=	"iceBoldClass";
 new const classBomb[]		=	"bombClass";
 new const classbombTrap[]	=	"bombTrapClass";
-new const rocketClass[] 		= 	"rocketClass"
+new const rocketClass[] 		= 	"rocketClass";
 
 
 new spriteBeam;
@@ -439,8 +436,7 @@ new sprite_bluez
 new thunder;
 new sprite_sleepshroom;
 
-
-enum{ sound_BUILD, sound_PREP , sound_START, sound_START2, sound_WINCT, sound_WINTT, sound_MOVESTART, sound_MOVESTOP, sound_HELLO,sound_LAUGHT, sound_PICKUP,sound_TOTAL }
+enum{ sound_BUILD, sound_PREP , sound_START, sound_START2, sound_WINCT, sound_WINTT, sound_MOVESTART, sound_MOVESTOP, sound_HELLO,sound_LAUGHT, sound_PICKUP,sound_TOTAL };
 new const soundsGame[sound_TOTAL][]={
 	
 	"basebuildervt/phase_build3.wav",
@@ -456,8 +452,7 @@ new const soundsGame[sound_TOTAL][]={
 	"basebuildervt/pickupgem.wav",
 	
 };
-
-enum { bonus_sound_ELECTRO,   bonus_sound_TRAP,  bonus_sound_FIRE, bonus_sound_ICEBOLT, bonus_sound_QUADDAMAGE,bonus_sound_POISON, bonus_sound_BRICK, bonus_sound_TOTAL }
+enum { bonus_sound_ELECTRO,   bonus_sound_TRAP,  bonus_sound_FIRE, bonus_sound_ICEBOLT, bonus_sound_QUADDAMAGE,bonus_sound_POISON, bonus_sound_BRICK, bonus_sound_TOTAL };
 new const bonusSound[bonus_sound_TOTAL][] = {
 	  "basebuildervt/electroshock.wav"
 	,"basebuildervt/trap.wav"
@@ -466,8 +461,7 @@ new const bonusSound[bonus_sound_TOTAL][] = {
 	,"basebuildervt/quaddamage.wav"
 	,"basebuildervt/glasspoison.wav"
 	,"basebuildervt/brick.wav"
-}
-
+};
 new const zombieSound[15][] ={
 	
 	"basebuildervt/zombie/pain/pain1.wav",		// 0
@@ -486,7 +480,7 @@ new const zombieSound[15][] ={
 	"basebuildervt/zombie/miss/miss2.wav",		// 13
 	"basebuildervt/zombie/miss/miss3.wav" 		// 14
 	
-}
+};
 
 	/*----------------------*\
 --------| STUCK			 |
@@ -498,8 +492,8 @@ new const Float:size[][3] = {
 	{0.0, 0.0, 3.0}, {0.0, 0.0, -3.0}, {0.0, 3.0, 0.0}, {0.0, -3.0, 0.0}, {3.0, 0.0, 0.0}, {-3.0, 0.0, 0.0}, {-3.0, 3.0, 3.0}, {3.0, 3.0, 3.0}, {3.0, -3.0, 3.0}, {3.0, 3.0, -3.0}, {-3.0, -3.0, 3.0}, {3.0, -3.0, -3.0}, {-3.0, 3.0, -3.0}, {-3.0, -3.0, -3.0},
 	{0.0, 0.0, 4.0}, {0.0, 0.0, -4.0}, {0.0, 4.0, 0.0}, {0.0, -4.0, 0.0}, {4.0, 0.0, 0.0}, {-4.0, 0.0, 0.0}, {-4.0, 4.0, 4.0}, {4.0, 4.0, 4.0}, {4.0, -4.0, 4.0}, {4.0, 4.0, -4.0}, {-4.0, -4.0, 4.0}, {4.0, -4.0, -4.0}, {-4.0, 4.0, -4.0}, {-4.0, -4.0, -4.0},
 	{0.0, 0.0, 5.0}, {0.0, 0.0, -5.0}, {0.0, 5.0, 0.0}, {0.0, -5.0, 0.0}, {5.0, 0.0, 0.0}, {-5.0, 0.0, 0.0}, {-5.0, 5.0, 5.0}, {5.0, 5.0, 5.0}, {5.0, -5.0, 5.0}, {5.0, 5.0, -5.0}, {-5.0, -5.0, 5.0}, {5.0, -5.0, -5.0}, {-5.0, 5.0, -5.0}, {-5.0, -5.0, -5.0}
-}
-new stuck[33]
+};
+new stuck[33];
 
 	/*----------------------*\
 --------| ACCOUNT		 |
@@ -513,7 +507,7 @@ new userPassword[33][12];
 --------| ZOMBIE | CT		 |
 	\*----------------------*/
 
-enum{class_CLASSIC, class_SPEED, class_FAT, class_TANK, class_DRACULA, class_SNOWMAN,  class_DEVIL, class_HEALTH, class_POISON, class_DEATH, class_TERMINATOR, class_DEMON, class_TOTAL}
+enum{class_CLASSIC, class_SPEED, class_FAT, class_TANK, class_DRACULA, class_SNOWMAN,  class_DEVIL, class_HEALTH, class_POISON, class_DEATH, class_TERMINATOR, class_DEMON, class_TOTAL};
 new const classesZombies[class_TOTAL][8][] = {
 	// NAZWA		| HP		| SPEED		| LVL		| GODZ / sek	| MODEL			| RECE						| OPIS					
 	{"Klasyczne",     		"2500",         	"250",         	"0",        	"0",        	"bb_classic",    		"models/basebuildervt/v_hands.mdl",		"Klasyczne Zombi | Balans"}
@@ -529,10 +523,10 @@ new const classesZombies[class_TOTAL][8][] = {
 	,{"Terminator",		"4000",		"300",		"50",		"70000",	"bb_nterminator",	"models/basebuildervt/v_terminator.mdl",	"Posiada szybsze rece zadaje po 10dmg" }
 	,{"Demon",		"5000",		"220",		"59",		"120000",	"bb_ndemon",		"models/basebuildervt/v_demon.mdl",		"Dostaje 15% mniej obrazenia"}
 
-}
-new userNewClass[33]
-new userClass[33]
-new userMaxHealth[33]
+};
+new userNewClass[33];
+new userClass[33];
+new userMaxHealth[33];
 new Float:userMaxSpeed[33];
 new userMaxArmor[33];
 new bool:userDraculaUsed[33];
@@ -542,7 +536,7 @@ new Float:userDracula[33];
 new const MODELHANDS[]	=	 "models/basebuildervt/kosa/v_hand.mdl"
 
 new const MAXLVLCLASS 	=	30;
-enum{ human_FREE, human_HEALER, human_ELEKTRYK, human_LAB, human_HUNTER,  human_SHOOTER, human_BULLDOZER,human_MAG, human_ICEMAG, human_AIM, human_BOOMBERMA, human_TRUPOSZ, human_SEARCH, human_MINER,  human_TOTAL }
+enum{ human_FREE, human_HEALER, human_ELEKTRYK, human_LAB, human_HUNTER,  human_SHOOTER, human_BULLDOZER,human_MAG, human_ICEMAG, human_AIM, human_BOOMBERMA, human_TRUPOSZ, human_SEARCH, human_MINER,  human_TOTAL };
 
 new const defaultCostClass = 7500;
 new const classesHuman[human_TOTAL][5][] = {	
@@ -562,7 +556,7 @@ new const classesHuman[human_TOTAL][5][] = {
 	,{"Poszukiwacz",	"Posiada wieksza szanse na dropniecie skrzyni! Oraz rakiete ktora moze sterowac",		"0",		"1",			"11"}
 	,{"Gornik",		"Ma szanse na wypadniecie brylek podczas strzelania! Oraz szybkostrzelnosc",			"0",		"1",			"12"}
 	
-}
+};
 new const classHumanKnifeModel[human_TOTAL][2][] = {
 	
 	  { "models/basebuildervt/kosa/v_budowniczy.mdl", 	"models/basebuildervt/kosa/p_budowniczy.mdl" } 
@@ -580,7 +574,7 @@ new const classHumanKnifeModel[human_TOTAL][2][] = {
 	,{ "models/basebuildervt/kosa/v_poszukiwacz.mdl" ,"models/basebuildervt/kosa/p_poszukiwacz.mdl" } 
 	,{ "models/basebuildervt/kosa/v_pickaxe.mdl", 	"models/basebuildervt/kosa/p_pickaxe.mdl" } 
 	
-}
+};
 new const paramClassesHuman[human_TOTAL][4][] = {
 	// TYP (1.1)	|  TYP (1.2)		| TYP (2.1)	|  TYP (2.2)
 	  { "0.05",		"_",			"_",		"_" }
@@ -597,9 +591,8 @@ new const paramClassesHuman[human_TOTAL][4][] = {
 	,{ "0.15",		"_",			"0.25",		"_" }
 	,{ "0.01",		"20",			"_",		"_" }
 	,{ "0.15",		"_",			"_",		"_" }
-}
-
-enum { bonus_BOTTLE, bonus_TRAP, bonus_FIELD , bonus_HEALTH, bonus_AMMO, bonus_PUSH,bonus_FIREBALL, bonus_ICEBOLT,  bonus_HS, bonus_BOMB, bonus_DAMAGE,bonus_ROCKET, bonus_SPEED, bonus_TOTAL }
+};
+enum { bonus_BOTTLE, bonus_TRAP, bonus_FIELD , bonus_HEALTH, bonus_AMMO, bonus_PUSH,bonus_FIREBALL, bonus_ICEBOLT,  bonus_HS, bonus_BOMB, bonus_DAMAGE,bonus_ROCKET, bonus_SPEED, bonus_TOTAL };
 new const bonusClass[bonus_TOTAL][5][] = {
 	// NAZWA			| MIN	| MAX	| ODEJMIJ CZAS	| 	| OBRAZENIA
 	  { "Fiolka Radioakywna", 	"20", 	"250",	"6",			"20" }
@@ -616,7 +609,7 @@ new const bonusClass[bonus_TOTAL][5][] = {
 	,{ "Rakieta",			"20",	"237",	"6",			"46"   }
 	,{ "Szybkostrzelnosc",		"20",	"215",	"5",			"1"   }
 	
-}
+};
 new Float:userClassUsed[33][bonus_TOTAL]
 new Float:userClassLast[33][bonus_TOTAL];
 new userClassHuman[33]
@@ -625,16 +618,12 @@ new Float:userSlow[33];
 new bool:userCritical[33];
 new bool:userAddAmmo[33];
 new Float:userSkillLast[33][bonus_TOTAL]
-
-
 new Float:userSpeedFire[33];
-
 new Float:userDamagexTwo[33];
 new Float:userHitOnlyHs[33];
-
 new userHuman[33];
 new userHumanLevel[33][human_TOTAL];
-new Float:userExpClass[33][human_TOTAL]
+new Float:userExpClass[33][human_TOTAL];
 new userClassPoint[33];
 
 new typeExpClass[5][2][] = {
@@ -644,8 +633,8 @@ new typeExpClass[5][2][] = {
 	,{ "75%",	"| 75% Klasa" }
 	,{ "100%",	"| 100% Klasa" }
 	
-}
-new userGiveClassExp[33]
+};
+new userGiveClassExp[33];
 
 	/*----------------------*\
 --------| HAPPY HOUR TIME	 |
@@ -665,18 +654,18 @@ new randomHappyHour;
 new bool:hourTime;
 new nextColorsHappy;
 new const happyHourChange 	=	15;
-enum { happy_EXP, happy_NUGGETS, happy_2XDMG, happy_DMG_PISTOL, happy_DMG_WEAPON,  happy_ALL_EXP_NUGGET,happy_CASE, happy_TOTAL }
+enum { happy_EXP, happy_NUGGETS, happy_BONES, happy_2XDMG, happy_DMG_PISTOL, happy_DMG_WEAPON,  happy_ALL_EXP_NUGGET,happy_CASE, happy_TOTAL };
 new const happyHourDesc[happy_TOTAL][2][] = {
 	  { "Dwa razy wiecej EXP'a" ,							"2x EXP"}
 	,{ "Dwa razy wiecej Brylek" ,							"2x Brylki"}
+	,{ "Dwa razy wiecej Kosci" ,							"2x Kosci"}
 	,{ "Zadajesz 10%% wiecej obrazen ze wszystkich broni" ,				"10% ALL WEAPON DMG"}
 	,{ "Zadajesz 30%% wiecej obrazen z pistoletow" ,					"30% PISTOL DMG"}
 	,{ "Zadajesz 20%% wiecej obrazen z karabinow" ,					"20% RIFLE DMG"}
-	,{ "Zadajesz 15%% wiecej obrazen ze wszystkich broni + x2 EXP/BRYLEK",		"2x EXP/BRYLKI 15% ALL WEAPON DMG" }
+	,{ "Zadajesz 15%% wiecej obrazen ze wszystkich broni + x2 EXP/BRYLEK/KOSCI",	"2x EXP/BRYLKI/KOSCI 15% ALL WEAPON DMG" }
 	,{ "Szansa na zdobycie skrzynki jest dwa razy wieksza",				"2x DROP CASE" }
 		
-}
-
+};
 	/*----------------------*\
 --------| TEAM			 |
 	\*----------------------*/
@@ -688,8 +677,7 @@ new typeExpParty[5][2][] = {
 	,{ "75%",	 "oddaje^x04 75%% EXP'a" }
 	,{ "Caly",	 "oddaje caly swoj^x04 EXP" }
 	
-}
-
+};
 new typeNuggetParty[5][2][] = {
 	  { "Nie oddawaj", "nie oddaje^x04 Brylek'a" }
 	,{ "25%",	 "oddaje^x04 25%% Brylek" }
@@ -697,16 +685,14 @@ new typeNuggetParty[5][2][] = {
 	,{ "75%",	 "oddaje^x04 75%% Brylek" }
 	,{ "Wszystko",	 "oddaje wszystkie swoje^x04 Brylki" }
 	
-}
-
-
+};
 new bool:userHelp[33];
 
 	/*----------------------*\
 --------| SHOP			 |
 	\*----------------------*/
 
-enum { shopB_HP, shopB_AMMO, shopB_DMG, shopB_RECOIL, shopB_NADE, shopB_FROST, shopB_PUSH, shopB_AUTOKAMPA,shopB_KROWA, shopB_TOTAL }
+enum { shopB_HP, shopB_AMMO, shopB_DMG, shopB_RECOIL, shopB_NADE, shopB_FROST, shopB_PUSH, shopB_AUTOKAMPA,shopB_KROWA, shopB_TOTAL };
 new const shopDescBuilder[shopB_TOTAL][4][] = {
 	// NAZWA				| ILOSC/MOC	| MAX	| CENA
 	  { "\w+50 HP", 				"50", 		"2", 	"100" }
@@ -718,16 +704,14 @@ new const shopDescBuilder[shopB_TOTAL][4][] = {
 	,{ "\wGranat Odpychajacy",		"1",		"3",	"340" }
 	,{ "\wLosowa AutoKampa\y - 20sek",	"20",		"2",	"750" }
 	,{ "\wKrowa\y - 15 sek",			"15",		"1",	"800" }
-}
-
-
-enum { shopZ_HPROUND, shopZ_HP, shopZ_REGENERACJA, shopZ_TOTAL }
+};
+enum { shopZ_HPROUND, shopZ_HP, shopZ_REGENERACJA, shopZ_TOTAL };
 new const shopDescZombie[shopZ_TOTAL][4][] = {
 	// NAZWA				| ILOSC - MOC	| MAX	| CENA
 	  { "\w+1000\y HP\y [Runda]", 		"1000", 		"5", 	"270" }
 	,{ "\w+2500\y HP", 			"2500", 		"1", 	"370" }
 	,{ "\wRegeneracja\y (25hp/s)\y [Runda]", "25",		"1",	"400" }
-}
+};
 new bool:userSpeedAttack[33];
 new bool:userExtraDmg[33];
 new bool:userNoRecoil[33];
@@ -745,19 +729,16 @@ new userDeathNum[33];
 	/*----------------------*\
 --------| MISSION		 |
 	\*----------------------*/
-enum{ NUGGET = 0, EXP, VIP, LUZACZKI, TOTAL_ITEMS} 
-	
+enum{ NUGGET = 0, EXP, VIP, LUZACZKI, TOTAL_ITEMS};
 new const nameItems[TOTAL_ITEMS][1][] = {
-	
 	   {"Brylki" }
 	, {"Exp" }
 	, {"VIP (Godz.)" }
 	, {"Luzaczki" }
-}
-	
-	
+};
 enum{  	 mission_CONNECT = 0,mission_HUMANDEATH, mission_SURVIVOR, mission_BUYHEALTH, mission_MAGIC,mission_BUILD,
-	 mission_CLONE, mission_TOCIX, mission_NEW, mission_SOLD, mission_BEST, mission_TOTAL        }
+	 mission_CLONE, mission_TOCIX, mission_NEW, mission_SOLD, mission_BEST, mission_TOTAL        
+};
 new const missionDesc[mission_TOTAL][4][] = {
 	
 	  {"Staly Gracz",		"Polacz sie z serwerem: %d razy",		"100",		""}		// 1
@@ -772,9 +753,7 @@ new const missionDesc[mission_TOTAL][4][] = {
 	,{"Przecena",			"Wybierz: %d razy bron",			"250",		""}		// 10
 	,{"Najlepszy",			"Zdobadz: %d razy najwiecej Brylek",		"10",		""}		// 11
 	
-}
-
-
+};
 new const missionAward[mission_TOTAL][] = {
 	
 	  { NUGGET,	2500}		// 1
@@ -789,11 +768,10 @@ new const missionAward[mission_TOTAL][] = {
 	,{ NUGGET,	2500}		// 10
 	,{ LUZACZKI,	15}		// 11
 	
-}
-
-
+};
 enum{  	mission_secret_NEWBEGINNING = 0,  mission_secret_OPENER, mission_secret_GOLDNUGGET, mission_secret_CHEATER, mission_secret_LUCK,
-	mission_secret_LUZAK, mission_secret_BLUE, mission_secret_GRENADIER, mission_secret_COLOR, mission_secret_MASTER, mission_secret_TOTAL         }
+	mission_secret_LUZAK, mission_secret_BLUE, mission_secret_GRENADIER, mission_secret_COLOR, mission_secret_MASTER, mission_secret_TOTAL         
+};
 new const missionDescSecret[mission_secret_TOTAL][4][] = {
 
 	  {"Nowy Poczatek",	"Zrob reset trzymajac glocka.",							"1",		""}	// 1
@@ -806,7 +784,7 @@ new const missionDescSecret[mission_secret_TOTAL][4][] = {
 	,{"Grenadier",	 	"Zakup podczas rundy granat (Zamrazajacy/Podpalajacy/Odpychajacy) %d/1 razy",	"5",		""}	// 8			
 	,{"Kolorowo",	 	"Ustaw kolor HUDA na ( Czerwony - 1, Zielony - 1, Niebieski - 1 )",		"1",		""}	// 9			
 	,{"Mistrzunio",	 	"Wbij maksymalny poziom na Glocku",						"1",		""}	// 10			
-}	
+};	
 //  addSecretMission(id, mission_secret_MASTER, 1)
 
 new const missionSecretAward[mission_secret_TOTAL][] = {
@@ -822,18 +800,19 @@ new const missionSecretAward[mission_secret_TOTAL][] = {
 	,{ VIP,		48}	// 9
 	,{ EXP,		2000}	// 10
 
-}
+};
 
-enum { MISSION_MENU_BASIC, MISSION_MENU_SECRET, MISSION_MENU_PRO }
+enum { MISSION_MENU_BASIC, MISSION_MENU_SECRET, MISSION_MENU_PRO };
 new missionMenu[33];
 new isMisisonMenu[33];
-new const userMission[33][mission_TOTAL]
-new const userMissionSecret[33][mission_secret_TOTAL]
+new const userMission[33][mission_TOTAL];
+new const userMissionSecret[33][mission_secret_TOTAL];
 new userFirstDeathHuman;
 
 enum{	pro_DAMAGEFIELD = 0, pro_TIMEEFIELD,pro_BETON, pro_HIN, pro_DRACULA, pro_BEAR, pro_JELLY, pro_LARGEAMMO, pro_ECOBOX,
 	pro_CAT, pro_TARGET, pro_ICE, pro_ICEFIRE, pro_MAGICFIRE, pro_FIRE, pro_RADIO, pro_POISON,pro_PAKER, pro_DEATH, pro_LAPCZYWIEC,
-	pro_TRUPOSZ, pro_TORPEDE, pro_CASE, pro_MINER, TOTAL_PRO}
+	pro_TRUPOSZ, pro_TORPEDE, pro_CASE, pro_MINER, TOTAL_PRO
+};
 
 new const proDesc[TOTAL_PRO][5][] = {
 	   {"Pastuch Elektryczny", 		"Zadaj 10.000 obrazen stojakiem Elektrycznym", 				"1", 	"Dodatkowe 40 obrazen do stojaka",		"10000"}
@@ -856,31 +835,24 @@ new const proDesc[TOTAL_PRO][5][] = {
 	 ,{"Paker", 				"Zredukuj 25.000 obrazen jako Demon", 					"1", 	"+10% redukcji obrazen",			"25000"}
 	 ,{"Blisko smierci", 			"Zabij 15 budowniczych jako smierc umiejetnoscia", 			"1", 	"+3% do natychmiastowego zabicia",		"15"}
 	 ,{"Lapczywiec", 			"Zdobyj 5.000 brylek z Zombie klasa Budowniczy", 			"1", 	"+ losowo (5-10) Brylek za zabicie Budowniczym","5000"}
-	 
-	  ,{"Ouuuuu", 				"Zabij 300 zombie z odpalana moca Truposza", 				"1", 	"+1 Sek do czasu trwania",			"300"}
+	 ,{"Ouuuuu", 				"Zabij 300 zombie z odpalana moca Truposza", 				"1", 	"+1 Sek do czasu trwania",			"300"}
 	 ,{"Detonate", 				"Wysadz 50 razy rakiete",			 			"1", 	"+100 obrazen z rakiety",			"50"}
 	 ,{"Mam, Mam", 				"Podnies 25 skrzynek klasa Poszukiwacz", 				"1", 	"+0.5% szansy na dropniecie skrzyni ta klasa",	"25"}
 	 ,{"Kopu Kopu", 				"Zdobadz 500 dodatkowych brylek majac odpalone szybko strzelnosc", 	"1", 	"10% szybko strzelnosci",			"500"}
-}
+};
 
 new userPro[33][TOTAL_PRO];
 new userProSelected[33];
-
-
-
-
 new const teamNames[4][2][]={
 	{"...",			"..."},
 	{"\yZombie\r",		"Zombie"},
 	{"\wBudowniczy\r",	"Budowniczych"},
 	{"Spect",		"Spect"}
-}
-
-
-
+};
 new logType[33];
 enum { 	LOG_BUY,LOG_ADD, LOG_LOGOUT, LOG_LOGIN, LOG_REGISTER, LOG_ERROR, LOG_TRANSFER, LOG_ROULETTE, LOG_DELETEACCOUNT, LOG_AWARD,LOG_MISSION,LOG_CLASS,LOG_MUTE, LOG_AFK, LOG_CAVE, LOG_CONNECT,
-	LOG_CHAT, LOG_CLAN_ADD,LOG_CLAN_PROMOTION, LOG_CLAN_CREATE, LOG_CLAN_DELETE,LOG_CLAN_UPGRADE , LOG_CLAN_DEPOSIT, LOG_CLAN_RESET, LOG_CLAN_LEAVE, LOG_CLAN_MANAGE, LOG_HAT_REMOVE, LOG_HAT_ADD, LOG_WARNING_ADD, LOG_WARNING_REMOVE, LOG_WARNING_CHANGE, LOG_TOTAL }
+	LOG_CHAT, LOG_CLAN_ADD,LOG_CLAN_PROMOTION, LOG_CLAN_CREATE, LOG_CLAN_DELETE,LOG_CLAN_UPGRADE , LOG_CLAN_DEPOSIT, LOG_CLAN_RESET, LOG_CLAN_LEAVE, LOG_CLAN_MANAGE, LOG_HAT_REMOVE, LOG_HAT_ADD, LOG_WARNING_ADD, LOG_WARNING_REMOVE, LOG_WARNING_CHANGE, LOG_TOTAL 
+};
 
 new userLastDay[33];
 
@@ -901,7 +873,7 @@ new const Float:colorAmount[MAXCOLORS][4] = {
 	,{001.0, 	001.0, 	001.0,		170.0}
 	,{255.0, 	255.0, 	255.0,		170.0}
 
-}
+};
 new const colorName[MAXCOLORS][] = {
 	"Jasny Czerwony",
 	"Czerwony",
@@ -916,7 +888,7 @@ new const colorName[MAXCOLORS][] = {
 	"Czarny",
 	"Bialy"
 	
-}
+};
 
 
 new Handle:sql, Handle:connection, bool:sqlConnected;
@@ -927,12 +899,12 @@ new userPoints[33];
 new userAcceptRestore[33];
 
 
-enum _:clanInfo { CLAN_ID, CLAN_LEVEL, CLAN_POINTS, CLAN_NUGGET,CLAN_KILLS, CLAN_MEMBERS, Trie:CLAN_STATUS, CLAN_NAME[64] , CLAN_HEALTH, CLAN_DAMAGECLASS, CLAN_DAMAGEPLAYER, CLAN_CRITIC,CLAN_GOBLIN,CLAN_COOLDOWN,CLAN_EXPDROP, CLAN_NUGGETDROP, CLAN_INFO[64], CLAN_MOTD[20], CLAN_UPGRADETIME};
+enum _:clanInfo { CLAN_ID, CLAN_LEVEL, CLAN_POINTS, CLAN_NUGGET,CLAN_KILLS, CLAN_MEMBERS, Trie:CLAN_STATUS, CLAN_NAME[64] , CLAN_HEALTH, CLAN_DAMAGECLASS, CLAN_DAMAGEPLAYER, CLAN_CRITIC,CLAN_COOLDOWN,CLAN_EXPDROP, CLAN_NUGGETDROP, CLAN_INFO[64], CLAN_MOTD[20], CLAN_UPGRADETIME};
 enum _:statusInfo { STATUS_NONE, STATUS_MEMBER, STATUS_DEPUTY, STATUS_LEADER };
 
 new chosenName[33][64], clan[33], chosenId[33], Array:bbClans;
 new bool:pageClan[33];
-new userClanSend[33]
+new userClanSend[33];
 
 
 
@@ -945,7 +917,7 @@ enum {     SYMBOL_DOT = 0, SYMBOL_LINE, SYMBOL_PERMILLE, SYMBOL_CROSS, SYMBOL_AP
 	SYMBOL_CIRCLE_R, SYMBOL_SMALL_DOT,SYMBOL_EMPTY_DOT, SYMBOL_LINE_CURVE,SYMBOL_VERTICAL_LINE, SYMBOL_SQUARE_X, SYMBOL_DOLAR, SYMBOL_PILCROW,
 	SYMBOL_SMALL_A, SYMBOL_SMALL_C, SYMBOL_SMALL_E, SYMBOL_SMALL_L, SYMBOL_SMALL_N, SYMBOL_SMALL_O, SYMBOL_SMALL_S, SYMBOL_SMALL_X, SYMBOL_SMALL_Z, 
 	SYMBOL_LARGE_A, SYMBOL_LARGE_C, SYMBOL_LARGE_E, SYMBOL_LARGE_L, SYMBOL_LARGE_N, SYMBOL_LARGE_O, SYMBOL_LARGE_S, SYMBOL_LARGE_X, SYMBOL_LARGE_Z, TOTAL_SYMBOL_CUSTOM
-}
+};
 
 new const symbolsCustom[TOTAL_SYMBOL_CUSTOM][] = {
 	  "^xe2^x80^xa2"		// ï		SYMBOL_DOT
@@ -987,23 +959,15 @@ new const symbolsCustom[TOTAL_SYMBOL_CUSTOM][] = {
 	,"^xc5^x9a"		// å		SYMBOL_LARGE_S
 	,"^xc5^xb9"		// è		SYMBOL_LARGE_X
 	,"^xc5^xbb"		// Ø		SYMBOL_LARGE_Z
-}
-
-
-//symbolsCustom[SYMBOL_DR_ARROW]
-
-
-
-new blood
-new blood2
+};
 
 #define MAXNUGGETSFLOOR 100
 
 
-enum { RED_NUGGET,  GREEN_NUGGET, YELLOW_NUGGET, BLUE_NUGGET, PINK_NUGGET, BLACK_NUGGET, TOTAL_NUGET}
+enum { RED_NUGGET,  GREEN_NUGGET, YELLOW_NUGGET, BLUE_NUGGET, PINK_NUGGET, BLACK_NUGGET, TOTAL_NUGET};
 
-new const Float:delayEffectNugget[] ={ 0.75, 0.7, 0.1, 0.2, 0.2, 1.0 }
-new listNuggetOnFloor[MAXNUGGETSFLOOR]
+new const Float:delayEffectNugget[] ={ 0.75, 0.7, 0.1, 0.2, 0.2, 1.0 };
+new listNuggetOnFloor[MAXNUGGETSFLOOR];
 
 new const modelNuggetDrop[] 	= 	"models/basebuildervt/brylka.mdl";
 
@@ -1012,7 +976,7 @@ new const modelNuggetDrop[] 	= 	"models/basebuildervt/brylka.mdl";
 #define MAXCASESFLOOR 15
 new listCaseOnFloor[MAXCASESFLOOR];
 
-new bool:userPressOpen[33]
+new bool:userPressOpen[33];
 
 new const caseClass[] 	= 	"casesClass";
 new const caseModel[] 	= 	"models/basebuildervt/chest.mdl";
@@ -1025,9 +989,9 @@ new const colorNugget[TOTAL_NUGET][3] = {
 	,{ 35,   163 , 255 }
 	,{ 255, 0 ,     144 }
 	,{ 255, 255, 255 }
-}
+};
 
-enum { CREATE_CASE_PLAYER, Float:CREATE_CASE_ORIGIN[3], CREATE_CASE_TYPE,bool:CREATE_CASE_TIME, CREATE_CASE_TOTAL }
+enum { CREATE_CASE_PLAYER, Float:CREATE_CASE_ORIGIN[3], CREATE_CASE_TYPE,bool:CREATE_CASE_TIME, CREATE_CASE_TOTAL };
 new caseCreate[33][CREATE_CASE_TOTAL];
 
 
@@ -1039,14 +1003,14 @@ new userChristmasStart[33];
 new userChristmasMission[33];
 new userChristmasType[33];
 new userSelectHat[33];
-new userSelectNewHat[33]
+new userSelectNewHat[33];
 new userHat[33][4];
 
 
 	#if defined CHRISTMAS_ADDON
 
-		new firstDayDecember  =  1606777200//1606780800;
-		new const timePlayChristmas[] = {  15,14,12,17,14,18,9,16,14,17,18,17,17,16,16,16,16,15,18,19,16,15}
+		new firstDayDecember  =  1606777200;//1606780800;
+		new const timePlayChristmas[] = {  15,14,12,17,14,18,9,16,14,17,18,17,17,16,16,16,16,15,18,19,16,15};
 		new randomSoundChristmas;
 		new configFile[128];
 		
@@ -1061,7 +1025,7 @@ new userHat[33][4];
 		{ "models/basebuildervt/ch_c2.mdl", 	"49", 		"67" },
 		{ "models/basebuildervt/ch_c3.mdl", 	"68", 		"91" },
 		{ "models/basebuildervt/ch_c4.mdl", 	"92", 		"97" }
-	}
+	};
 	enum { 	
 		CH_KILL1 = 0,		// 1
 		CH_PICKUP,		// 2
@@ -1097,11 +1061,12 @@ new userHat[33][4];
 		
 	
 	CHRISTMAS_TOTAL_MISSION
-	}
+	};
 	
 	#if defined CHRISTMAS_ADDON
 		
-		
+		new countDeath;
+
 		new const christmasMission[CHRISTMAS_TOTAL_MISSION][2][] = {
 			  { "Zabij 100 zombie", 				"100" }	// 1
 			,{ "Podnies 500 brylek", 			"500" }	// 2
@@ -1135,7 +1100,7 @@ new userHat[33][4];
 			,{ "Zgin jako trzecia osoba 10 razy",		"10"}	// 30
 			,{ "Odbierz bron 30 razy",			"30" }	// 31		// PINGWIN NA PLECACH
 			
-		}
+		};
 	#endif
 	
 	enum { 	
@@ -1239,7 +1204,7 @@ new userHat[33][4];
 		HAT_LATAJACYROBOCIK, 
 		
 	MAXHAT // 98
-	}
+	};
 	
 	
 		
@@ -1344,14 +1309,13 @@ new userHat[33][4];
 		,{"Latajaca Kostka",		"" }
 		,{"Latajacy Robocik",		"" }
 	
-	}
+	};
 	new selectHat[33][MAXHAT];
 
 	
 	
 enum { PRICE_DEATH, PRICE_CLASS, bool:PRICE_GOD, PRICE_TIME, bool:PRICE_START, bool:PRICE_BUYGOD, bool:PRICE_LOST,  PRICE_TOTAL }
-new userDeathPrice[33][PRICE_TOTAL]
-
+new userDeathPrice[33][PRICE_TOTAL];
 new userMutePlayer[33][33];
 
 new Float:bonusExpTeam;
@@ -1359,9 +1323,9 @@ new Float:bonusExpTeam;
 #define MAXLEN 64
 #define MAXWAR 15
 	
-new userWarningName[33][MAXLEN], userWarningTime[33][MAXLEN], userWarningMap[33][MAXLEN]
-new userWarningPlayer[33][MAXLEN]
-new userWarningAdmin[33][MAXLEN]
+new userWarningName[33][MAXLEN], userWarningTime[33][MAXLEN], userWarningMap[33][MAXLEN];
+new userWarningPlayer[33][MAXLEN];
+new userWarningAdmin[33][MAXLEN];
 new userWarningAmount[33];
 new userWarningInfo[33];
 new userWarningMenu[33][33];
@@ -1370,9 +1334,12 @@ new userWarningItem[33];
 new userViewClan[33][33];
 new userViewClanInfo[33];
 
+new userTutorMsg[33][181];
+new Float:userLastTutor[33];
+
 enum { UP_ZM_HEALTH, UP_ZM_SPEED, UP_ZM_REDUCTION, UM_ZM_TOTAL}
 
-new userZombie[33][class_TOTAL][UM_ZM_TOTAL]
+new userZombie[33][class_TOTAL][UM_ZM_TOTAL];
 
 new const upgradeClasses[class_TOTAL][9][] = {
 	// ADD HEALTH		| ADD SPEED	| ADD REDUCTION	| MAX HEALTH	| MAX SPEED	| MAX REDUCTION		| COST HEALTH	| COST SPEED	| COST REDUCTION			
@@ -1389,7 +1356,64 @@ new const upgradeClasses[class_TOTAL][9][] = {
 	,{"30",			"8",		"0.4",		"15",        	"15",        	"10",                		"45",        	"60",        	"35"}            // Terminator
 	,{"35",			"6",		"0.3",		"20",        	"15",        	"10",                		"30",        	"40",        	"60"}            // Demon
 
-}
+};
+
+enum _:allCvars {
+	cvarNightMultiplyEnable,
+	cvarNightMultiplyTo,
+	cvarNightMultiplyFrom,
+	Float:cvarNightMultiply,
+	Float:cvarDropPercentCase,
+	Float:cvarExpForWillSurvive,
+	Float:cvarExpForWillSurviveVip,
+	cvarNuggetForWillSurvive,
+	cvarNuggetForWillSurviveVip,
+	cvarHelpMaxCount,
+	cvarHelpEnable,
+	cvarMoveMaxBlock,
+	cvarMoveMaxBlockVip,
+	cvarClansCostNugget,
+	cvarClansCostLevel,
+	cvarClansCostLuzaczki,
+	cvarClansStartMember,
+	cvarClansLevelMax,
+	cvarClansLevelCost,
+	cvarClansLevelCostNext,
+	cvarClansLevelKill,
+	cvarClansLevelKillNext,
+	cvarClansLevelTimeUpgrade,
+	cvarClansUpgradeExp,
+	cvarClansUpgradeNugget,
+	cvarClansUpgradeHealth,
+	cvarClansUpgradeCritic,
+	cvarClansUpgradeDamagePlayer,
+	cvarClansUpgradeDamageClass,
+	cvarClansUpgradeCoolDown,
+	cvarClansRestore,
+	cvarSchroomFrom,
+	cvarSchroomTo,
+	cvarSchroomPlayers,
+	cvarPointToDeaths,
+	cvarPointToKills,
+	
+	cvarMoveMaxBlockSVip,
+	Float:cvarExpForWillSurviveSVip,
+	cvarNuggetForWillSurviveSVip,
+};
+new bbCvar[allCvars];
+enum _:allForward{
+	forwardSpawned,
+	forwardNewRound,
+	forwardStartRound,
+	forwardRestartRound,
+	forwardEndRound,
+	forwardEndGame,
+	forwardStartGame,
+	forwardStartPrep,
+	forwardStartBuild,
+	forwardStartRelease
+};
+new bbForward[allForward];
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
 */

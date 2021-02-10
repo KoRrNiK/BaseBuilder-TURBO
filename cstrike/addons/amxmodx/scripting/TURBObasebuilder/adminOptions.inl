@@ -746,7 +746,6 @@ public adminResetBlock(type, id1, id2){
 			for(new i = 0; i < 3; i ++) saveEntOrigin[ent][i] = fOrigin[i]
 				
 			engfunc( EngFunc_SetOrigin, ent, Float:{ -8192.0, -8192.0, -8192.0 } );
-			//unSetBlock( ent )
 		}
 		else if( type == 3 ){			
 			if( getOwner(ent) != id2  )
@@ -871,8 +870,6 @@ public adminCommands(id, szMessage[]){
 				}
 				return PLUGIN_CONTINUE;
 			} 
-			
-			
 			new target = cmd_target(id, szName, 0)
 			if(!target){
 				ColorChat(id, GREEN, "%s Nie znaleziono takiego gracza!", PREFIXSAY);
@@ -889,21 +886,16 @@ public adminCommands(id, szMessage[]){
 				pev(id, pev_origin, fOrigin);
 				set_pev(target, pev_origin, fOrigin);
 			}
-			
-			
 			return PLUGIN_HANDLED;
 		}
 	}
 	if(equal(szMessage, "/warn")||equal(szMessage, "/ostrzez", 8)){	
 		userMenuPlayer[id] = MENU_PLAYER_WARNING
 		choosePlayer(id, 0)
-		
 		return PLUGIN_HANDLED
 	}
-	
 	if(equal(szMessage, "/a")||equal(szMessage, "/admin")){	
-		if(userHelpAdmin[id])
-			menuPerrmissions(id)
+		if(userHelpAdmin[id]) menuPerrmissions(id)
 		else mainMenuAdmin(id)
 		
 		return PLUGIN_HANDLED
@@ -1070,6 +1062,12 @@ public menuSpecifyUser_2(id, menu, item){
 
 
 public adminHelp(id){
+	
+	if(!bbCvar[cvarHelpEnable]){
+		ColorChat(id, GREEN, "%s Pomoc jest wylaczona! Aby to wlaczyc zglos sie do Wlasciciela serwera.", PREFIXSAY);
+		return 1;
+	}
+	
 	if (!prepTime){
 		ColorChat(id, GREEN, "%s Poczekaj na czas przygotowania", PREFIXSAY);
 		return 1;

@@ -227,7 +227,7 @@ public setZombieClass(id){
 			new additionalHP = floatround( str_to_float( classesZombies[class][1] ) *0.07) *userDeathNum[id]
 			additionalHP += userHPAddRound[id]
 			
-			userMaxHealth[id]	= str_to_num( classesZombies[class][1] ) + additionalHP + ( isVip(id) ?  hpVipZombi : 0 ) + calcZombieUpgradeHealth(id, class)
+			userMaxHealth[id]	= str_to_num( classesZombies[class][1] ) + additionalHP + ( isSVip(id) ? hpSVipZombi : isVip(id) ?  hpVipZombi : 0 ) + calcZombieUpgradeHealth(id, class)
 			userMaxSpeed[id] 	= str_to_float( classesZombies[class][2] ) + calcZombieUpgradeSpeed(id, class)
 			
 			new clanHealth = 0;
@@ -293,10 +293,6 @@ public setUserSpeed(id){
 	if(!is_user_alive(id))
 		return;
 	set_user_maxspeed(id, userMaxSpeed[id]-userSlow[id]-userSpeedAdmin[id])	
-}
-
-public native_return_class(id){
-	return userClass[id]
 }
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }

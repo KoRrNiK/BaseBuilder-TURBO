@@ -2,8 +2,8 @@
 #include <fvault>
 
 public loadInt(id){
-	userLogged[id] = false;
 	
+	userLogged[id] = false;
 	userLoaded[id] = false;
 	userLoadVault[id] = false;
 	
@@ -16,7 +16,6 @@ public fVaultLoad(id){
 	new day;
 	date(_,_, day);
 	
-	
 	new szData[756];
 	if( fvault_get_data(fVAULTFILE, userName[id], szData, sizeof(szData) - 1) ){
 		
@@ -25,16 +24,13 @@ public fVaultLoad(id){
 		new szTimeVip[11]
 		new szLuzCoin[11]
 		new szClassHuman[10]
-
 		new szMission[mission_TOTAL*7]
 		new szMissionOne[mission_TOTAL][7];
 		new szMissionSecret[mission_secret_TOTAL*7]
 		new szMissionSecretOne[mission_secret_TOTAL][7];
-		
 		new szPro[TOTAL_PRO*5]
 		new szProOne[TOTAL_PRO][5]
 		new szProSelected[3]
-
 		new szHumanSelectNew1[3]
 		new szHumanSelectNew2[3]
 		new szZombieSelectNew1[3]
@@ -43,58 +39,39 @@ public fVaultLoad(id){
 		new szDayFreeNugger[3];
 		new szJetpackSpeed[7];
 		new szColorRendering[3];
-		
 		new szColorRed[4], szColorGreen[4], szColorBlue[4];
-		
 		new szTimeStamina[10]
 		new szStaminaDayRefresh[10];
-		
-		
 		new szUpgradeMine[up_TOTAL*7]
 		new szUpgradeMineOne[up_TOTAL][7]
-		
 		new szDigging[mine_TOTAL*7]
 		new szDiggingOne[mine_TOTAL][7]
-		
 		new szTypeMine[10];
 		new szMineNugget[10]
 		new szPayDayGoblin[10]
-		
 		new szLastUpgradeTime[7]
 		new szUnlockCave[3]
 		new szStartUpgrade[3];
-		
 		new szAwardTime[7];
 		new szAllAward[7];
 		new szAllDmg[11];
 		new szFov[4]
-		
-	
 		new szScrollExp[10];
 		new szScrollNugget[10];
 		new szBoostMine[10];
-		
 		new szMute[11]
-		
 		new szMaxHelp[3]
 		new szHelpDay[3];
-		
 		new szHelpPointAdmin[5];
-		
 		new szPointSecret[7]
-		
 		new szLastAwardGot[11]
 		new szLastAwardFree[11]
 		new szLastAwardRow[7]
-
 		new szChristmasStart[5];
 		new szChristmasMission[5]
 		new szChristmasType[5];
-		
-		
 		new szHat[4][11];
 		new szSelectHat[2][3];
-		
 		
 		parse(szData,
 			szLuzCoin,		sizeof(szLuzCoin),
@@ -184,10 +161,8 @@ public fVaultLoad(id){
 		userJetpackSpeed[id]			=	str_to_num(szJetpackSpeed);
 		userMoverBlockColor[id]			=	str_to_num(szColorRendering);
 		
-	
-		
 		if(str_to_num(szHelpDay) != day){
-			userMaxHelp[id]			=	maxHelpCount
+			userMaxHelp[id]			=	bbCvar[cvarHelpMaxCount]
 			userDayHelp[id]			=	day
 		} else {
 			userMaxHelp[id]			=	str_to_num(szMaxHelp)
@@ -203,7 +178,6 @@ public fVaultLoad(id){
 			userStaminaDayRefresh[id] 	= 	str_to_num(szStaminaDayRefresh)
 			userMinePayGoblin[id]		=	false;
 		}
-		
 		
 		explode(szPro		,'_'	,szProOne	,sizeof(szProOne)	,sizeof(szProOne[]))
 		for(new i = 0 ; i < sizeof(szProOne); i ++ )
@@ -241,11 +215,9 @@ public fVaultLoad(id){
 		
 		userSecretPoint[id]			=	str_to_num(szPointSecret)
 	
-	
 		userLastAwardGot[id]			=	str_to_num(szLastAwardGot);
 		userLastAwardFree[id]			=	str_to_num(szLastAwardFree);
 		userLastAwardRow[id] 			=	str_to_num(szLastAwardRow);
-
 		
 		userChristmasStart[id] 			=	str_to_num(szChristmasStart);
 		userChristmasMission[id] 		=	str_to_num(szChristmasMission);
@@ -358,10 +330,9 @@ public fVaultSave(id){
 
 	if(!userLoadVault[id]) return PLUGIN_CONTINUE;
 	
-	
 	new szData[756];
 
-	new iLen
+	new iLen = 0
 
 	new szMission[mission_TOTAL*7]
 	for(new i = 0; i < mission_TOTAL; i ++)		iLen += format(szMission[iLen], sizeof(szMission)-iLen-1, "%d%s", userMission[id][i], i == mission_TOTAL-1?"":"_")

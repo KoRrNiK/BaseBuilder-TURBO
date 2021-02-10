@@ -90,8 +90,8 @@ public randomClassAll(id){
 	logType[id] = LOG_CLASS;
 	if(logType[id] == LOG_CLASS){
 		format(gText, sizeof(gText), "kupil klase [%s]", classesHuman[class][0]);
+		logBB(id,gText)
 	}
-	logBB(id,gText)
 					
 	addClassHuman(id, class);
 	ColorChat(id, GREEN, "---^x01 Zakupiles klase^x03 %s!^x04 ---", classesHuman[class][0]);
@@ -103,7 +103,7 @@ public randomClassAll(id){
 }
 
 public Float:coolDownClass(id, class, bonus)
-	return (((isVip(id) ? 0.95 : 1.0) - ( (clan[id] && get_clan_info(clan[id], CLAN_COOLDOWN) >= 1) ? 0.01 * get_clan_info(clan[id], CLAN_COOLDOWN) : 0.0 )) *str_to_float( bonusClass[bonus][2]))  - ( userHumanLevel[id][class]  * str_to_float( bonusClass[bonus][3]))
+	return (((isSVip(id) ? 0.90 : isVip(id) ? 0.95 : 1.0) - ( (clan[id] && get_clan_info(clan[id], CLAN_COOLDOWN) >= 1) ? 0.01 * get_clan_info(clan[id], CLAN_COOLDOWN) : 0.0 )) *str_to_float( bonusClass[bonus][2]))  - ( userHumanLevel[id][class]  * str_to_float( bonusClass[bonus][3]))
 	
 	
 public upgradeClass(id, item){
@@ -355,7 +355,7 @@ public setHumanClass(id){
 				
 				
 				userMaxArmor[id]	= userLevel[id] * 2
-				userMaxHealth[id]	= 100 + hpCT + ( isVip(id) ?  hpVipHuman : 0 )
+				userMaxHealth[id]	= 100 + hpCT + ( isSVip(id) ? hpSVipHuman : isVip(id) ?  hpVipHuman : 0 )
 				
 				new clanHealth = 0;
 			

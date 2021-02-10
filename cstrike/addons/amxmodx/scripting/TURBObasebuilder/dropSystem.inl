@@ -32,7 +32,7 @@ public addShotExp(id, Float:damage){
 	if(clan[id]) damage += 5 * (get_clan_info(clan[id], CLAN_EXPDROP) / 2.25)
 	
 	damage += 10 * userReset[id]
-	damage *= isVip(id) ? 0.009 : 0.006
+	damage *= isSVip(id) ? 0.011 :isVip(id) ? 0.009 : 0.006
 	damage += 0.01
 
 	if(teamWorks(id)){
@@ -121,7 +121,8 @@ public addKillNugget(id, value){
 	
 	if(userClassHuman[id] == human_FREE && didPro(id,  pro_LAPCZYWIEC) && get_user_team(id) == 2) value += random_num(5,10);
 	
-	if(isVip(id)) value += random(2);
+	if(isSVip(id)) value += random(6);
+	else if(isVip(id)) value += random(2);
 	
 	if(clan[id]) if(get_clan_info(clan[id], CLAN_NUGGETDROP) >= 1 ) value += random_num(get_clan_info(clan[id], CLAN_NUGGETDROP) / 2 , get_clan_info(clan[id], CLAN_NUGGETDROP) + 3)	
 	
