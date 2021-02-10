@@ -1,7 +1,7 @@
 #include <amxmodx>
 #include <fakemeta_util>
 #include <fun>
-
+#include <bbTurbo>
 new gCvarColor;
 new gScreenfade
 new gTrail;
@@ -23,7 +23,6 @@ new bool:gRestartAttempt[33];
 new iColors[3];
 
 enum{class_CLASSIC, class_SPEED, class_FAT, class_TANK, class_DRACULA, class_SNOWMAN,  class_DEVIL, class_HEALTH, class_POISON, class_DEATH, class_TERMINATOR, class_DEMON, class_TOTAL}
-native bb_get_class(id)
 
 public plugin_init() 
 {
@@ -281,7 +280,7 @@ public ExplodeFrost(const args[2])
 				continue
 			
 			
-			if( bb_get_class(victim) == class_SNOWMAN )
+			if( bb_get_class_zombie(victim) == class_SNOWMAN )
 				continue
 			
 			if( get_user_team(id) == get_user_team(victim) )
@@ -481,3 +480,6 @@ GetColor(&r, &g, &b)
 	g = str_to_num(Green)
 	b = str_to_num(Blue)
 }
+/* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
+*{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
+*/

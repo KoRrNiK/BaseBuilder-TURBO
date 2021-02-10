@@ -4,7 +4,7 @@
 #include <xs>
 #include <cstrike>
 #include <fun>
-
+#include <bbTurbo>
 
 //#define USE_NAPALM_CUSTOM_MODELS
 #if defined USE_NAPALM_CUSTOM_MODELS
@@ -71,11 +71,9 @@ g_ff, g_duration, g_buyzone, g_price, g_carrylimit, g_hitself, g_screamrate,
 Float:g_slowdown, g_cankill, Float:g_radius
 //new bool:isInFire[33]
 new lastAttacker[33]
-enum{class_CLASSIC, class_SPEED, class_FAT, class_TANK, class_DRACULA, class_SNOWMAN,  class_DEVIL, class_HEALTH, class_POISON, class_DEATH, class_TERMINATOR, class_DEMON, class_TOTAL}
-native bb_get_class(id)
-//native bb_kill_respawn(attacker, victim)
 
-native bb_add_exp(attacker, Float:value);
+enum{class_CLASSIC, class_SPEED, class_FAT, class_TANK, class_DRACULA, class_SNOWMAN,  class_DEVIL, class_HEALTH, class_POISON, class_DEATH, class_TERMINATOR, class_DEMON, class_TOTAL}
+
 
 
 public plugin_precache()
@@ -528,7 +526,7 @@ napalm_explode(ent)
 		if( get_user_team(victim) != 1)
 			continue
 	
-		if( bb_get_class(victim) == class_DEVIL )
+		if( bb_get_class_zombie(victim) == class_DEVIL )
 			continue
 		// Heat icon
 		message_begin(MSG_ONE_UNRELIABLE, g_msgDamage, _, victim)
@@ -624,7 +622,7 @@ public burning_flame(args[2], taskid)
 	// Take damage from the fire
 	if (health - g_damage > 0){
 		set_pev(ID_BURN, pev_health, (health - g_damage))
-		bb_add_exp(BURN_ATTACKER, random_float(0.1, 0.5));
+		bb_set_final_exp(BURN_ATTACKER, random_float(0.1, 0.5));
 	}else if (g_cankill)
 	{
 		

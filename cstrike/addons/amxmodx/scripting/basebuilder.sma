@@ -369,7 +369,7 @@ public plugin_init(){
 public plugin_natives(){
 	register_native("bb_get_class_zombie", 	"return_class_zombie", 1);
 	register_native("bb_get_class_human", 	"return_class_human", 1);
-	register_native("bb_add_final_exp", 	"return_add_final_exp", 1);
+	register_native("bb_set_final_exp", 	"return_add_final_exp", 1);
 	register_native("bb_set_exp", 		"return_set_nugget", 1);
 	register_native("bb_set_final_nugget", 	"return_set_final_nugget", 1);
 	register_native("bb_set_nugget", 	"return_set_exp", 1);
@@ -4034,6 +4034,3 @@ public tutorBB_Final(id){
 	id -= TASK_TUTORFINAL;
 	userTutorMsg[id] = "";
 }
-/* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
-*{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
-*/
