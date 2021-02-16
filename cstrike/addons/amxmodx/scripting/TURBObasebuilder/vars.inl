@@ -1,6 +1,6 @@
 new const PLUGIN[] 	= 	"BaseBuilder TURBO";
 new const VERSION[] 	= 	"v1.3.3";
-new const AUTHOR[] 	= 	"KoRrNiK eidt taasdasd";
+new const AUTHOR[] 	= 	"KoRrNiK";
 new const PREFIXSAY[] 	=  	"^xc2^xa6 BaseBuilder ^xc2^xa6^x01";
 new const fVAULTFILE[]	=	 "TURBOBB";
 
