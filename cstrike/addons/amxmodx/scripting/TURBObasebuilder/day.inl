@@ -13,8 +13,8 @@
 #include <	xs		>
 
 public data(id){
-	new day
-	date(_,_,day)
+	new day;
+	date(_,_,day);
 	
 	if(userLastDay[id] != day){
 		userNugget[id] += 10;

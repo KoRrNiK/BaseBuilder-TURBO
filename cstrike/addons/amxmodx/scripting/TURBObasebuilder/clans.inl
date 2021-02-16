@@ -24,8 +24,8 @@ public globalClanMenu(id){
 	}
 	if (clan[id]){
 		pageClan[id] = false;
-		showClanMenu(id, false)
-	} else createClanMenu(id)		
+		showClanMenu(id, false);
+	} else createClanMenu(id);	
 }
 public createClanMenu(id){
 	
@@ -37,10 +37,10 @@ public createClanMenu(id){
 	format(availableLuzaczki, 	sizeof(availableLuzaczki),  	"\w|\d Potrzebujesz jeszcze:\r %d Luzaczkow!", 	bbCvar[cvarClansCostLuzaczki]-userLuzCoin[id]);
 	
 	iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "\r[BaseBuilder]\y Stworz klan:^n");
-	iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y-^t^t\dNazwa klanu musi miec co najmniej\r %d\d znaki", minSymbolClan)
-	iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y-^t^t\dNazwa nie moze miec wiecej niz\r %d\d znakow", maxSymbolClan)
-	iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y-^t^t\dZakaz\r obrazliwych\d nazw klanow")
-	iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y-^t^t\dDozwolone znaki\r [A-Z0-9_]^n")
+	iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y-^t^t\dNazwa klanu musi miec co najmniej\r %d\d znaki", minSymbolClan);
+	iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y-^t^t\dNazwa nie moze miec wiecej niz\r %d\d znakow", maxSymbolClan);
+	iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y-^t^t\dZakaz\r obrazliwych\d nazw klanow");
+	iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y-^t^t\dDozwolone znaki\r [A-Z0-9_]^n");
 	
 	if(bbCvar[cvarClansCostNugget]) 		iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y%s^t^t\dBrylki:\r %d %s",symbolsCustom[SYMBOL_DR_ARROW], bbCvar[cvarClansCostNugget], (bbCvar[cvarClansCostNugget] > userNugget[id]) ? availableNugget : "\w| \yWymaganie spelnione!");
 	if(bbCvar[cvarClansCostLevel]) 		iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y%s^t^t\dPoziom:\r %d %s", symbolsCustom[SYMBOL_DR_ARROW], bbCvar[cvarClansCostLevel], (bbCvar[cvarClansCostLevel] > userLevel[id]) ? availableLevel : "\w| \yWymaganie spelnione!");
@@ -52,7 +52,7 @@ public createClanMenu(id){
 	
 	iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n^n\r0.\y Wyjdz");
 	
-	show_menu(id, B1 | B2 | B3 | B0  , gText, -1, "createClanMenu"  )
+	showMenu(id, B1 | B2 | B3 | B0  , gText, -1, "createClanMenu", 1);
 }
 public createClanMenu_2(id, item){
 	if (!is_user_connected(id)) return;
@@ -75,23 +75,21 @@ public createClanMenu_2(id, item){
 			client_cmd(id, "messagemode PodajNazweKlanu");
 		}
 		case 1: loadStatsSql(id,5 );
-		case 2: loadStatsSql(id,7 )
+		case 2: loadStatsSql(id,7 );
 		
 		default:{}
 	}
 }
-
-
 public listClanMenu_2(id, menu, item){
 	if(item == MENU_EXIT){
 		menu_destroy(menu);
-		return
+		return;
 	}
 	
 	new target = userViewClan[id][item];
 	userViewClanInfo[id] = target;
 	
-	loadDescClan(id)
+	loadDescClan(id);
 }
 
 public loadDescClan(id){
@@ -100,11 +98,11 @@ public loadDescClan(id){
 		
 	if (!sqlConnected) {
 		log_amx("[SQL-LOG] Brak polaczenia");
-		return PLUGIN_CONTINUE
+		return PLUGIN_CONTINUE;
 	}
 
 	
-	new queryData[512]
+	new queryData[512];
 	new tempId[3];
 	
 	tempId[0] = id;
@@ -114,7 +112,7 @@ public loadDescClan(id){
 		SELECT `a`.`idmotd`, `a`.`idclans` AS 'idclan', `a`.`name` AS `clan`, `a`.`kills`,`a`.`members`,`a`.`level`, `a`.`createDate`, `b`.`name` AS 'LIDER'\
 		FROM `clans` `a`\
 		JOIN `players` `b` ON `a`.`idclans` = `b`.`clan`\
-		WHERE `a`.`idclans`='%d' AND `flag`='%d'", tempId[1], STATUS_LEADER)
+		WHERE `a`.`idclans`='%d' AND `flag`='%d'", tempId[1], STATUS_LEADER);
 	
 	SQL_ThreadQuery(sql, "loadClanInfoDesc_2", queryData, tempId, sizeof(tempId));
 
@@ -122,15 +120,15 @@ public loadDescClan(id){
 }
 public loadClanInfoDesc_2(failState, Handle:query, error[], errorNum, tempId[], dataSize){
 	
-	new id 		= 	tempId[0]
+	new id 		= 	tempId[0];
 	
 	if (failState){
-		if (failState == TQUERY_CONNECT_FAILED) log_amx("[SQL-LOG] Nie mozna polaczyc siê z baz¹ danych SQL. Blad: %s (%d)", error, errorNum)
-		else if (failState == TQUERY_QUERY_FAILED) log_amx("[SQL-LOG] Zapytanie watkowe nie powiodlo sie. Blad: %s (%d)", error, errorNum)
+		if (failState == TQUERY_CONNECT_FAILED) log_amx("[SQL-LOG] Nie mozna polaczyc siê z baz¹ danych SQL. Blad: %s (%d)", error, errorNum);
+		else if (failState == TQUERY_QUERY_FAILED) log_amx("[SQL-LOG] Zapytanie watkowe nie powiodlo sie. Blad: %s (%d)", error, errorNum);
 		return PLUGIN_HANDLED;
 	}	
 	
-	new gText[1756], iLen = 0
+	new gText[1756], iLen = 0;
 	new szName[33], szDate[33], szLider[33], motd[21];
 
 	SQL_ReadResult(query, SQL_FieldNameToNum(query, "idmotd"), motd, sizeof(motd)-1);
@@ -143,19 +141,19 @@ public loadClanInfoDesc_2(failState, Handle:query, error[], errorNum, tempId[], 
 
 	new skillbar[256];
 	
-	skillBarMenu(skillbar, sizeof(skillbar), level, bbCvar[cvarClansLevelMax], symbolsCustom[SYMBOL_SMALL_DOT], symbolsCustom[SYMBOL_SMALL_DOT])	
+	skillBarMenu(skillbar, sizeof(skillbar), level, bbCvar[cvarClansLevelMax], symbolsCustom[SYMBOL_SMALL_DOT], symbolsCustom[SYMBOL_SMALL_DOT]);	
 	
-	iLen = format(gText[iLen], sizeof(gText)-iLen-1, "\r[BaseBuilder]\y Informacje o Klanie!^n")
+	iLen = format(gText[iLen], sizeof(gText)-iLen-1, "\r[BaseBuilder]\y Informacje o Klanie!^n");
 	
 	iLen += format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y%s\w %s\d %s\w %s\y %s^n", symbolsCustom[SYMBOL_R_ARROW], symbolsCustom[SYMBOL_VERTICAL_LINE], skillbar, symbolsCustom[SYMBOL_VERTICAL_LINE], symbolsCustom[SYMBOL_L_ARROW]);
 	
-	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\y%s^t^t\dNazwa Klanu:\r %s", symbolsCustom[SYMBOL_DR_ARROW], szName)
-	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\y%s^t^t\dPrzywodca Klanu:\r %s", symbolsCustom[SYMBOL_DR_ARROW], szLider)
+	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\y%s^t^t\dNazwa Klanu:\r %s", symbolsCustom[SYMBOL_DR_ARROW], szName);
+	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\y%s^t^t\dPrzywodca Klanu:\r %s", symbolsCustom[SYMBOL_DR_ARROW], szLider);
 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\y%s^t^t\dCzlonkowie:\r %d/%d", symbolsCustom[SYMBOL_DR_ARROW], members,(  level / 3 ) + bbCvar[cvarClansStartMember]);
-	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\y%s^t^t\dZabojstwa:\r %d", symbolsCustom[SYMBOL_DR_ARROW], kills)
-	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\y%s^t^t\dPoziom:\r %d^n", symbolsCustom[SYMBOL_DR_ARROW], level)
+	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\y%s^t^t\dZabojstwa:\r %d", symbolsCustom[SYMBOL_DR_ARROW], kills);
+	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\y%s^t^t\dPoziom:\r %d^n", symbolsCustom[SYMBOL_DR_ARROW], level);
 	
-	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\y%s^t^t\dData Stworzenia:\r %s", symbolsCustom[SYMBOL_DR_ARROW], szDate)
+	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\y%s^t^t\dData Stworzenia:\r %s", symbolsCustom[SYMBOL_DR_ARROW], szDate);
 
 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n^n\r7.\r Zdjecie Informacyjne");
 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\r8.\w Czlonkowie^n");
@@ -163,22 +161,16 @@ public loadClanInfoDesc_2(failState, Handle:query, error[], errorNum, tempId[], 
 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\r9.\y Wroc");
 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\r0.\y Wyjdz");
 	
-	show_menu(id, B7 | B8 | B9| B0, gText, -1, "clanInfoDesc")	
+	showMenu(id, B7 | B8 | B9| B0, gText, -1, "clanInfoDesc")	;
 	return PLUGIN_HANDLED;
 }
 public clanInfoDesc_2(id, item){
 	
 	switch(item){
-		case 6:{
-			loadMotdClan(id)
-		}
-		case 7:{
-			loadMembersClan(id)
-		}
-		case 8:{
-			loadStatsSql(id,7 )
-		}
-		default:{ return; }
+		case 6: loadMotdClan(id);
+		case 7: loadMembersClan(id);
+		case 8: loadStatsSql(id,7);
+		default:{ return;}
 	}
 }
 public loadMotdClan(id){
@@ -187,11 +179,11 @@ public loadMotdClan(id){
 		
 	if (!sqlConnected) {
 		log_amx("[SQL-LOG] Brak polaczenia");
-		return PLUGIN_CONTINUE
+		return PLUGIN_CONTINUE;
 	}
 
 	
-	new queryData[512]
+	new queryData[512];
 	new tempId[3];
 	
 	tempId[0] = id;
@@ -199,7 +191,7 @@ public loadMotdClan(id){
 
 	format(queryData, sizeof(queryData), "\
 		SELECT `idmotd`, `name` FROM `clans`\
-		WHERE `idclans`='%d'", tempId[1])
+		WHERE `idclans`='%d'", tempId[1]);
 	
 	SQL_ThreadQuery(sql, "loadMotdClan_2", queryData, tempId, sizeof(tempId));
 
@@ -214,16 +206,14 @@ public loadMotdClan_2(failState, Handle:query, error[], errorNum, tempId[], data
 	SQL_ReadResult(query, SQL_FieldNameToNum(query, "name"), clanName, sizeof(clanName)-1);
 	
 	
-	new gText[2048], iLen=0
+	new gText[2048], iLen=0;
 	new sizeText = sizeof(gText)-iLen-1;
 				
-	iLen += format(gText[iLen], sizeText, "<html>")
+	iLen += format(gText[iLen], sizeText, "<html>");
 	iLen += format(gText[iLen], sizeText, "<body style=^"background: url('https://i.imgur.com/%s.png') top center #000000;margin:0px;padding:0px;background-size:100%% 100%%;background-repeat:no-repeat;^"></body>", strlen(gMotd) > 1 ? formatm("%s", gMotd) : formatm("%s", MOTDNONE));				
-	iLen += format(gText[iLen], sizeText, "</html>")
-	show_motd(id, gText, formatm("Klan: %s", clanName))
-	
+	iLen += format(gText[iLen], sizeText, "</html>");
+	show_motd(id, gText, formatm("Klan: %s", clanName));
 }
-
 
 public loadMembersClan(id){
 	
@@ -231,10 +221,10 @@ public loadMembersClan(id){
 		
 	if (!sqlConnected) {
 		log_amx("[SQL-LOG] Brak polaczenia");
-		return PLUGIN_CONTINUE
+		return PLUGIN_CONTINUE;
 	}
 
-	new queryData[512]
+	new queryData[512];
 	new tempId[3];
 	
 	tempId[0] = id;
@@ -243,7 +233,7 @@ public loadMembersClan(id){
 	
 	format(queryData, sizeof(queryData), "\
 		SELECT * FROM `players`\
-		WHERE clan = '%d'", tempId[1])
+		WHERE clan = '%d'", tempId[1]);
 	
 	SQL_ThreadQuery(sql, "loadMembersClan_2", queryData, tempId, sizeof(tempId));
 
@@ -252,24 +242,20 @@ public loadMembersClan(id){
 
 public loadMembersClan_2(failState, Handle:query, error[], errorNum, tempId[], dataSize){
 	
-	new id 		= 	tempId[0]
+	new id 		= 	tempId[0];
 	
 	if (failState){
-		if (failState == TQUERY_CONNECT_FAILED){
-			log_amx("[SQL-LOG] Nie mozna polaczyc siê z baz¹ danych SQL. Blad: %s (%d)", error, errorNum)
-		}
-		else if (failState == TQUERY_QUERY_FAILED){
-			log_amx("[SQL-LOG] Zapytanie watkowe nie powiodlo sie. Blad: %s (%d)", error, errorNum)
-		}
+		if (failState == TQUERY_CONNECT_FAILED) log_amx("[SQL-LOG] Nie mozna polaczyc siê z baz¹ danych SQL. Blad: %s (%d)", error, errorNum);
+		else if (failState == TQUERY_QUERY_FAILED) log_amx("[SQL-LOG] Zapytanie watkowe nie powiodlo sie. Blad: %s (%d)", error, errorNum);
 		return PLUGIN_HANDLED;
 	}	
 	
-	new gText[1756], iLen = 0
-	new szName[33]
+	new gText[1756], iLen = 0;
+	new szName[33];
 	new copyName[11];
 	new status;
 	
-	iLen = format(gText[iLen], sizeof(gText)-iLen-1, "\r[BaseBuilder]\y Lista Czlonkow!^n")
+	iLen = format(gText[iLen], sizeof(gText)-iLen-1, "\r[BaseBuilder]\y Lista Czlonkow!^n");
 	
 	while (SQL_MoreResults(query)) {
 		SQL_ReadResult(query, SQL_FieldNameToNum(query, "name"), szName, sizeof(szName));
@@ -287,22 +273,19 @@ public loadMembersClan_2(failState, Handle:query, error[], errorNum, tempId[], d
 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n^n\r9.\y Wroc");
 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\r0.\y Wyjdz");
 	
-	show_menu(id, B9| B0, gText, -1, "clanInfoMember")
+	showMenu(id, B9| B0, gText, -1, "clanInfoMember");
 	return PLUGIN_HANDLED;
 }
 
 public clanInfoMember_2(id, item){
 	switch(item){
-		case 8:{
-			loadDescClan(id)
-		}
+		case 8: loadDescClan(id);
 		default:{ return; }
 	}
 }
 
 public showClanMenu(id, next){	
-	if (!is_user_connected(id)) 
-		return;
+	if (!is_user_connected(id))  return;
 	
 	if( !playerLogged(id)){
 		ColorChat(id, GREEN, "%s Zaloguj sie aby kozystac z klanow!", PREFIXSAY);
@@ -315,7 +298,7 @@ public showClanMenu(id, next){
 	new skillbar[256];
 	ArrayGetArray(bbClans, get_clan_id(clan[id]), bbClan);
 		
-	skillBarMenu(skillbar, sizeof(skillbar), bbClan[CLAN_LEVEL], bbCvar[cvarClansLevelMax], symbolsCustom[SYMBOL_SMALL_DOT], symbolsCustom[SYMBOL_SMALL_DOT])	
+	skillBarMenu(skillbar, sizeof(skillbar), bbClan[CLAN_LEVEL], bbCvar[cvarClansLevelMax], symbolsCustom[SYMBOL_SMALL_DOT], symbolsCustom[SYMBOL_SMALL_DOT]);	
 	
 	iLen 	+= 	format(gText[iLen], sizeof(gText) - iLen - 1, "\r[BaseBuilder]\y Menu Klanu\d [\w %s/2\d ]^n", !next ? "1" : "2");
 	
@@ -357,21 +340,18 @@ public showClanMenu(id, next){
 	iLen 	+=	 format(gText[iLen], sizeof(gText) - iLen - 1, "^n\r0.\y Wyjdz");
 	
 	
-	show_menu(id, B1 | B2 | B3 | B4 | B5 | B6 | B7 | B8 | B9 | B0, gText, -1, "showClanMenu"  )
+	showMenu(id, B1 | B2 | B3 | B4 | B5 | B6 | B7 | B8 | B9 | B0, gText, -1, "showClanMenu"  );
 	
 }
 public showClanMenu_2(id, item){
 	if (!is_user_connected(id)) return;
-	
-	
-
 	
 	switch (item) {
 		
 		case 0: {
 			if(pageClan[id]){
 				if (get_user_status(id) > STATUS_MEMBER) avansClanMenu(id);
-				else globalClanMenu(id)
+				else globalClanMenu(id);
 				
 			} 
 			else membersOnlineMenu(id);
@@ -382,34 +362,26 @@ public showClanMenu_2(id, item){
 					userAcceptRestore[id] = false;
 					leaderMenu(id);
 				} else {
-					globalClanMenu(id)
+					globalClanMenu(id);
 					ColorChat(id, GREEN, "%s Nie posiadasz dostepu!", PREFIXSAY);	
 				}
-			}else {
-				loadStatsSql(id,6 );	
-			}
+			}else loadStatsSql(id,6 );	
 		}
 		case 2: {
 			if(pageClan[id]){
 				
 				if (get_user_status(id) == STATUS_LEADER) {
 					ColorChat(id, GREEN, "%s Oddaj przywodctwo klanu jednemu z czlonkow zanim go upuscisz", PREFIXSAY);	
-					globalClanMenu(id)
-				} else {
-					leaveConfimMenu(id);	
-				}
-			} else {
-				loadStatsSql(id,5 );
-			}
+					globalClanMenu(id);
+				} else leaveConfimMenu(id);	
+			} else loadStatsSql(id,5 );	
 		}
 		case 3: {
 			if(pageClan[id]){
 				client_cmd(id, "messagemode IloscBrylekKlan");
 				client_print(id, print_center, "Wpisz ilosc Brylek, ktora chcesz wplacic");
 				ColorChat(id, GREEN, "%s Wpisz ilosc Brylek, ktora chcesz wplacic.", PREFIXSAY);
-			} else {
-				loadStatsSql(id,7 );
-			}
+			} else loadStatsSql(id,7 );
 		}
 		case 4:{
 			if(!pageClan[id]){
@@ -417,16 +389,14 @@ public showClanMenu_2(id, item){
 				new bbClan[clanInfo];
 				ArrayGetArray(bbClans, get_clan_id(clan[id]), bbClan);
 					
-				new gText[2048], iLen=0
+				new gText[2048], iLen=0;
 				new sizeText = sizeof(gText)-iLen-1;
 				
-				iLen += format(gText[iLen], sizeText, "<html>")
+				iLen += format(gText[iLen], sizeText, "<html>");
 				iLen += format(gText[iLen], sizeText, "<body style=^"background: url('https://i.imgur.com/%s.png') top center #000000;margin:0px;padding:0px;background-size:100%% 100%%;background-repeat:no-repeat;^"></body>", strlen(bbClan[CLAN_MOTD]) > 1 ? formatm("%s", bbClan[CLAN_MOTD]) : formatm("%s", MOTDNONE));				
-				iLen += format(gText[iLen], sizeText, "</html>")
-				show_motd(id, gText, formatm("Klan: %s", bbClan[CLAN_NAME]))
-			} else {
-				showClanMenu(id, true)	
-			}
+				iLen += format(gText[iLen], sizeText, "</html>");
+				show_motd(id, gText, formatm("Klan: %s", bbClan[CLAN_NAME]));
+			} else showClanMenu(id, true);	
 		}
 		case 5..7:pageClan[id] ? showClanMenu(id, false) : showClanMenu(id, true);
 		case 8: pageClan[id] ? showClanMenu(id, true) : showClanMenu(id, false);
@@ -438,7 +408,7 @@ public avansClanMenu(id){
 	ArrayGetArray(bbClans, get_clan_id(clan[id]), bbClan);
 	new costNugget = (bbCvar[cvarClansCostLuzaczki] + bbCvar[cvarClansStartMember] * bbClan[CLAN_LEVEL]);
 	new killsClan =  (bbCvar[cvarClansLevelKill] + bbCvar[cvarClansLevelKillNext] * bbClan[CLAN_LEVEL]);
-	new timeUpgrade =  calcAvansClan(id)
+	new timeUpgrade =  calcAvansClan(id);
 
 	new availableNugget[256], availableKill[256]; 
 	
@@ -452,7 +422,7 @@ public avansClanMenu(id){
 	iLen 	+= 	format(gText[iLen], sizeof(gText) - iLen - 1, "^n\y%s^t\dZabojstwa Klanowe:\r %s",symbolsCustom[SYMBOL_DR_ARROW],formatNumber(bbClan[CLAN_KILLS]));
 	
 	
-	new upgradeLeft = (bbClan[CLAN_UPGRADETIME] - get_systime())
+	new upgradeLeft = (bbClan[CLAN_UPGRADETIME] - get_systime());
 			
 	if(bbClan[CLAN_LEVEL] < bbCvar[cvarClansLevelMax]){
 		
@@ -486,7 +456,7 @@ public avansClanMenu(id){
 	
 	iLen 	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "^n^n\r0.\y Wyjdz");
 	
-	show_menu(id, B1 | B2 | B3 | B0  , gText, -1, "avansClanMenu"  )
+	showMenu(id, B1 | B2 | B3 | B0  , gText, -1, "avansClanMenu"  );
 }
 public avansClanMenu_2(id, item){
 	switch(item){
@@ -497,10 +467,10 @@ public avansClanMenu_2(id, item){
 			
 			if (bbClan[CLAN_LEVEL] >= bbCvar[cvarClansLevelMax]) {
 				ColorChat(id, GREEN, "%s Twoj klan ma juz maksymalny Poziom.", PREFIXSAY);
-				avansClanMenu(id)
+				avansClanMenu(id);
 				return;
 			}
-			upgradeLeft = (bbClan[CLAN_UPGRADETIME] - get_systime())
+			upgradeLeft = (bbClan[CLAN_UPGRADETIME] - get_systime());
 					
 			if(upgradeLeft > 0){
 				new gText[128], iLen = 0;
@@ -514,26 +484,26 @@ public avansClanMenu_2(id, item){
 				
 				iLen += format(gText[iLen], sizeof(gText) - 1 - iLen, "^x04 ---");
 				
-				ColorChat(id, GREEN, gText)
-				avansClanMenu(id)
-				return
+				ColorChat(id, GREEN, gText);
+				avansClanMenu(id);
+				return;
 			}	
 			new costNugget = bbClan[CLAN_NUGGET] - (bbCvar[cvarClansCostLuzaczki] + bbCvar[cvarClansStartMember] * bbClan[CLAN_LEVEL]);
 			new killsClan = bbClan[CLAN_KILLS] - (bbCvar[cvarClansLevelKill] + bbCvar[cvarClansLevelKillNext] * bbClan[CLAN_LEVEL]);
 					
 			if (costNugget < 0) {		
 				ColorChat(id, GREEN, "%s Twoj klan nie ma wystarczajacej ilosci Brylek." ,PREFIXSAY );
-				avansClanMenu(id)
+				avansClanMenu(id);
 				return;
 			}		
 			if (killsClan < 0) {		
 				ColorChat(id, GREEN, "%s Twoj klan nie ma wystarczajacej ilosci Zabojstw." ,PREFIXSAY );
-				avansClanMenu(id)
+				avansClanMenu(id);
 				return;
 			}
-			new upgradeTime = calcAvansClan(id)
+			new upgradeTime = calcAvansClan(id);
 			
-			bbClan[CLAN_UPGRADETIME]	= 	max( bbClan[CLAN_UPGRADETIME] + (upgradeTime), get_systime() + (upgradeTime) )
+			bbClan[CLAN_UPGRADETIME]	= 	max( bbClan[CLAN_UPGRADETIME] + (upgradeTime), get_systime() + (upgradeTime) );
 					
 			bbClan[CLAN_LEVEL] ++;
 			bbClan[CLAN_NUGGET] = costNugget;
@@ -550,22 +520,22 @@ public avansClanMenu_2(id, item){
 				get_clan_info(clan[id], CLAN_NAME, clanName, sizeof(clanName));	
 				format(logText, sizeof(logText), "awansowal na poziom: %d | klan: %s", bbClan[CLAN_LEVEL], clanName);
 									
-				logBB(id, logText)
+				logBB(id, logText);
 			}		
 					
 			ColorChat(0, GREEN, "^x04---^x03 %s^x01 ulepszyl klan^x04 %s^x01 na poziom^x03 %d^x04 ---", userName[id],bbClan[CLAN_NAME], bbClan[CLAN_LEVEL]);
-			avansClanMenu(id)
+			avansClanMenu(id);
 			return;
 			
 		}
 		case 1:{
 			new bbClan[clanInfo];
 			ArrayGetArray(bbClans, get_clan_id(clan[id]), bbClan);
-			bbClan[CLAN_UPGRADETIME]	= 	 get_systime()
+			bbClan[CLAN_UPGRADETIME]	= 	 get_systime();
 			ArraySetArray(bbClans, get_clan_id(clan[id]), bbClan);
 			save_clan(get_clan_id(clan[id]));
 			
-			avansClanMenu(id)
+			avansClanMenu(id);
 			return;
 		}
 	}
@@ -573,7 +543,7 @@ public avansClanMenu_2(id, item){
 public calcAvansClan(id){
 	new bbClan[clanInfo];
 	ArrayGetArray(bbClans, get_clan_id(clan[id]), bbClan);
-	return (bbCvar[cvarClansLevelTimeUpgrade] * (bbClan[CLAN_LEVEL]+1))
+	return (bbCvar[cvarClansLevelTimeUpgrade] * (bbClan[CLAN_LEVEL]+1));
 }
 public createClanHandle(id){
 	if (!is_user_connected(id)  ||  !playerLogged(id) || clan[id]) return;
@@ -659,20 +629,20 @@ public createClanHandle(id){
 		return ;
 	}
 
-	createClan(id, clanName)
+	createClan(id, clanName);
 	new logText[128];	
 	logType[id] = LOG_CLAN_CREATE;
 	if(logType[id] == LOG_CLAN_CREATE){
 		
 		format(logText, sizeof(logText), "stworzyl klan %s", clanName);
-		logBB(id, logText)
+		logBB(id, logText);
 	}
 
 	ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 zalozyl klan:^x04 [^x03 %s^x04 ] ---", userName[id], clanName);
 	
 	
-	userNugget[id] -= bbCvar[cvarClansCostNugget]
-	userLuzCoin[id] -= bbCvar[cvarClansCostLuzaczki]
+	userNugget[id] -= bbCvar[cvarClansCostNugget];
+	userLuzCoin[id] -= bbCvar[cvarClansCostLuzaczki];
 	
 	globalClanMenu(id);
 
@@ -715,10 +685,8 @@ public leaveConfimMenu_2(id, menu, item){
 						
 				get_clan_info(clan[id], CLAN_NAME, clanName, sizeof(clanName));	
 				format(logText, sizeof(logText), "opuscil klan %s",  clanName);
-									
-				
+				logBB(id, logText);
 			}
-			logBB(id, logText)
 			set_user_clan(id);
 			globalClanMenu(id);
 		}
@@ -734,8 +702,7 @@ public membersOnlineMenu(id){
 	new menu = menu_create("\r[BaseBuilder]\y Czlonkowie Online:", "membersOnlineMenu_2");
 	
 	for (new i = 1; i < maxPlayers; i++) {
-		if (!is_user_connected(id) || clan[id] != clan[i]) 
-			continue;
+		if (!is_user_connected(id) || clan[id] != clan[i])  continue;
 			
 		online++;
 		
@@ -750,7 +717,7 @@ public membersOnlineMenu(id){
 	menu_setprop(menu, MPROP_BACKNAME, "Poprzednie");
 	menu_setprop(menu, MPROP_NEXTNAME, "Nastepne");
 	
-	if (!online) ColorChat(id, GREEN, "%s Na serwerze nie ma zadnego czlonka twojego klanu!", PREFIXSAY)
+	if (!online) ColorChat(id, GREEN, "%s Na serwerze nie ma zadnego czlonka twojego klanu!", PREFIXSAY);
 	else menu_display(id, menu);
 }
 
@@ -807,7 +774,7 @@ public leaderMenu_2(id, menu, item){
 			else ColorChat(id, GREEN, "%s Tylko wlasciciel oraz zastepca klanu moze ulepszac!", PREFIXSAY);
 		}
 		case 2: inviteMenu(id);
-		case 3: loadStatsSql(id,8)
+		case 3: loadStatsSql(id,8);
 		case 4:{
 			if(get_user_status(id) == STATUS_LEADER){
 				new bbClan[clanInfo];
@@ -821,8 +788,8 @@ public leaderMenu_2(id, menu, item){
 						return;
 					}
 					
-					bbClan[CLAN_NUGGET] -= bbCvar[cvarClansRestore]
-					bbClan[CLAN_POINTS] = bbClan[CLAN_LEVEL] * 2
+					bbClan[CLAN_NUGGET] -= bbCvar[cvarClansRestore];
+					bbClan[CLAN_POINTS] = bbClan[CLAN_LEVEL] * 2;
 					
 					bbClan[CLAN_HEALTH] = 0;
 					bbClan[CLAN_DAMAGECLASS] = 0;
@@ -844,12 +811,12 @@ public leaderMenu_2(id, menu, item){
 					if(logType[id] == LOG_CLAN_RESET){
 						get_clan_info(clan[id], CLAN_NAME, clanName, sizeof(clanName));	
 						format(logText, sizeof(logText), "zresetowal statystyki | klan: %s",  clanName);
-						logBB(id, logText)
+						logBB(id, logText);
 					}
 					return;
 				}
 				userAcceptRestore[id] = true;
-				leaderMenu(id)
+				leaderMenu(id);
 				return;
 	
 			} else ColorChat(id, GREEN, "%s Tylko wlasciciel klanu moze to zrobic!", PREFIXSAY);
@@ -857,14 +824,14 @@ public leaderMenu_2(id, menu, item){
 		case 5:{
 			if(get_user_status(id) == STATUS_LEADER){
 				client_print(id, print_center, "Wpisz teraz nowe ogloszenie dla Klanowiczow!");
-				cmd_execute(id, "messagemode Ogloszenie_Klanu")
-				leaderMenu(id)
+				cmd_execute(id, "messagemode Ogloszenie_Klanu");
+				leaderMenu(id);
 			} else ColorChat(id, GREEN, "%s Tylko wlasciciel klanu moze to zrobic!", PREFIXSAY);
 			
 		}
 		case 6:{
 			if(get_user_status(id) > STATUS_MEMBER){
-				motdClanMenu(id)
+				motdClanMenu(id);
 			} else ColorChat(id, GREEN, "%s Tylko wlasciciel oraz zastepca klanu moze ulepszac!", PREFIXSAY);
 		}
 	}
@@ -908,8 +875,8 @@ public motdClanMenu_2(id, menu, item){
 	
 	switch(item){
 		case 0:{
-			cmd_execute(id, "messagemode Kod_Motd_Klanu")
-			motdClanMenu(id)
+			cmd_execute(id, "messagemode Kod_Motd_Klanu");
+			motdClanMenu(id);
 		}
 		case 1:{
 			new bbClan[clanInfo];
@@ -923,7 +890,7 @@ public motdClanMenu_2(id, menu, item){
 			
 			save_clan(get_clan_id(clan[id]));
 			
-			motdClanMenu(id)
+			motdClanMenu(id);
 		}
 	}
 }
@@ -933,7 +900,7 @@ public checkCodeMotd(id){
 	new bbClan[clanInfo];
 	ArrayGetArray(bbClans, get_clan_id(clan[id]), bbClan);
 	
-	new codeMotd[20]
+	new codeMotd[20];
 	read_args(codeMotd, sizeof(codeMotd));
 	remove_quotes(codeMotd);
 	trim(codeMotd);
@@ -956,7 +923,7 @@ public checkCodeMotd(id){
 	
 	save_clan(get_clan_id(clan[id]));
 	
-	motdClanMenu(id)	
+	motdClanMenu(id);
 	
 	return PLUGIN_HANDLED;
 }
@@ -991,13 +958,12 @@ public disbandMenu_2(id, menu, item){
 		}
 		case 1: globalClanMenu(id);
 	}
-
 }
 
 public checkNameClan(id){
 	if(!(get_user_status(id) == STATUS_LEADER || is_user_connected(id) || clan[id])) return;
 	
-	new nameClan[17]
+	new nameClan[17];
 	read_args(nameClan, sizeof(nameClan));
 	remove_quotes(nameClan);
 	trim(nameClan);
@@ -1006,7 +972,7 @@ public checkNameClan(id){
 	ArrayGetArray(bbClans, get_clan_id(clan[id]), bbClan);
 				
 	if(equal(nameClan, bbClan[CLAN_NAME])){
-		ColorChat(id, GREEN, "%s Rozwiazales swoj klan!", PREFIXSAY)
+		ColorChat(id, GREEN, "%s Rozwiazales swoj klan!", PREFIXSAY);
 		
 		new logText[128];
 		logType[id] = LOG_CLAN_DELETE;
@@ -1015,13 +981,10 @@ public checkNameClan(id){
 		
 			get_clan_info(clan[id], CLAN_NAME, clanName, sizeof(clanName));	
 			format(logText, sizeof(logText), "usunal klan: %s",  clanName);
-			logBB(id, logText)			
+			logBB(id, logText);		
 		}
-		
 		removeClan(id);
-					
-		
-	} else  ColorChat(id, GREEN, "%s Wpisz poprawna nazwe klanu!", PREFIXSAY)	
+	} else  ColorChat(id, GREEN, "%s Wpisz poprawna nazwe klanu!", PREFIXSAY);
 }
 
 public upgradeClanMenu(id){
@@ -1046,7 +1009,7 @@ public upgradeClanMenu(id){
 	
 	iLen	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "^n\r0.\y Wyjscie");
 	
-	show_menu(id, B1 | B2 | B3 | B4 | B5 | B6 | B7 |/* B8 |*/ B9 | B0, gText, -1, "upgradeClanMenu"  )
+	showMenu(id, B1 | B2 | B3 | B4 | B5 | B6 | B7 |  B9 | B0, gText, -1, "upgradeClanMenu"  );
 
 }
 
@@ -1147,9 +1110,7 @@ public upgradeClanMenu_2(id, item){
 			ColorChat(id, GREEN, "%s Ulepszyles umiejetnosc^x03 %s^x01 na^x03 %d^x01 poziom!", PREFIXSAY, upgradedSkillName, bbClan[upgradedSkill]);
 		}
 		
-		default:{
-			return;
-		}
+		default:{ return; }
 	}
 	
 	bbClan[CLAN_POINTS]--;
@@ -1161,8 +1122,7 @@ public upgradeClanMenu_2(id, item){
 	
 	
 	for (new i = 1; i < maxPlayers; i++) {
-		if (!is_user_connected(id) || i == id || clan[i] != clan[id]) 
-			continue;
+		if (!is_user_connected(id) || i == id || clan[i] != clan[id]) continue;
 			
 		ColorChat(i,GREEN, "%s^x03 %s^x01 ulepszyl %s na^x03 %d Poziom^x01!",PREFIXSAY, userName[id], upgradedSkillName, bbClan[upgradedSkill]);
 	}
@@ -1174,7 +1134,7 @@ public upgradeClanMenu_2(id, item){
 		
 		get_clan_info(clan[id], CLAN_NAME, clanName, sizeof(clanName));	
 		format(logText, sizeof(logText), "ulepszyl %s na poziom %d | klan: %s", upgradedSkillName, bbClan[upgradedSkill], clanName);	
-		logBB(id, logText)
+		logBB(id, logText);
 	}
 	upgradeClanMenu(id);
 	
@@ -1204,7 +1164,7 @@ public inviteMenu(id){
 
 public inviteMenu_2(id, menu, item){
 	if (item == MENU_EXIT) {
-		menu_destroy(menu)
+		menu_destroy(menu);
 		globalClanMenu(id);
 		return ;
 	}
@@ -1215,7 +1175,7 @@ public inviteMenu_2(id, menu, item){
 		ColorChat(id, GREEN, "%s Wybranego gracza nie ma juz na serwerze.", PREFIXSAY);
 		return;
 	} 
-	userClanSend[target] = id
+	userClanSend[target] = id;
 	
 	inviteConfirmMenu(target);
 
@@ -1272,7 +1232,7 @@ public inviteConfirmMenu_2(id, menu, item){
 				
 				format(logText, sizeof(logText), "dodal: %s | klan: %s", userName[id],  clanName);
 				
-				logBB(target, logText)
+				logBB(target, logText);
 			}
 		}
 		default:{}
@@ -1329,7 +1289,6 @@ public memberMenu_2(id, menu, item){
 		menu_additem(menu, "Przekaz Przywodctwo", "1");
 
 		if (flag == STATUS_MEMBER) menu_additem(menu, "Mianuj \yZastepce", "2");
-
 		if (flag == STATUS_DEPUTY) menu_additem(menu, "Degraduj \yZastepce", "3");
 	}
 
@@ -1438,7 +1397,7 @@ public update_member(id, status){
 	
 			if (status == STATUS_LEADER) set_user_status(id, STATUS_DEPUTY);
 		}
-		logBB(id, logText)
+		logBB(id, logText);
 	}
 	globalClanMenu(id);
 	
@@ -1457,13 +1416,11 @@ public depositNuggetHandle(id){
 
 	if (nuggetAmount <= 0) { 
 		ColorChat(id, GREEN, "%s Nie mozesz wplacic mniej niz^x03 1 Brylek^x01!", PREFIXSAY);
-
 		return PLUGIN_HANDLED;
 	}
 	
 	if (userNugget[id] < nuggetAmount) { 
 		ColorChat(id, GREEN, "%s Nie masz tyle^x03 Brylek^x01!", PREFIXSAY);
-
 		return PLUGIN_HANDLED;
 	}
 
@@ -1484,7 +1441,7 @@ public depositNuggetHandle(id){
 		
 		get_clan_info(clan[id], CLAN_NAME, clanName, sizeof(clanName));	
 		format(logText, sizeof(logText), "wplacil [ %d Brylek ( Aktualnie: %d ) ] | klan: %s", nuggetAmount, get_clan_info(clan[id], CLAN_NUGGET), clanName);	
-		logBB(id, logText)
+		logBB(id, logText);
 	}
 	return PLUGIN_HANDLED;
 }

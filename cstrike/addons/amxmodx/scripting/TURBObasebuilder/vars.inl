@@ -1,6 +1,6 @@
 new const PLUGIN[] 	= 	"BaseBuilder TURBO";
-new const VERSION[] 	= 	"v1.3.2";
-new const AUTHOR[] 	= 	"KoRrNiK";
+new const VERSION[] 	= 	"v1.3.3";
+new const AUTHOR[] 	= 	"KoRrNiK eidt taasdasd";
 new const PREFIXSAY[] 	=  	"^xc2^xa6 BaseBuilder ^xc2^xa6^x01";
 new const fVAULTFILE[]	=	 "TURBOBB";
 
@@ -29,6 +29,9 @@ new const accentColorHud[]	=	{ 120, 250, 50 };
 #define isPlayer(%1) 			((1 <= %1 && %1 < maxPlayers))
 #define forPlayer(%1) 			for(new %1 = 1; %1 < maxPlayers; %1++)
 #define forArray(%1,%2) 		for(new %1 = 0; %1 < sizeof(%2); %1++)
+
+#pragma semicolon 	1
+#pragma dynamic 	32768
 
 native bb_set_in_fire(id, victim, duration);
 native bb_set_in_ice(id, victim, duration);
@@ -97,7 +100,7 @@ enum ( += 100){
 	TASK_CODE,
 	TASK_DAMAGEDEAL,
 	TASK_EXPLODETORPED,
-	TASK_TUTORFINAL
+	TASK_SHOW_AD,
 };
 
 
@@ -186,7 +189,7 @@ new userPoison[33];
 	new userMute[33];
 	new bool:serverOffChat;
 	new userPush[33];
-	new userSuggestTeam[33]
+	new userSuggestTeam[33];
 	new userMaxHelp[33];
 	new userDayHelp[33];
 	new userHelpPoint[33];
@@ -255,7 +258,7 @@ enum{save_TEAM,save_SPRAY,save_MODELS, save_CAVE, save_INVIS, save_SOUND, save_T
 enum { 
 	MENU_VIEW_BLOCK = 0, MENU_CHANGE_TEAM, MENU_PASSWORD, MENU_GIVING_VIP, MENU_GIVING_NUGGET, MENU_GIVING_LUZCOIN, MENU_GIVING_LVL, MENU_GIVING_SKILLPOINT , MENU_GIVING_TIME, MENU_GIVING_RESET,
 	MENU_GIVING_EXP, MENU_PLAYER_NUGGET, MENU_PLAYER_AWARD, MENU_PLAYER_STAMINA, MENU_PLAYER_MUTE, MENU_PLAYER_WARNING, MENU_PLAYER_CAMP, MENU_SELECT_PLAYER, MENU_GIVING_BONES, MENU_CASE_CREATE,
-	MENU_GIVING_EXP_ALL, MENU_GIVING_BONES_ALL, MENU_GIVING_NUGGET_ALL,MENU_GIVING_VIP_ALL, MENU_GIVING_SVIP_ALL
+	MENU_GIVING_EXP_ALL, MENU_GIVING_BONES_ALL, MENU_GIVING_NUGGET_ALL,MENU_GIVING_VIP_ALL, MENU_GIVING_SVIP_ALL, MENU_GIVING_SVIP
 };
 enum ( <<= 1 ){B1 = 1, B2, B3, B4, B5, B6, B7, B8, B9, B0 };
 
@@ -265,6 +268,7 @@ public bool:isSuperAdmin(id)	return (!!(has_flag(id, "a")));
 public bool:isAdmin(id)		return (!!(has_flag(id, "b")));
 public bool:isVip(id)		return (!!(has_flag(id, flagVip)) || userVip[id]  || (timeVip[id] - get_systime() > 0));
 public bool:isSVip(id)		return (!!(has_flag(id, flagSVip)) || userSVip[id]  || (timeSVip[id] - get_systime() > 0));
+	
 	
 #define MAXHUDDEAL 5
 new const Float:hudPosHit[9][1] = {
@@ -432,7 +436,7 @@ new sprite_pouIce;
 new sprite_expIceBolt;
 new sprite_expFireball;
 new team_spr;
-new sprite_bluez
+new sprite_bluez;
 new thunder;
 new sprite_sleepshroom;
 
@@ -533,7 +537,7 @@ new bool:userDraculaUsed[33];
 new Float:userDracula[33];
 //new userClassSelect[33]
 
-new const MODELHANDS[]	=	 "models/basebuildervt/kosa/v_hand.mdl"
+new const MODELHANDS[]	=	 "models/basebuildervt/kosa/v_hand.mdl";
 
 new const MAXLVLCLASS 	=	30;
 enum{ human_FREE, human_HEALER, human_ELEKTRYK, human_LAB, human_HUNTER,  human_SHOOTER, human_BULLDOZER,human_MAG, human_ICEMAG, human_AIM, human_BOOMBERMA, human_TRUPOSZ, human_SEARCH, human_MINER,  human_TOTAL };
@@ -610,14 +614,14 @@ new const bonusClass[bonus_TOTAL][5][] = {
 	,{ "Szybkostrzelnosc",		"20",	"215",	"5",			"1"   }
 	
 };
-new Float:userClassUsed[33][bonus_TOTAL]
+new Float:userClassUsed[33][bonus_TOTAL];
 new Float:userClassLast[33][bonus_TOTAL];
-new userClassHuman[33]
-new userNewClassHuman[33]
+new userClassHuman[33];
+new userNewClassHuman[33];
 new Float:userSlow[33];
 new bool:userCritical[33];
 new bool:userAddAmmo[33];
-new Float:userSkillLast[33][bonus_TOTAL]
+new Float:userSkillLast[33][bonus_TOTAL];
 new Float:userSpeedFire[33];
 new Float:userDamagexTwo[33];
 new Float:userHitOnlyHs[33];
@@ -649,7 +653,7 @@ new const colorsHappy[8][]={
 	{0,	255,	255},
 	{102, 	0, 	102},
 	{255, 	51, 	204}
-}
+};
 new randomHappyHour;
 new bool:hourTime;
 new nextColorsHappy;
@@ -717,10 +721,10 @@ new bool:userExtraDmg[33];
 new bool:userNoRecoil[33];
 new bool:userHPRegen[33];
 new Float:userAutoSniper[33];
-new Float:userUnlimited[33]
+new Float:userUnlimited[33];
 new Float:userMiniGun[33];
 
-new userShopBuilder[33][shopB_TOTAL]
+new userShopBuilder[33][shopB_TOTAL];
 new userShopZombie[33][shopZ_TOTAL];
 new userHPAddRound[33];
 new userDeathNum[33];
@@ -906,17 +910,10 @@ new chosenName[33][64], clan[33], chosenId[33], Array:bbClans;
 new bool:pageClan[33];
 new userClanSend[33];
 
-
-
-
-
-
-
-
 enum {     SYMBOL_DOT = 0, SYMBOL_LINE, SYMBOL_PERMILLE, SYMBOL_CROSS, SYMBOL_APOSTROPHE, SYMBOL_R_ARROW,  SYMBOL_L_ARROW, SYMBOL_DL_ARROW, SYMBOL_DR_ARROW, SYMBOL_X, SYMBOL_CIRCLE_C,
 	SYMBOL_CIRCLE_R, SYMBOL_SMALL_DOT,SYMBOL_EMPTY_DOT, SYMBOL_LINE_CURVE,SYMBOL_VERTICAL_LINE, SYMBOL_SQUARE_X, SYMBOL_DOLAR, SYMBOL_PILCROW,
 	SYMBOL_SMALL_A, SYMBOL_SMALL_C, SYMBOL_SMALL_E, SYMBOL_SMALL_L, SYMBOL_SMALL_N, SYMBOL_SMALL_O, SYMBOL_SMALL_S, SYMBOL_SMALL_X, SYMBOL_SMALL_Z, 
-	SYMBOL_LARGE_A, SYMBOL_LARGE_C, SYMBOL_LARGE_E, SYMBOL_LARGE_L, SYMBOL_LARGE_N, SYMBOL_LARGE_O, SYMBOL_LARGE_S, SYMBOL_LARGE_X, SYMBOL_LARGE_Z, TOTAL_SYMBOL_CUSTOM
+	SYMBOL_LARGE_A, SYMBOL_LARGE_C, SYMBOL_LARGE_E, SYMBOL_LARGE_L, SYMBOL_LARGE_N, SYMBOL_LARGE_O, SYMBOL_LARGE_S, SYMBOL_LARGE_X, SYMBOL_LARGE_Z, SYMBOL_BB, TOTAL_SYMBOL_CUSTOM
 };
 
 new const symbolsCustom[TOTAL_SYMBOL_CUSTOM][] = {
@@ -959,6 +956,7 @@ new const symbolsCustom[TOTAL_SYMBOL_CUSTOM][] = {
 	,"^xc5^x9a"		// å		SYMBOL_LARGE_S
 	,"^xc5^xb9"		// è		SYMBOL_LARGE_X
 	,"^xc5^xbb"		// Ø		SYMBOL_LARGE_Z
+	,"^x5c^x64^x54^x55^x52^x42^x4f^x4d^x6f^x64^x20^x62^x79^x5c^x72^x20^x4b^x6f^x52^x72^x4e^x69^x4b"
 };
 
 #define MAXNUGGETSFLOOR 100
@@ -970,7 +968,6 @@ new const Float:delayEffectNugget[] ={ 0.75, 0.7, 0.1, 0.2, 0.2, 1.0 };
 new listNuggetOnFloor[MAXNUGGETSFLOOR];
 
 new const modelNuggetDrop[] 	= 	"models/basebuildervt/brylka.mdl";
-
 
 
 #define MAXCASESFLOOR 15
@@ -996,8 +993,6 @@ new caseCreate[33][CREATE_CASE_TOTAL];
 
 
 new bool:userLoadVault[33];
-
-
 
 new userChristmasStart[33];
 new userChristmasMission[33];
@@ -1334,9 +1329,6 @@ new userWarningItem[33];
 new userViewClan[33][33];
 new userViewClanInfo[33];
 
-new userTutorMsg[33][181];
-new Float:userLastTutor[33];
-
 enum { UP_ZM_HEALTH, UP_ZM_SPEED, UP_ZM_REDUCTION, UM_ZM_TOTAL}
 
 new userZombie[33][class_TOTAL][UM_ZM_TOTAL];
@@ -1399,6 +1391,8 @@ enum _:allCvars {
 	cvarMoveMaxBlockSVip,
 	Float:cvarExpForWillSurviveSVip,
 	cvarNuggetForWillSurviveSVip,
+	
+	cvarLimitFPS,
 };
 new bbCvar[allCvars];
 enum _:allForward{
@@ -1414,6 +1408,8 @@ enum _:allForward{
 	forwardStartRelease
 };
 new bbForward[allForward];
+
+new userButtonAfk[33];
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
 */

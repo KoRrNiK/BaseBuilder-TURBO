@@ -20,9 +20,9 @@ public warningInfo(id){
 	new target = userWarningInfo[id];
 	
 	
-	new gText[1756], iLen
+	new gText[1756], iLen;
 
-	iLen = format(gText[iLen], sizeof(gText)-iLen-1, "\r[BaseBuilder]\y Informacje o graczu:\r %s:^n", userName[target])
+	iLen = format(gText[iLen], sizeof(gText)-iLen-1, "\r[BaseBuilder]\y Informacje o graczu:\r %s:^n", userName[target]);
 	
 	if( userWarningAmount[target] == 0)
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r1.\y Lista Ostrzezen\d [\rBrak\d]");
@@ -33,9 +33,9 @@ public warningInfo(id){
 	else iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r2.\w Dodaj Ostrzezenie");
 	
 	
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n^n\r0.\w Wyjdz")
+	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n^n\r0.\w Wyjdz");
 	
-	show_menu(id, B1 | B2 | B0, gText, -1, "warningInfo"  )
+	showMenu(id, B1 | B2 | B0, gText, -1, "warningInfo"  );
 	return PLUGIN_HANDLED;
 }
 
@@ -50,16 +50,16 @@ public warningInfo_2(id, item){
 		case 1:{
 			if(target == id && !isSuperAdmin(id)){
 				ColorChat(id, GREEN, "---^x01 Nie mozesz sobie nadac ostrzezenia!^x04 ---");
-				warningInfo(id)	
-				return 
+				warningInfo(id);
+				return;
 			}
 			if(userWarningAmount[target] >= MAXWAR){
 				ColorChat(id, GREEN, "---^x01 Gracz Posiada juz^x03 %d ostrzezen^x01! Musisz jakies usunac aby dodac nowe!^x04 ---", MAXWAR);
-				warningInfo(id)
+				warningInfo(id);
 				return;
 			}
 			client_print(id, print_center, "Wpisz teraz opis ostrzezenia!");
-			client_cmd(id, "messagemode warning")
+			client_cmd(id, "messagemode warning");
 		}		
 	}	
 }
@@ -75,47 +75,47 @@ public writeWarning(id){
 	
 	if(userWarningAmount[target] >= MAXWAR){
 		ColorChat(id, GREEN, "---^x01 Gracz Posiada juz^x03 %d ostrzezen^x01! Musisz jakies usunac aby dodac nowe!^x04 ---", MAXWAR);
-		warningInfo(id)
+		warningInfo(id);
 		return;
 	}
 	if (equal(szArg, "") || strlen(szArg) <  1 ) {
 		ColorChat(id, GREEN, "---^x01 Nic nie wpisales!^x04 ---");
-		warningInfo(id)
-		return ;
+		warningInfo(id);
+		return;
 	}
 	new globalTime[32], map[33]; 
 	
 	get_time("%d.%m.%Y - %H:%M:%S",globalTime,sizeof(globalTime));
 	get_mapname(map, sizeof(map));
 	
-	userWarningName[target] = szArg
+	userWarningName[target] = szArg;
 	userWarningTime[target] = globalTime;
 	userWarningMap[target] = map;
 	userWarningPlayer[target] = userName[target];
 	userWarningAdmin[target] = userName[id];
 
-	warningAddMenu(id)
+	warningAddMenu(id);
 }
 public warningAddMenu(id){
 	
 	new target = userWarningInfo[id];
 	
-	new gText[1756], iLen
+	new gText[1756], iLen;
 
-	iLen = format(gText[iLen], sizeof(gText)-iLen-1, "\r[BaseBuilder]\y Informacje o ostrzezeniu!^n^n")
+	iLen = format(gText[iLen], sizeof(gText)-iLen-1, "\r[BaseBuilder]\y Informacje o ostrzezeniu!^n^n");
 	
-	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "\y%s^t^t\dGracz:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], userWarningPlayer[target])
-	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "\y%s^t^t\dAdmin:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], userWarningAdmin[target])
-	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "\y%s^t^t\dOpis:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], userWarningName[target])
-	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "\y%s^t^t\dMapa:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], userWarningMap[target])
-	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "\y%s^t^t\dGodzina:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], userWarningTime[target])
+	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "\y%s^t^t\dGracz:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], userWarningPlayer[target]);
+	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "\y%s^t^t\dAdmin:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], userWarningAdmin[target]);
+	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "\y%s^t^t\dOpis:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], userWarningName[target]);
+	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "\y%s^t^t\dMapa:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], userWarningMap[target]);
+	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "\y%s^t^t\dGodzina:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], userWarningTime[target]);
 
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r1.\w Zapisz %s", userWarningAccept[id] ? "\r[POTWIERDZ]":"")
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r2.\y Zmien Opis")
+	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r1.\w Zapisz %s", userWarningAccept[id] ? "\r[POTWIERDZ]":"");
+	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r2.\y Zmien Opis");
 	
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n^n\r0.\w Wyjdz")
+	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n^n\r0.\w Wyjdz");
 	
-	show_menu(id, B1 | B2| B0, gText, -1, "warningAddMenu"  )
+	showMenu(id, B1 | B2| B0, gText, -1, "warningAddMenu"  );
 	return PLUGIN_HANDLED;
 }
 public warningAddMenu_2(id, item){
@@ -125,8 +125,8 @@ public warningAddMenu_2(id, item){
 		case 0:{
 			if(!userWarningAccept[id]){
 				userWarningAccept[id] = true;
-				warningAddMenu(id)
-				return
+				warningAddMenu(id);
+				return;
 			}
 			
 			ColorChat(target, GREEN, "---^x01 Dostales ostrzezenie od^x03 %s^x01!^x04 ---", userName[id]); 
@@ -135,12 +135,12 @@ public warningAddMenu_2(id, item){
 				
 			userWarningAmount[target] ++;
 			
-			saveWarning(id, target)
+			saveWarning(id, target);
 		}
 		case 1:{
 			client_print(id, print_center, "Wpisz teraz opis ostrzezenia");
-			warningAddMenu(id)
-			client_cmd(id, "messagemode warning")
+			warningAddMenu(id);
+			client_cmd(id, "messagemode warning");
 		}
 	}
 }
@@ -154,7 +154,7 @@ public warningList_2(id, menu, item){
 	new target = userWarningMenu[id][item];
 	userWarningItem[id] = target;
 
-	loadDescWarning(id)
+	loadDescWarning(id);
 }
 public loadDescWarning(id){
 	
@@ -162,10 +162,10 @@ public loadDescWarning(id){
 		
 	if (!sqlConnected) {
 		log_amx("[SQL-LOG] Brak polaczenia");
-		return PLUGIN_CONTINUE
+		return PLUGIN_CONTINUE;
 	}
 	
-	new queryData[512]
+	new queryData[512];
 	new tempId[3];
 	
 	tempId[0] = id;
@@ -177,7 +177,7 @@ public loadDescWarning(id){
 		FROM `warnings`\
 		LEFT JOIN `players` AS `playerWarning` ON `warnings`.`idplayer` = `playerWarning`.`idplayer`\
 		LEFT JOIN `players` AS `adminWarning` ON `warnings`.`idadmin` = `adminWarning`.`idplayer`\
-		WHERE `warnings`.`idwarning`='%d'", tempId[2])
+		WHERE `warnings`.`idwarning`='%d'", tempId[2]);
 
 	SQL_ThreadQuery(sql, "loadDescWarning_2", queryData, tempId, sizeof(tempId));
 
@@ -185,15 +185,11 @@ public loadDescWarning(id){
 }
 public loadDescWarning_2(failState, Handle:query, error[], errorNum, tempId[], dataSize){
 	
-	new id 		= 	tempId[0]
+	new id 		= 	tempId[0];
 
 	if (failState){
-		if (failState == TQUERY_CONNECT_FAILED){
-			log_amx("[SQL-LOG] Nie mozna polaczyc siê z baz¹ danych SQL. Blad: %s (%d)", error, errorNum)
-		}
-		else if (failState == TQUERY_QUERY_FAILED){
-			log_amx("[SQL-LOG] Zapytanie watkowe nie powiodlo sie. Blad: %s (%d)", error, errorNum)
-		}
+		if (failState == TQUERY_CONNECT_FAILED) log_amx("[SQL-LOG] Nie mozna polaczyc sie z baz1 danych SQL. Blad: %s (%d)", error, errorNum);
+		else if (failState == TQUERY_QUERY_FAILED) log_amx("[SQL-LOG] Zapytanie watkowe nie powiodlo sie. Blad: %s (%d)", error, errorNum);
 		return PLUGIN_HANDLED;
 	}	
 	
@@ -205,13 +201,13 @@ public loadDescWarning_2(failState, Handle:query, error[], errorNum, tempId[], d
 	SQL_ReadResult(query, SQL_FieldNameToNum(query, "time"), szInfo[3], sizeof(szInfo[]));
 	SQL_ReadResult(query, SQL_FieldNameToNum(query, "map"), szInfo[4], sizeof(szInfo[]));
 
-	iLen = format(gText[iLen], sizeof(gText)-iLen-1, "\r[BaseBuilder]\y Informacje o ostrzezeniu!^n^n")
+	iLen = format(gText[iLen], sizeof(gText)-iLen-1, "\r[BaseBuilder]\y Informacje o ostrzezeniu!^n^n");
 	
-	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "\y%s^t^t\dGracz:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], szInfo[1])
-	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "\y%s^t^t\dAdmin:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], szInfo[2])
-	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "\y%s^t^t\dOpis:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], szInfo[0])
-	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "\y%s^t^t\dMapa:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], szInfo[4])
-	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "\y%s^t^t\dGodzina:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], szInfo[3])
+	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "\y%s^t^t\dGracz:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], szInfo[1]);
+	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "\y%s^t^t\dAdmin:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], szInfo[2]);
+	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "\y%s^t^t\dOpis:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], szInfo[0]);
+	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "\y%s^t^t\dMapa:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], szInfo[4]);
+	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "\y%s^t^t\dGodzina:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], szInfo[3]);
 
 	if(isSuperAdmin(id)){
 		iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n\r1.\w Usun %s", userWarningAccept[id] ? "\r[POTWIERDZ]":"");
@@ -225,7 +221,7 @@ public loadDescWarning_2(failState, Handle:query, error[], errorNum, tempId[], d
 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n^n\r0.\w Wyjdz");
 	
 	
-	show_menu(id, B1 | B2| B0, gText, -1, "warningDesc")	
+	showMenu(id, B1 | B2| B0, gText, -1, "warningDesc");	
 	return PLUGIN_HANDLED;
 }
 public warningDesc_2(id, item){
@@ -234,25 +230,25 @@ public warningDesc_2(id, item){
 			
 			if(!isSuperAdmin(id)) {
 				ColorChat(id, GREEN, "---^x01 Brak dostepu!^x04 ---");
-				loadDescWarning(id)
+				loadDescWarning(id);
 				return;
 			}
 			if(!userWarningAccept[id]){
 				userWarningAccept[id] = true;
-				loadDescWarning(id)
-				return
+				loadDescWarning(id);
+				return;
 			}
-			removeWarning(id)
+			removeWarning(id);
 		}
 		case 1:{
 			if(!isSuperAdmin(id)) {
 				ColorChat(id, GREEN, "---^x01 Brak dostepu!^x04 ---");
-				loadDescWarning(id)
+				loadDescWarning(id);
 				return;
 			}
-			loadDescWarning(id)
+			loadDescWarning(id);
 			client_print(id, print_center, "Wpisz teraz nowy opis ostrzezenia!");
-			client_cmd(id, "messagemode change_desc")
+			client_cmd(id, "messagemode change_desc");
 	
 		}
 	}
@@ -294,10 +290,11 @@ public  updateWarning(id){
 	logType[id] = LOG_WARNING_CHANGE;
 	if(logType[id] == LOG_WARNING_CHANGE){
 		format(gText, sizeof(gText), "zaktualizowal ostrzezenia gracza [%s] nowy opis [%s]", userName[tempId[1]], szArg);
+		logBB(id,gText);
 	}
-	logBB(id,gText)
+
 			
-	loadDescWarning(id)
+	loadDescWarning(id);
 }
 public  removeWarning(id){
 	
@@ -328,11 +325,11 @@ public  removeWarning(id){
 	logType[id] = LOG_WARNING_REMOVE;
 	if(logType[id] == LOG_WARNING_REMOVE){
 		format(gText, sizeof(gText), "usunal ostrzezenie graczowi [%s] ID [%d]", userName[tempId[1]], tempId[2]);
+		logBB(id,gText);	
 	}
-	logBB(id,gText)	
 	
 	userWarningAccept[id] = false;
-	warningInfo(id)
+	warningInfo(id);
 }
 public saveWarning(id, target){
 	new queryData[256], tempId[2];
@@ -350,11 +347,11 @@ public saveWarning(id, target){
 	logType[id] = LOG_WARNING_ADD;
 	if(logType[id] == LOG_WARNING_ADD){
 		format(gText, sizeof(gText), "dodal ostrzezenie graczowi [%s] opis [%s] godzina [%s] mapa [%s]", userName[tempId[1]], userWarningName[target], userWarningTime[target], userWarningMap[target]);
+		logBB(id,gText);
 	}
-	logBB(id,gText)	
 	
 	userWarningAccept[id] = false;
-	warningInfo(id)
+	warningInfo(id);
 }
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }

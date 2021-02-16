@@ -50,24 +50,23 @@
 #include "TURBObasebuilder/case.inl"
 #include "TURBObasebuilder/award.inl"
 #include "TURBObasebuilder/hatSystem.inl"
-
 #if defined CHRISTMAS_ADDON
 	#include "TURBObasebuilder/christmas.inl"
 #endif
 #if defined SCHROOM_ADDON
 	#include "TURBObasebuilder/grzybki.inl"
 #endif
-
 #include "TURBObasebuilder/deathPrice.inl"
 #include "TURBObasebuilder/warning.inl"
 
 public bool:registerPlugin(){
+	
 	register_plugin
 	(
 		PLUGIN,
 		VERSION,
 		AUTHOR
-	)
+	);
 	
 	// Poradnik pisania / edytowania pluginow
 	// Krok 1. - Zmien autora
@@ -75,8 +74,8 @@ public bool:registerPlugin(){
 	// Krok 3. - Brawo przerobiles plugin! 
 	
 	if(!equal(AUTHOR, "KoRrNiK", 7)){
-		set_fail_state("No i po co to zmieniles :(")
-		set_fail_state("Why did you change it :(")
+		set_fail_state("No i po co to zmieniles :(");
+		set_fail_state("Why did you change it :(");
 		return false;
 	} return true;
 }
@@ -132,9 +131,11 @@ public plugin_precache(){
 	#if defined CHRISTMAS_ADDON
 		christmasPrecache();
 	#endif
+	
 }
 public plugin_init(){	
 	
+
 	if(registerPlugin()){
 	
 		register_cvar("basebuilder_version", VERSION, FCVAR_SERVER);
@@ -185,6 +186,10 @@ public plugin_init(){
 		bind_pcvar_num(create_cvar("bb_schroom_min_players", 		"4"), 		bbCvar[cvarSchroomPlayers]);
 		bind_pcvar_num(create_cvar("bb_point_to_kills", 			"2"), 		bbCvar[cvarPointToKills]);
 		bind_pcvar_num(create_cvar("bb_point_to_deaths", 		"3"), 		bbCvar[cvarPointToDeaths]);
+			
+		bind_pcvar_num(create_cvar("bb_limit_fps", 			"101"), 		bbCvar[cvarLimitFPS]);
+	
+		set_cvar_num("mp_freezetime", 0);
 	
 		serverOffChat 	=	false;
 	
@@ -216,11 +221,11 @@ public plugin_init(){
 		register_clcmd("DoKiedyMozeZabic", 	"timeDeath");
 		register_clcmd("warning", 		"writeWarning");
 		register_clcmd("change_desc", 		"updateWarning");
-		
+
 		register_impulse(201, 			"impulsePush");
 		register_impulse(100, 			"impulseClone");
 		
-		new const blockCommandAll[][] = { "drop","buy", "buyammo1", "buyammo2", "radio", "radio1", "radio2", "radio3", "votekick", "votemap", "vote" , "kick"}
+		new const blockCommandAll[][] = { "drop","buy", "buyammo1", "buyammo2", "radio", "radio1", "radio2", "radio3", "votekick", "votemap", "vote" , "kick"};
 		for(new i = 0; i < sizeof(blockCommandAll); i++) register_clcmd(blockCommandAll[i],  "blockCommand");
 		
 		register_event("DeathMsg", 		"DeathMsg", 	"ade");
@@ -249,7 +254,7 @@ public plugin_init(){
 		register_menu("selectWeapon", 		B1 | B2 , 				"selectWeapon_2");
 		register_menu("upgradeWeapon", 		B1 | B2 | B0 , 				"upgradeWeapon_2");
 		register_menu("displayBuy",		B1 | B2,					"displayBuy_2");
-		register_menu("missionMenuDesc",	B1 | B2  , 				"missionMenuDesc_2")
+		register_menu("missionMenuDesc",	B1 | B2  , 				"missionMenuDesc_2");
 		register_menu("viewUpgradeMine", 	B1 | B2 , 				"viewUpgradeMine_2");
 		register_menu("showInfoVip", 		B1 | B0 , 				"showInfoVip_2");	
 		register_menu("buyCave", 		B1 | B2, 					"buyCave_2");
@@ -266,6 +271,8 @@ public plugin_init(){
 		register_menu("warningAddMenu", 		B1 | B2 | B0 , 				"warningAddMenu_2");
 		register_menu("warningDesc", 		B1 | B2 | B0 , 				"warningDesc_2");
 		
+		register_menu("infoCostumes", 		B1 | B2 , 	"infoCostumes_2");
+		
 		register_message(get_user_msgid("SendAudio"), 		"messageAudioMsg");
 		register_message(get_user_msgid("TextMsg"), 		"messageTextMsg");	
 		register_message(get_user_msgid("SayText"), 		"messageSayText");
@@ -275,8 +282,8 @@ public plugin_init(){
 		register_message(get_user_msgid("HideWeapon"), 		"MSG_HideWeapon");
 		register_message(get_user_msgid("ScoreAttrib"), 		"vipStatus");
 	
-		new const wpCPost[][]=	{ "weapon_shield", "weaponbox", "armoury_entity" }
-		new const entFire[][] = 	{ "worldspawn", "player" }
+		new const wpCPost[][]=	{ "weapon_shield", "weaponbox", "armoury_entity" };
+		new const entFire[][] = 	{ "worldspawn", "player" };
 		
 		for(new i; i < sizeof(wpCPost); i++) RegisterHam(Ham_Touch, wpCPost[i],"ham_WeaponCleaner_Post", 0);
 		for(new i; i < sizeof(entFire); i++) RegisterHam(Ham_TraceAttack, entFire[i], "fw_TraceAttack");
@@ -314,7 +321,7 @@ public plugin_init(){
 		register_think(caseClass, "chestThink");
 		register_touch("player", 	"player", 		"blockJumpOnHead");
 		register_touch(rocketClass, 	"*", 			"rocketTouch");
-		register_touch("player", 	"func_wall", 		"jumpBlockTouch");
+		register_touch("player", 	"func_wall",	 	"touchPlayerWall");
 		
 		new globalTime[9], map[33]; 
 		get_time("%H:%M:%S",globalTime,sizeof(globalTime));
@@ -335,12 +342,11 @@ public plugin_init(){
 		#if defined SCHROOM_ADDON
 			register_clcmd("schroom", 	"menuGrzybki");
 			register_think("grzybek", 	"grzybekThink");
-			prepareShroom()
+			prepareShroom();
 			prepareDigitalCounter();
 		#endif
 		
 		#if defined CHRISTMAS_ADDON
-			register_menu("infoCostumes", 		B1 | B2 , 	"infoCostumes_2");
 			register_clcmd("christmas", "menuCreateChristmas");
 			register_think(szChristmasTreeSprite, "treeThink");
 			register_touch("player", 	szChristmasTree, 	"christmasTouchTree");
@@ -369,7 +375,7 @@ public plugin_init(){
 public plugin_natives(){
 	register_native("bb_get_class_zombie", 	"return_class_zombie", 1);
 	register_native("bb_get_class_human", 	"return_class_human", 1);
-	register_native("bb_set_final_exp", 	"return_add_final_exp", 1);
+	register_native("bb_set_final_exp", 	"return_set_final_exp", 1);
 	register_native("bb_set_exp", 		"return_set_nugget", 1);
 	register_native("bb_set_final_nugget", 	"return_set_final_nugget", 1);
 	register_native("bb_set_nugget", 	"return_set_exp", 1);
@@ -377,54 +383,57 @@ public plugin_natives(){
 	register_native("bb_set_bone", 		"return_set_bone", 1);
 	register_native("bb_get_nugget", 	"return_get_nugget", 1);
 	register_native("bb_get_bone", 		"return_get_bone", 1);
-	register_native("bb_prep", 		"return_prep", 1)
-	register_native("bb_build", 		"return_build", 1)
-	register_native("bb_game", 		"return_game", 1)
-	register_native("bb_get_luzaczki", 	"return_getLuzaczki",1)
-	register_native("bb_set_luzaczki", 	"return_setLuzaczki",1)
-	register_native("bb_get_user_id", 	"return_getUserId",1)
-	register_native("bb_get_login", 		"playerLogged",1)
+	register_native("bb_prep", 		"return_prep", 1);
+	register_native("bb_build", 		"return_build", 1);
+	register_native("bb_game", 		"return_game", 1);
+	register_native("bb_get_luzaczki", 	"return_getLuzaczki",1);
+	register_native("bb_set_luzaczki", 	"return_setLuzaczki",1);
+	register_native("bb_get_user_id", 	"return_getUserId",1);
+	register_native("bb_get_login", 		"playerLogged",1);
+	
+	register_native("bb_get_fps", 		"return_get_fps",1);
 }
 public return_set_final_bone(id, value)
-	addBoneToFinal(id, value)
+	addBoneToFinal(id, value);
 public return_set_bone(id, value)
-	addBone(id, value)
+	addBone(id, value);
 public return_set_final_nugget(id, value)
-	addNuggetToFinal(id, value)
+	addNuggetToFinal(id, value);
 public return_set_nugget(id, value)
-	addNugget(id, value)
+	addNugget(id, value);
 public Float:return_set_final_exp(id, Float:value)
 	addExpToFinal(id, Float:value);
 public Float:return_set_exp(id, Float:value)
-	addExp(id, Float:value)
+	addExp(id, Float:value);
 public bool:return_prep()
-	return prepTime
+	return prepTime;
 public bool:return_build()
-	return buildTime
+	return buildTime;
 public bool:return_game()
 	return gameTime;
 public return_class_zombie(id)
-	return userClass[id]
+	return userClass[id];
 public return_class_human(id)
-	return userClassHuman[id]
+	return userClassHuman[id];
 public return_getUserId(id)
 	return userSqlId[id];
 public return_getLuzaczki(id)
 	return userLuzCoin[id];
 public return_setLuzaczki(id, value)
-	userLuzCoin[id]=value	
+	userLuzCoin[id]=value;	
 public return_get_bone(id)
-	return userBone[id]
+	return userBone[id];
 public return_get_nugget(id)
-	return userNugget[id]
-		
+	return userNugget[id];
+public return_get_fps(id)
+	return userFPS[id];
 	
 public ham_TakeDamageEnt(ent, idinflictor, id, Float:damage, damagebits){
 	
 	#if defined SCHROOM_ADDON
 		if(!pev_valid(ent) || !is_user_alive(shroomPlayer)) return HAM_IGNORED;
 		if(isSchroom(ent)){
-			grzybekDMG(shroomPlayer, ent, 0.0)	;
+			grzybekDMG(shroomPlayer, ent, 0.0);
 		}	
 		return HAM_IGNORED;
 	#endif
@@ -440,7 +449,7 @@ public ham_UseButtonEnt(this, id, idactivator, use_type, Float:value){
 	
 	if( equal(szTarget, "playshroom") ){
 		new hour;
-		time(hour)
+		time(hour);
 		if( !has_flag(id, "a") ){
 			if( hour >= bbCvar[cvarSchroomFrom] && hour < bbCvar[cvarSchroomTo] ) {    
 			ColorChat(id, GREEN, "---^x01 Grzybki poszly spac i wstana dopioro o 7^x04 ---");
@@ -480,14 +489,14 @@ public fw_SetModel(ent,const model[]){
 	#endif 
 	return FMRES_IGNORED;
 }
-public jumpBlockTouch(id, ent){
+public touchPlayerWall(id, ent){
 	if( !pev_valid(ent)) return;
-
-	new szClass[14], szTarget[7];
-	entity_get_string(ent, EV_SZ_classname, szClass, sizeof(szClass));
+	if( !is_user_alive(id)) return;
+	
+	new szTarget[7];
 	entity_get_string(ent, EV_SZ_targetname, szTarget, sizeof(szTarget));
 	
-	if(equal(szClass, "func_wall") && equal(szTarget, "JUMP")){
+	if(equal(szTarget, "JUMP")){
 		jumpFuncBlock(id, 2);
 	} 
 }
@@ -535,6 +544,14 @@ public teamCampTouching(id){
 	}else userDarkScreen[id] = max( userDarkScreen[id]-2, 0);
 }
 public plugin_cfg(){
+	
+	new configPath[64];
+	get_localinfo("amxx_configsdir", configPath, sizeof(configPath) - 1);
+	server_cmd("exec %s/basebuilder.cfg", configPath);
+	
+	log_amx("=== Zaladowano: %s/basebuilder.cfg ===", configPath);
+	log_amx("=== BaseBuilder Mod by KoRrNiK (%s) === ", VERSION);
+	
 	cfgClan();
 	plugin_init_sql();
 }
@@ -544,7 +561,7 @@ public plugin_end(){
 	endClan();
 }
 public restartRound(){
-	static ret;
+	new ret;
 	ExecuteForward(bbForward[forwardRestartRound], ret);
 }
 public WeapPickup(id) return PLUGIN_HANDLED;
@@ -702,15 +719,17 @@ traceShot(id, trace){
 public CurWeapon(id){
 	if( !is_user_connected(id) || !is_user_alive(id) ) return;
 
-	new wpnID = read_data(2);
+	static weapon;
+	weapon = get_user_weapon(id);
+	
 	if( get_user_team(id) == 2 ){
 	
-		if( checkWeapon(wpnID) ) cs_set_user_bpammo(id, wpnID, 200 );
-		if(wpnID == CSW_KNIFE) setModelsKnifeHuman(id);
+		if( checkWeapon(weapon) ) cs_set_user_bpammo(id, weapon, 200 );
+		if(weapon == CSW_KNIFE) setModelsKnifeHuman(id);
 		
 	}else{		
 		new class = userClass[id];
-		if(wpnID == CSW_KNIFE) entity_set_string( id , EV_SZ_viewmodel , classesZombies[class][6])  ;
+		if(weapon == CSW_KNIFE) entity_set_string( id , EV_SZ_viewmodel , classesZombies[class][6])  ;
 		entity_set_string( id , EV_SZ_weaponmodel , "" ) ;
 	}
 	#if defined CHRISTMAS_ADDON
@@ -720,8 +739,6 @@ public CurWeapon(id){
 	setUserSpeed(id);
 	
 	if(userFov[id] > 90 ){
-		new weapon = get_user_weapon(id);
-		
 		if(cs_get_user_zoom(id) == CS_SET_AUGSG552_ZOOM && ( weapon == CSW_AUG || weapon == CSW_SG552 ) ) setFov(id, 55);
 		else if((cs_get_user_zoom(id) == CS_SET_FIRST_ZOOM)   && weapon == CSW_AWP ) setFov(id, 40);
 		else if((cs_get_user_zoom(id) == CS_SET_SECOND_ZOOM) && weapon == CSW_AWP ) setFov(id, 10);
@@ -730,8 +747,8 @@ public CurWeapon(id){
 		else setFov(id, userFov[id]);
 	}	
 	
-	if( checkWeapon(wpnID) ){
-		if( get_gametime() < userUnlimited[id] ) fm_cs_get_weapon_ammo( get_pdata_cbase(id, 373), g_MaxClipAmmo[ wpnID ]);		
+	if( checkWeapon(weapon) ){
+		if( get_gametime() < userUnlimited[id] ) fm_cs_get_weapon_ammo( get_pdata_cbase(id, 373), g_MaxClipAmmo[weapon]);		
 	}
 }
 
@@ -805,7 +822,7 @@ public addToReconnect(id, type){
 }
 
 public fw_PlayerPreThink(id){
-	if( !is_user_alive(id) || !is_user_connected(id) || userFPS[id] >= 105) return FMRES_IGNORED;
+	if( !is_user_alive(id) || !is_user_connected(id) || userFPS[id] >= bbCvar[cvarLimitFPS] + 4) return FMRES_IGNORED;
 
 	new Float:speedMulti=1.0;
 
@@ -855,16 +872,15 @@ public fw_ClientUserInfoChanged(id) {
 public client_putinserver(id){
 	set_task(0.1, "startLogin", id+ TASK_LOGIN);
 	
-	if(isAdmin(id))
-		userAdmin[id] = true;
+	if(isAdmin(id)) userAdmin[id] = true;
 	else userAdmin[id] = false;
 	
 	userConnected[id] = true;
 	userFirstSpawn[id] = false;
 
-	set_task(2.0,"radarOff");
-	//set_task(2.0,"snowOn");
-	
+	//set_task(2.0,"snowOn", id);
+	set_task(2.0,"radarOff", id);
+
 	return PLUGIN_CONTINUE;
 }
 public radarOff(id){
@@ -898,7 +914,6 @@ public client_disconnect(id){
 
 public client_connect(id){
 	get_user_name(id, userName[id], sizeof(userName[]));
-	
 		
 	new bool:kick = false;
 	
@@ -932,12 +947,13 @@ public client_connect(id){
 	userLoadVault[id]		= 	false;
 	
 	userNugget[id] 			= 	0;
-	userLevel[id]			=	1
+	userLevel[id]			=	1;
 	userExp[id]			=	0.0;
 	userNuggetAll[id]		=	0;
 	timeVip[id] 			= 	0;
+	timeSVip[id] 			= 	0;
 	userLuzCoin[id]			= 	0;
-	userAfkValue[id]		=	0.00
+	userAfkValue[id]		=	0.00;
 	userBlocksUsed[id] 		= 	0;
 	userCloned[id] 			= 	0;
 	userMoveAs[id] 			= 	0;
@@ -1033,7 +1049,7 @@ public client_connect(id){
 	userLastAwardGot[id]		=	playedTime(id);
 	userLastAwardFree[id]		=	get_systime();
 	userLastAwardRow[id] 		=	0;		
-	needHelp[findHelp(id)]		=	-1	
+	needHelp[findHelp(id)]		=	-1	;
 	userChristmasStart[id] 		= 	0;
 	userChristmasMission[id] 	= 	0;
 	userChristmasType[id] 		= 	0;
@@ -1106,7 +1122,7 @@ public DeathMsg(){
 			addKillBone(victim, random_num(1,3));
 			
 			createNugget(attacker, victim);
-			if(random_float(0.0, 100.0) <= dropChest(attacker)) createCase(attacker, victim)
+			if(random_float(0.0, 100.0) <= dropChest(attacker)) createCase(attacker, victim);
 			
 			addMission(victim, mission_HUMANDEATH, 1);
 			addMission(attacker, mission_TOCIX, 1);
@@ -1146,15 +1162,13 @@ public globalHud(id){
 		return PLUGIN_CONTINUE;
 	}
 	
-	new iLen;
-	new gText[512];
+	static gText[512], iLen, bonus, newAwardLeft, newLeftExp, newLeftNugget;
+
+	bonus 		= 	str_to_num(classesHuman[userClassHuman[id]][4]);
+	newAwardLeft 	= 	userLastAwardTime[id] + userAwardTime - playedTime(id);
+	newLeftExp  	=  	userScrollExp[id] - playedTime(id);
+	newLeftNugget  	=  	userScrollNugget[id] - playedTime(id);
 	
-	new bonus 		= 	str_to_num(classesHuman[userClassHuman[id]][4]);
-	new newAwardLeft 	= 	userLastAwardTime[id] + userAwardTime - playedTime(id);
-	new newLeftExp  		=  	userScrollExp[id] - playedTime(id);
-	new newLeftNugget  	=  	userScrollNugget[id] - playedTime(id);
-	
-	// SQL NIE POLACZYLO SIE
 	if(sql == Empty_Handle){
 		set_hudmessage(215, 15, 15, -1.0, 0.35, 0, 0.5, 1.0, 0.0, 1.0);
 		show_hudmessage(id, "Wystapil blad przy probie nawiazania polaczenia z baza danych!");
@@ -1165,9 +1179,8 @@ public globalHud(id){
 		set_task(1.0, "globalHud" ,id+ TASK_GLOBAL);
 		return PLUGIN_CONTINUE;
 	}
-	
-	// GLOWNY HUD
-	if(userLogged[id] && !(userExtraFps[id] || userFPS[id] >= 150)){
+
+	if(userLogged[id] && !(userExtraFps[id] || userFPS[id] >= bbCvar[cvarLimitFPS] + 49)){
 		
 		if( get_user_team(id) == 1) iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n|^t%s Zombie^t|^n", classesZombies[userClass[id]][0]) ;
 		else if(get_user_team(id) == 2 && hasClassHuman(id, userClassHuman[id])) iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n|^t%s - Lv: %d - XP: %0.2f%%^t|^n", classesHuman[userClassHuman[id]][0],  userHumanLevel[id][userClassHuman[id]], (userExpClass[id][userClassHuman[id]]*100.0/needXpClass(userHumanLevel[id][userClassHuman[id]])));
@@ -1178,9 +1191,10 @@ public globalHud(id){
 		iLen += format(gText[iLen], sizeof(gText)-iLen-1, "|^tKosci: %s^t|^n",formatNumber(userBone[id]));
 		iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n");
 		
-		new symbolLevel = SYMBOL_LINE_CURVE;
+		static symbolLevel, weapon;
+		symbolLevel = SYMBOL_LINE_CURVE;
+		weapon = userWeaponSelect[id] ;
 		
-		new weapon = userWeaponSelect[id] ;
 		if(equal(allGuns[userWeaponSelect[id]][0], weapons[get_user_weapon(id)])){
 			
 			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^t%s^tBron: %s (Lv: %d/%d)^n", symbolsCustom[symbolLevel], allGuns[userWeaponSelect[id]][1], userWeaponLevel[id][weapon], str_to_num(allGuns[userWeaponSelect[id]][4]));
@@ -1198,15 +1212,16 @@ public globalHud(id){
 		if(newLeftNugget > 0 ) iLen += format(gText[iLen], sizeof(gText)-iLen-1,"-^tZwoj Szczescia: %d:%s%d:%s%d^n",  ( newLeftNugget / HOUR ),(newLeftNugget / MINUTE % MINUTE)<10?"0":"", ( newLeftNugget / MINUTE % MINUTE ), (newLeftNugget%MINUTE)<10?"0":"", ( newLeftNugget %MINUTE ));
 
 		if(!(bonus == -1)){
-			new Float:coolDown;
+			static Float:coolDown;
 			coolDown = floatsub(userClassUsed[id][bonus], get_gametime());
 			if(userSkillLast[id][bonus] > get_gametime() )  iLen += format(gText[iLen], sizeof(gText)-iLen-1,  "-^t%s: W trakcie^n",  bonusClass[bonus][0]);
 			else if( coolDown <= 0.0 ) iLen += format(gText[iLen], sizeof(gText)-iLen-1,  "-^t%s: Do uzycia^n",  bonusClass[bonus][0]);
 			else iLen += format(gText[iLen], sizeof(gText)-iLen-1,"-^t%s: %0.1f^n",  bonusClass[bonus][0], coolDown);
 		}
-		new Float:cdUn = floatsub(userUnlimited[id], get_gametime());
-		new Float:cdSn = floatsub(userAutoSniper[id], get_gametime());
-		new Float:cdMg = floatsub(userMiniGun[id], get_gametime());
+		static Float:cdUn, Float:cdSn, Float:cdMg;
+		cdUn = floatsub(userUnlimited[id], get_gametime());
+		cdSn = floatsub(userAutoSniper[id], get_gametime());
+		cdMg = floatsub(userMiniGun[id], get_gametime());
 		
 		
 		if( cdUn >= 0.0 ) iLen += format(gText[iLen], sizeof(gText)-iLen-1,"-^tBezlik: %0.1f^n",  cdUn);
@@ -1220,9 +1235,8 @@ public globalHud(id){
 		}
 	}
 	
-	// LICZNIK EXPA I BRYLEK
-	if(userExpShow[id] > 0.0 || userNuggetShow[id] > 0 || userBoneShow[id] > 0){
-		new gText[128], iLen=0;    
+	iLen=0;
+	if(userExpShow[id] > 0.0 || userNuggetShow[id] > 0 || userBoneShow[id] > 0){  
 		
 		if(userExpShow[id]) 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n[ +%0.2f EXP'a %s ]",userExpShow[id], (typeExpClass[userGiveClassExp[id]][1]));
 		if(userNuggetShow[id]) 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n[ +%d Brylek ]",userNuggetShow[id]);
@@ -1234,7 +1248,6 @@ public globalHud(id){
 		}
 	}
 	
-	// WLACZONE ATRYBTUY
 	iLen = 0;
 	if(userNoClip[id] || userGodMod[id] || userAllowBuild[id] || userPush[id]){
 		new Float:got = floatsub(userTimeAdmin[id], get_gametime());
@@ -1251,8 +1264,7 @@ public globalHud(id){
 			show_dhudmessage(id, "%s", gText);
 		}
 	}
-	
-	// PORUSZA TOBA
+
 	iLen = 0;
 	if( userHudMoving[id] != 0 ){
 		iLen += format(gText[iLen], sizeof(gText)-1-iLen, "Porusza Toba admin %s", userName[userHudMoving[id]]);
@@ -1322,7 +1334,7 @@ public messageStatusIcon(const iMsgId, const iMsgDest, const iPlayer){
 			"defuser",
 			"buyzone",
 			"vipsafety"
-		}
+		};
 		
 		for(new i = 0; i < sizeof(blockIcon); i ++){
 			if(equal(szMsg, blockIcon[i])){
@@ -1347,7 +1359,6 @@ public fw_addtofullpack( es, e, ent, host, host_flags, player, p_set ){
 			cs_get_user_team( host ) == cs_get_user_team( ent )
 		) 
 			set_es(  es, ES_Origin, { 999999999.0, 999999999.0, 999999999.0 } );
-			
 	}
 	new szClass[18]; 
 	entity_get_string(ent, EV_SZ_classname, szClass, sizeof(szClass));
@@ -1359,8 +1370,6 @@ public fw_addtofullpack( es, e, ent, host, host_flags, player, p_set ){
 	}
 	return FMRES_IGNORED;
 }
-new userButtonAfk[33];
-
 public checkCamping(id){	
 	id -= TASK_AFK;
 	
@@ -1381,9 +1390,8 @@ public checkCamping(id){
 		}
 		return PLUGIN_CONTINUE;
 	}
-	new Float:fVelocity[3];
+	static Float:fVelocity[3];
 	pev(id,pev_velocity,fVelocity);
-	
 	static button;
 	button = get_user_button(id);	
 	
@@ -1410,12 +1418,12 @@ public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 	#if defined SCHROOM_ADDON 
 		if( isSchroom(attacker) || isSchroom(victim) ) return HAM_IGNORED;
 	#endif 
-	
+		
 	if(!isPlayer(attacker) || !isPlayer(victim) ) return HAM_IGNORED;
 	if(!is_user_alive(attacker) || !is_user_alive(victim) ) return HAM_IGNORED;
 	if(!is_valid_ent(victim) || !is_user_alive(victim) || !is_user_connected(attacker)) return HAM_IGNORED;	
 	if(get_user_team(attacker) == get_user_team(victim)) return HAM_IGNORED;
-	//if(bb_is_in_barrier(victim)) return HAM_IGNORED
+	if(bb_is_in_barrier(victim)) return HAM_IGNORED;
 	if(buildTime || roundEnd || prepTime)return HAM_SUPERCEDE;
 	if(userGodMod[attacker]) return HAM_SUPERCEDE;	
 	if(victim == attacker) return HAM_SUPERCEDE;
@@ -1466,7 +1474,8 @@ public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 	
 	if(hourTime){
 		
-		new weapon = get_user_weapon(attacker);
+		static weapon;
+		weapon = get_user_weapon(attacker);
 		
 		// ALL WEAPON
 		
@@ -1545,7 +1554,7 @@ public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 		if(random(100) <= 15){
 			if(get_user_team(victim) == 1){
 				if( userClass[victim] == class_HEALTH ){
-					new Float:fOrigin[3], Float:fOriginTarget[3];
+					static Float:fOrigin[3], Float:fOriginTarget[3];
 					for( new i = 1 ; i < maxPlayers;i ++ ){
 						
 						if( !is_user_connected(i) || !is_user_alive(i) || get_user_team(i) != 1  || get_user_godmode(i) ||  i == attacker || i == victim) continue;
@@ -1602,7 +1611,6 @@ public killPlayerRespawn(attacker, victim, headShot){
 	}
 		
 	#if defined CHRISTMAS_ADDON
-	
 		addChristmasMission(attacker, CH_RANK, 2);
 		addChristmasMission(victim,     CH_RANK, 3);
 		addChristmasMission(attacker, CH_KILL1, 1);
@@ -1629,14 +1637,9 @@ public killPlayerRespawn(attacker, victim, headShot){
 		addPro(attacker, pro_TRUPOSZ, 1);
 	}
 
-	new all = 0, ct = 0;
-	for(new i = 1; i < maxPlayers; i ++){
-		if(!is_user_connected(i) || is_user_hltv(i) || is_user_bot(i)) continue;
-		
-		all++;
-
-		if(get_user_team(i) == 2) ct  ++;		
-	}
+	new ct = numPlayers(2, false);
+	new tt = numPlayers(1, false);
+	new all = ct + tt;
 			
 	if(get_user_team(victim) == 1) addNuggetToFinal(victim, ( (all - ct) * 2 ) + userDeathNum[victim] );
 	
@@ -1675,8 +1678,7 @@ public classTakeDamage(victim, inflictor, attacker, &Float:damage, damagebits){
 	if( userClass[victim] == class_DEMON ){
 		new Float:reduceDamage;
 		new bool:isProDamage= didPro(victim,  pro_PAKER);
-		if(isProDamage)	
-			damage *= 0.75;
+		if(isProDamage) damage *= 0.75;
 		else damage *= 0.85;
 		
 		reduceDamage = damage;
@@ -1687,7 +1689,7 @@ public classTakeDamage(victim, inflictor, attacker, &Float:damage, damagebits){
 		if(random(100) <= 5 + ( isProPercent ? 3 : 0 )){
 			if( userClass[attacker] == class_DEATH ){
 				
-				damage = float(get_user_health(victim))
+				damage = float(get_user_health(victim));
 				addPro(attacker, pro_DEATH, 1);
 			}
 		}
@@ -1800,7 +1802,7 @@ public class_humanTakeDamage(victim, inflictor, attacker, Float:damage, damagebi
 		}
 		if(userClassHuman[attacker] == human_LAB) {
 			if(random_float(0.00, 100.00) <= str_to_float(paramClassesHuman[human_LAB][0])* userHumanLevel[attacker][human_LAB] ){
-				new bonus = str_to_num(classesHuman[human_LAB][4])
+				new bonus = str_to_num(classesHuman[human_LAB][4]);
 				new Float:coolDown;
 				coolDown = floatsub(userClassUsed[attacker][bonus], get_gametime());
 				if(coolDown > 0.0){
@@ -1842,7 +1844,7 @@ public class_humanTakeDamage(victim, inflictor, attacker, Float:damage, damagebi
 				get_user_origin(attacker, iOrigin, 2);
 				IVecFVec(iOrigin, fOrigin);
 				
-				new Float:fVelocity[3]
+				new Float:fVelocity[3];
 				entity_get_vector(attacker, 	EV_VEC_origin, 	fOrigin);
 			
 				entity_get_vector(victim, 	EV_VEC_origin, 	fOriginTarget);
@@ -1900,7 +1902,7 @@ public class_humanTakeDamage(victim, inflictor, attacker, Float:damage, damagebi
 	return HAM_IGNORED;
 }
 public newRound(){
-	static ret;
+	new ret;
 	ExecuteForward(bbForward[forwardNewRound], ret);
 }
 public round_start(){
@@ -1908,7 +1910,7 @@ public round_start(){
 	resetBlocks();
 	removeSkill();	
 	
-	static ret;
+	new ret;
 	ExecuteForward(bbForward[forwardStartRound], ret);
 }
 public removeSkill(){
@@ -2001,7 +2003,7 @@ public gameStart(){
 		startNewRound();
 	} else roundGood=false;
 	
-	static ret;
+	new ret;
 	ExecuteForward(bbForward[forwardStartGame], ret);	
 	
 }
@@ -2009,18 +2011,18 @@ public startNewRound(){
 	
 	if( task_exists(TASK_CLOCK) )
 		remove_task(TASK_CLOCK);
-		
-	new ct=numPlayers(2, false);
-	new tt=numPlayers(1, false);
-	
+
 	resetBlocks();
+
+	new ct = numPlayers(2, false);
+	new tt = numPlayers(1, false);
 	
 	if( ct <= 0 || tt <= 0 || (ct + tt ) <= 1 ) return 0;
 	
 	startBuild();
 	timerStart();
 		
-	freeChestCreate()
+	freeChestCreate();
 	
 	for(new i = 1; i < maxPlayers; i ++){
 		
@@ -2046,7 +2048,7 @@ public startBuild(){
 	
 	gTime = gBuildTime;
 	
-	static ret;
+	new ret;
 	ExecuteForward(bbForward[forwardStartBuild], ret);
 }
 public happyColorBarrier(){
@@ -2063,7 +2065,6 @@ public happyColorBarrier(){
 	return PLUGIN_HANDLED;
 }
 public timerStart(){
-	
 	if (gTime > 0 && !clockStop) gTime --;
 	if(roundEnd) return PLUGIN_CONTINUE;
 	
@@ -2104,13 +2105,12 @@ public timerStart(){
 	}
 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "%s[ %s - %d:%s%d ]", happy, gRound, gTime/60, (gTime%60 < 10 ? "0" : ""), gTime%60);
 	
-	nextColorsHappy = (nextColorsHappy+1)%sizeof(colorsHappy)	
+	nextColorsHappy = (nextColorsHappy+1)%sizeof(colorsHappy);	
 	set_dhudmessage(hourTime ? colorsHappy[nextColorsHappy][0] : 255, hourTime ? colorsHappy[nextColorsHappy][1] : 102, hourTime ? colorsHappy[nextColorsHappy][2] : 0, -1.0, 0.0, 0, 0.5, 0.9, 0.5, 0.5);
 	show_dhudmessage(0, "%s",gText);
 	
-	if(hourTime){
-		if(buildTime || prepTime) happyColorBarrier();
-	}
+	if(hourTime && ( buildTime || prepTime ) ) happyColorBarrier();
+	
 	set_task(1.0, "timerStart", TASK_CLOCK);
 	return PLUGIN_CONTINUE;
 }
@@ -2126,12 +2126,12 @@ public startRelease(){
 		Display_Fade(i,1024,1024,1024,0, 0, 0, 180);
 	}
 	
-	set_dhudmessage(255, 16, 255, -1.0, 0.20, 0, 0.5, 1.0, 0.5, 0.5)
+	set_dhudmessage(255, 16, 255, -1.0, 0.20, 0, 0.5, 1.0, 0.5, 0.5);
 	show_dhudmessage(0,  "^n!! RUNDA WYSTARTOWALA !!");
 	
 	removeNotUsedBlock();
 	
-	static ret;
+	new ret;
 	ExecuteForward(bbForward[forwardStartRelease], ret);
 
 }
@@ -2155,7 +2155,7 @@ public startPrep(){
 	prepTime = true;
 	gameTime = false;
 	
-	static ret;
+	new ret;
 	ExecuteForward(bbForward[forwardStartPrep], ret);
 
 }
@@ -2170,7 +2170,7 @@ public respawnAll(){
 public round_End(){
 	gameEnd();
 	
-	static ret;
+	new ret;
 	ExecuteForward(bbForward[forwardEndRound], ret);
 	
 }
@@ -2192,9 +2192,9 @@ public gameEnd(){
 	
 	if( roundGood ){
 		if( ctAlive > 0 ){
-			set_dhudmessage(16, 16, 255, -1.0, 0.20, 0, 0.5, 3.0, 0.5, 0.5)
+			set_dhudmessage(16, 16, 255, -1.0, 0.20, 0, 0.5, 3.0, 0.5, 0.5);
 			show_dhudmessage(0,  "^n!! BUDOWNICZY WYGRALI !!");
-			spkGameSound(0, sound_WINCT)
+			spkGameSound(0, sound_WINCT);
 			
 			for(new i = 1; i < maxPlayers; i ++){
 				if(!is_user_connected(i) || is_user_hltv(i) || is_user_bot(i)) continue;
@@ -2218,8 +2218,8 @@ public gameEnd(){
 						randomExp = random_float(bbCvar[cvarExpForWillSurviveVip]/2, bbCvar[cvarExpForWillSurviveVip]);
 						randomNugget = random_num(bbCvar[cvarNuggetForWillSurviveVip]/2, bbCvar[cvarNuggetForWillSurviveVip]);
 					} else {
-						randomExp =random_float(bbCvar[cvarExpForWillSurvive]/2, bbCvar[cvarExpForWillSurvive])
-						randomNugget = random_num(bbCvar[cvarNuggetForWillSurvive]/2, bbCvar[cvarNuggetForWillSurvive])
+						randomExp =random_float(bbCvar[cvarExpForWillSurvive]/2, bbCvar[cvarExpForWillSurvive]);
+						randomNugget = random_num(bbCvar[cvarNuggetForWillSurvive]/2, bbCvar[cvarNuggetForWillSurvive]);
 					}
 						
 					addExpToFinal(i, randomExp);
@@ -2257,7 +2257,7 @@ public gameEnd(){
 			ct = numPlayers(2, false);
 			new dif = abs(ct-tt);
 			if( dif > 1 ){			
-				new lookFor = ct>tt ? 2 : 1
+				new lookFor = ct>tt ? 2 : 1;
 				new iTabPlayers[33], iPlayers=0;	
 				
 				for( new i = 1; i < maxPlayers; i++ ){
@@ -2280,7 +2280,7 @@ public gameEnd(){
 			}
 		}
 	}
-	static ret;
+	new ret;
 	ExecuteForward(bbForward[forwardEndGame], ret);
 }
 public makeBarrierSolid(){
@@ -2334,7 +2334,7 @@ public fw_ClientKill(id){
 	return FMRES_SUPERCEDE;	
 }
 public respawnPlayerAsTT(id){
-	id -= TASK_RESPAWN
+	id -= TASK_RESPAWN;
 	if( is_user_hltv(id) ||  get_user_team(id) > 2  || !is_user_connected(id)) return;
 
 	if( !is_user_alive(id)){		
@@ -2350,7 +2350,7 @@ public respawnPlayer(id){
 	}
 }
 public numPlayers(team, bool:alive ){
-	new iNum=0
+	new iNum=0;
 	for(new i=1;i<maxPlayers;i++){
 		if( !is_user_connected(i) || is_user_hltv(i) ) continue;
 		if( alive ){
@@ -2403,10 +2403,7 @@ public ham_Spawn(id){
 	gameUserSpawn(id);
 	setZombieClass(id);
 	setHumanClass(id);
-	#if defined CHRISTMAS_ADDON
-		setHat(id);
-	#endif
-	
+	setHat(id);
 	setFov(id, userFov[id]);
 	removeGlow(id);
 	stopEnt(id);
@@ -2419,7 +2416,7 @@ public ham_Spawn(id){
 	userAllowBuild[id] =false; 
 	userPush[id]	= false;
 	
-	static ret;
+	new ret;
 	ExecuteForward(bbForward[forwardSpawned], ret, id, !userFirstSpawn[id]);
 	
 	return HAM_IGNORED;
@@ -2451,26 +2448,20 @@ public messageShowMenu(msgid, dest, id) {
 	static team_select[] = "#Team_Select";
 	static menu_text_code[sizeof team_select];
 	get_msg_arg_string(4, menu_text_code, sizeof menu_text_code - 1);
-	if (!equal(menu_text_code, team_select))
-		return PLUGIN_CONTINUE;
+	if (!equal(menu_text_code, team_select)) return PLUGIN_CONTINUE;
 	forceTeam(id, msgid);
-
 	return PLUGIN_HANDLED;
 }
 
 public messageVGUIMenu(msgid, dest, id) {
-	if (get_msg_arg_int(1) != 2)
-		return PLUGIN_CONTINUE;
-
+	if (get_msg_arg_int(1) != 2) return PLUGIN_CONTINUE;
 	forceTeam(id, msgid);
-
 	return PLUGIN_HANDLED;
 }
 public forceTeam(id, msgid){
 	static gData[1];
 	gData[0] = msgid;
 	set_task(0.1, "joinTeam", id, gData, sizeof(gData));
-	
 }
 public joinTeam(menu_msgid[], id) {
 	if (get_user_team(id) || is_user_hltv(id)) return;
@@ -2487,7 +2478,6 @@ public joinTeam(menu_msgid[], id) {
 	set_msg_block(menu_msgid[0], msg_block);
 	if( userReconnected[id] ){				
 		cs_set_user_team(id, 1);
-		//ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 zrobil^x03 RC^x01 zostal przeniesiony do^x03 ZM^x04 ---", userName[id]);
 	} else addMission(id, mission_CONNECT, 1);
 	set_task( 1.0, "checkTeam", id);
 }
@@ -2571,7 +2561,7 @@ public cmdSay(id){
 	new szMessage[124];
 	read_args(szMessage, sizeof( szMessage )); 
 	remove_quotes(szMessage);
-		
+	
 	if(szMessage[0] == '/' || szMessage[0] == '!'){
 		if(!playerLogged(id)){
 			if(equal(szMessage, "/konto", 6)  || equal(szMessage, "/haslo", 6) || equal(szMessage, "/zaloguj", 8) || equal(szMessage, "/login", 6) || equal(szMessage, "/zarejestruj", 12)){
@@ -2688,7 +2678,7 @@ public cmdSay(id){
 				return PLUGIN_HANDLED;
 			}
 			if(equal(szMessage, "/info", 5)){	
-				new szName[33], szCommand[10]
+				new szName[33], szCommand[10];
 				parse( szMessage,
 					szCommand, 	sizeof(szCommand),
 					szName, 	sizeof(szName)
@@ -2712,7 +2702,6 @@ public cmdSay(id){
 				userMaxDmg[id] = 0;
 				return PLUGIN_HANDLED;
 			}
-			
 			if (equal(szMessage, "/id")){
 				ColorChat(id, GREEN, "---^x01 Twoje^x03 ID^x01 konta:^x03 %d^x04 ---", userSqlId[id]);
 				return PLUGIN_HANDLED;
@@ -2815,8 +2804,7 @@ public cmdSay(id){
 				userMenuPlayer[id] = MENU_PLAYER_MUTE;
 				choosePlayer(id, 0);
 				return PLUGIN_HANDLED;
-			}
-			if (equal(szMessage, "/ban")) return PLUGIN_HANDLED;
+			}	
 		}
 		
 		ColorChat(id, GREEN, "---^x01 Nie ma takiej komendy ---");
@@ -2838,11 +2826,12 @@ public cmdSay(id){
 			return PLUGIN_HANDLED;
 		}
 		
-		new muteLeft = (userMute[id] - get_systime())	
+		new muteLeft = (userMute[id] - get_systime());	
 		if ((userMute[id] - get_systime() > 0)){
 			ColorChat(id, RED, "Zostales zmutowany!^x01 Koniec za:^x04 %d godz %s%d min %s%d sek!",  ( muteLeft / HOUR ),(muteLeft / MINUTE % MINUTE)<10?"0":"", ( muteLeft / MINUTE % MINUTE ), (muteLeft%MINUTE)<10?"0":"", ( muteLeft %MINUTE ));
 			return PLUGIN_HANDLED;
 		}
+		
 		if(equali( oldMessage[id], szMessage)){
 			ColorChat(id, GREEN, "%s Nie powtarzaj tej samej^x03 wiadomosci^x01 kilka razy!", PREFIXSAY);
 			return PLUGIN_HANDLED;
@@ -2858,7 +2847,6 @@ public cmdSay(id){
 		ColorChat(0, get_user_team(id)==1?RED:BLUE,"%s%s^x03 %s%s^x01:^x01 %s",clan[id] ? chatPrefix : "",isSVip(id) ? "^x04[SVip]" : isVip(id) ? "^x04[Vip]" : "",  userName[id], isSuperAdmin(id) ? "^x04*" : "", szMessage);
 		
 		if(userFPS[id] < 30) addSecretMission(id, mission_secret_CHEATER, 1);
-		
 		new gText[192];
 		logType[id] = LOG_CHAT;
 		if(logType[id] == LOG_CHAT){
@@ -2892,7 +2880,6 @@ public adminsPointHelp(id){
 		
 		iLen += format(gText[iLen], sizeText, "<tr><td>%s</td><td>%d</td></tr>",userName[i], userHelpPoint[i]);
 	}
-		
 	iLen += format(gText[iLen], sizeText, "</table>");
 	show_motd(id, gText, "Lista Adminow");
 }
@@ -2939,7 +2926,7 @@ public cmdSayClan(id){
 		
 	new szMessage[124];
 	read_args(szMessage, sizeof( szMessage )); 
-	remove_quotes(szMessage)
+	remove_quotes(szMessage);
 
 	szMessage[sizeof(szMessage)-1] = 0;
 	trim(szMessage);
@@ -2963,6 +2950,7 @@ public cmdSayClan(id){
 	return PLUGIN_HANDLED;
 }
 public respawnPlayerAdmin(id){
+	if(!is_user_connected(id)) return; 
 	ExecuteHamB(Ham_CS_RoundRespawn, id);	
 }
 
@@ -2981,7 +2969,7 @@ public Release_Zombies(){
 			
 		if(get_user_team(i) == 2){
 			if(userWeaponBool[i]){
-				giveWeapons(i, userWeaponSelect[i])
+				giveWeapons(i, userWeaponSelect[i]);
 				userWeaponBool[i] = false;
 			}
 			else if(gameTime) menuWeapon(i);
@@ -3056,14 +3044,14 @@ public fw_CmdStart( id, uc_handle, randseed ){
 	
 	moveRocket(id);
 	
-	if(userFPS[id] >= 125 || !playerLogged(id)){
+	if(userFPS[id] >= bbCvar[cvarLimitFPS] + 24 || !playerLogged(id)){
 		if(entity_get_int(id, EV_INT_button) & IN_JUMP || entity_get_int(id, EV_INT_button) & IN_DUCK ){
 			entity_set_int(id, EV_INT_oldbuttons, entity_get_int(id, EV_INT_button));
 		}
 	}
 	if( userJetPack[ id ] ){
 		if( buildTime || isAdmin(id) ){		
-			new Float:fVelo[ 3 ];		
+			static Float:fVelo[ 3 ];		
 			VelocityByAim(id, userJetpackSpeed[id], fVelo );
 			entity_set_vector(id , EV_VEC_velocity, fVelo );
 			entity_set_int(id,EV_INT_sequence, 8 ) ;									
@@ -3094,6 +3082,9 @@ public jumpFuncBlock(id, type){
 	}
 }
 public fw_EmitSound(id,channel,const sample[],Float:volume,Float:attn,flags,pitch){
+	
+	if(!is_user_alive(id)) return FMRES_IGNORED;
+
 	if (!is_user_connected(id) || get_user_team(id) != 1 || buildTime || prepTime || roundEnd) return FMRES_IGNORED;
 		
 	if(equal(sample[7], "die", 3) || equal(sample[7], "dea", 3)){
@@ -3143,7 +3134,7 @@ public resetBlocks(){
 		
 		if( !equal(szClass, "func_wall") || containi(szTarget, "ignore") !=-1 || equal(szTarget, "barrier")) continue;
 		
-		unSetBlock( ent )
+		unSetBlock( ent );
 		
 		if( getLock(ent) == 3 ) remove_entity(ent);
 		else if(getLock(ent) ==  2){			
@@ -3186,10 +3177,8 @@ public globalMenu(id){
 		return;
 	}
 	
-	new gText[1536], iLen;
-	new szAuthor[7];
-	copy(szAuthor, sizeof(szAuthor), AUTHOR);
-	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\dTURBOMod by\r %s^n", szAuthor); // No i po co usuwacie?? xd
+	new gText[1536], iLen = 0;
+
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\r[BaseBuilder]\y Glowne Menu^n");
 
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n\r1.\w Sklep");
@@ -3212,7 +3201,8 @@ public globalMenu(id){
 	
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n^n\r0.\w Wyjdz");
 	
-	show_menu(id, B1 | B2 | B3 | B4 | B5 | B6 | B7 | B8 | B9 | B0, gText, -1, "globalMenu" );	
+	showMenu(id, B1 | B2 | B3 | B4 | B5 | B6 | B7 | B8 | B9 | B0, gText, -1, "globalMenu", 1);	
+
 }
 public globalMenu_2(id, item){
 	
@@ -3232,8 +3222,8 @@ public globalMenu_2(id, item){
 				else respawnPlayerAdmin(id);
 			} else ColorChat(id, GREEN, "%s Nie mozesz teraz sie odrodzic", PREFIXSAY);
 		}
-		case 5:adminHelp(id);
-		case 6:teamOption(id);
+		case 5: adminHelp(id);
+		case 6: teamOption(id);
 		case 7:{
 			userGiveClassExp[id] 	= (userGiveClassExp[id]+1) 	% sizeof(typeExpClass);
 			globalMenu(id);
@@ -3243,6 +3233,7 @@ public globalMenu_2(id, item){
 	return PLUGIN_CONTINUE;
 }
 public logBB(id, szText[]){
+	
 	new szMessage[256];
 	new szName[32];
 	new szIP[32];
@@ -3311,10 +3302,10 @@ public checkFPS(id){
 	query_client_cvar(id, "fps_max", "maxFPS");
 	query_client_cvar(id, "fps_modem", "maxFPS");
 	
-	if( ( userExtraFps[id] || userFPS[id] >= 150 || save != userExtraFps[id] ) && get_gametime() - userInfoFps[id] > 1.0){
+	if( ( userExtraFps[id] || userFPS[id] >= bbCvar[cvarLimitFPS] + 49 || save != userExtraFps[id] ) && get_gametime() - userInfoFps[id] > 1.0){
 		userInfoFps[id] = get_gametime();
 		
-		new Float:fPunchAngle[3]
+		new Float:fPunchAngle[3];
 		fPunchAngle[0] = float(random(500));
 		fPunchAngle[1] = float(random(500));
 		fPunchAngle[2] = float(random(500));
@@ -3348,7 +3339,7 @@ public maxFPS(id, const cvar[], const val[]){
 		if(val[i] == '.' ) dot ++;
 	}
 	
-	if( fps > 101 || dot >= 2) userExtraFps[id] = true;
+	if( fps > bbCvar[cvarLimitFPS] || dot >= 2) userExtraFps[id] = true;
 }
 
 public menuGlobalVip(id){
@@ -3368,10 +3359,10 @@ public menuGlobalVip_2(id, menu, item){
 		return;
 	}
 	switch(item){
-		case 0:showInfoVip(id, 0)
-		case 1:showInfoVip(id, 1)
-		case 2:showVipsOnline(id, 0)
-		case 3:showVipsOnline(id, 1)	
+		case 0:showInfoVip(id, 0);
+		case 1:showInfoVip(id, 1);
+		case 2:showVipsOnline(id, 0);
+		case 3:showVipsOnline(id, 1);	
 	}	
 }
 public showVipsOnline(id, type) {
@@ -3398,7 +3389,7 @@ public showVipsOnline_2(id, menu, item){
 		menu_destroy(menu);
 		return PLUGIN_CONTINUE;
 	}
-	menuGlobalVip(id)
+	menuGlobalVip(id);
 	return PLUGIN_CONTINUE;
 }
 
@@ -3418,7 +3409,7 @@ public showInfoVip(id, type){
 	new daysLeft = 0;	
 	
 	if(type == 0){
-		daysLeft = (timeVip[id] - get_systime())
+		daysLeft = (timeVip[id] - get_systime());
 		
 		if(!isSVip(id)){
 			if(has_flag(id, flagVip))	iLen += format(gText[iLen],size, "^n\y%s^t^t\dPosiadasz Vipa:\r Bez Limitu Czasu^n", symbolsCustom[SYMBOL_DR_ARROW]);
@@ -3435,7 +3426,7 @@ public showInfoVip(id, type){
 		iLen += format(gText[iLen], size, "^n^t\yLepsze bonusy pod:\r /nagroda");
 		iLen += format(gText[iLen], size, "^n^t\yZwiekszony limit klockow do:\r %d", bbCvar[cvarMoveMaxBlockVip]);	
 	} else {
-		daysLeft = (timeSVip[id] - get_systime())
+		daysLeft = (timeSVip[id] - get_systime());
 		
 		if(has_flag(id, flagSVip))	iLen += format(gText[iLen],size, "^n\y%s^t^t\dPosiadasz SVipa:\r Bez Limitu Czasu^n", symbolsCustom[SYMBOL_DR_ARROW]);
 		else if((daysLeft) / HOUR > 0 )	iLen += format(gText[iLen],size, "^n\y%s^t^t\dPosiadasz SVipa:\r %d\d godz\r %d\d min^n", symbolsCustom[SYMBOL_DR_ARROW], (daysLeft) / HOUR, ((daysLeft) / MINUTE) %MINUTE);
@@ -3455,7 +3446,7 @@ public showInfoVip(id, type){
 	iLen += format(gText[iLen],size, "^n^n\r1.\w Kup %sVipa", type == 0 ? "" : "S");
 	iLen += format(gText[iLen],size, "^n\r0.\w Wyjdz");
 
-	show_menu(id, B1 | B0 , gText, -1, "showInfoVip" );
+	showMenu(id, B1 | B0 , gText, -1, "showInfoVip" );
 }
 public showInfoVip_2(id, item){
 	switch(item){
@@ -3473,7 +3464,7 @@ public infoPlayer(id, target){
 	
 	new timeOnline		=	userPlayerConnected[target]=floatround(get_gametime());
 			
-	iLen += format(gText[iLen], sizeText, "<html>")
+	iLen += format(gText[iLen], sizeText, "<html>");
 	iLen += format(gText[iLen], sizeText, "\
 					<style>\
 						*{ font-size: 15px;color: white; text-align: center; padding: 0; margin: 0;}\
@@ -3489,13 +3480,8 @@ public infoPlayer(id, target){
 	iLen += format(gText[iLen], sizeText, "<tr><td>Pierwszy raz byl:</td><td><b>%s</b></td></tr>", userFirstLogin[target]);
 	iLen += format(gText[iLen], sizeText, "<tr><td>Poziom Postaci:</td><td><b>%d</b> %0.2f%%</td></tr>", userLevel[target], (userExp[target]*100.0/needXp(id, userLevel[target])));
 	iLen += format(gText[iLen], sizeText, "<tr><td>Aktualna Klasa %s:</td><td><b>%d</b> %0.2f%%</td></tr>",classesHuman[userClassHuman[target]][0],  userHumanLevel[target][userClassHuman[target]], (userExpClass[target][userClassHuman[target]]*100.0/needXpClass(userHumanLevel[target][userClassHuman[target]])));
-	
-	
-	//iLen += format(gText[iLen], sizeText, "<tr><td>Poziom Postaci:</td><td><b>%d</b> [ %0.2f/%0.2f ]</td></tr>", userLevel[target], userExp[target],needXp(target, userLevel[target]))
-	//iLen += format(gText[iLen], sizeText, "<tr><td>Aktualna Klasa %s:</td><td><b>%d</b> [ %0.2f/%0.2f ]</td></tr>",classesHuman[userClassHuman[target]][0],  userHumanLevel[target][userClassHuman[target]], userExpClass[target][userClassHuman[target]],needXpClass(userHumanLevel[target][userClassHuman[target]]));
-	
-	iLen += format(gText[iLen], sizeText, "<tr><td>Czas Ogolny:</td><td><b>%d</b> godz <b>%s%d</b> min<b> %s%d</b> sek</td></tr>", playedTime(target)/HOUR, (playedTime(target)/MINUTE)<10?"0":"",playedTime(target)/MINUTE%MINUTE, playedTime(target)%MINUTE<10?"0":"", playedTime(target)%MINUTE)
-	//iLen += format(gText[iLen], sizeText, "<tr><td>Czas Ogolny:</td><td><b>%02d</b> godz <b>%02d</b> min<b> %02d</b> sek</td></tr>", playedTime(target)/HOUR,(playedTime(target) % HOUR) / MINUTE, playedTime(target)%MINUTE);
+
+	iLen += format(gText[iLen], sizeText, "<tr><td>Czas Ogolny:</td><td><b>%d</b> godz <b>%s%d</b> min<b> %s%d</b> sek</td></tr>", playedTime(target)/HOUR, (playedTime(target)/MINUTE)<10?"0":"",playedTime(target)/MINUTE%MINUTE, playedTime(target)%MINUTE<10?"0":"", playedTime(target)%MINUTE);
 	iLen += format(gText[iLen], sizeText, "<tr><td>Czas Online:</td><td><b>%d</b> godz <b>%s%d</b> min<b> %s%d</b> sek</td></tr>", timeOnline/HOUR, (timeOnline/MINUTE)<10?"0":"",timeOnline/MINUTE%MINUTE, timeOnline%MINUTE<10?"0":"", timeOnline%MINUTE);
 	iLen += format(gText[iLen], sizeText, "<tr><td>Zdobyte Brylki:</td><td><b>%s</b></td></tr>",  formatNumber(userNuggetAll[target]));
 	iLen += format(gText[iLen], sizeText, "<tr><td>Brylki:</td><td><b>%s</b></td></tr>",  formatNumber(userNugget[target]));
@@ -3653,7 +3639,7 @@ public checkForAward(id){
 				}
 				case 2:{
 					new Float:expRandom = random_float(100.0, 300.0);
-					addExpToFinal(id, expRandom)
+					addExpToFinal(id, expRandom);
 					ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 otrzymal^x04 %0.1f EXP'a^x01 z nagrody.", PREFIXSAY, userName[id],expRandom);
 					iLen += format(gText[iLen], sizeof(gText)-1-iLen, "dostal %0.1f EXP'a z Nagrody!",expRandom);
 					empty	=	false;
@@ -3673,7 +3659,7 @@ public checkForAward(id){
 					empty	=	false;
 				}
 				case 5:{
-					new userTimeScrool = (HOUR*random_num(1,3))
+					new userTimeScrool = (HOUR*random_num(1,3));
 					new newLeftExp  =  userScrollExp[id] - playedTime(id);
 					if(newLeftExp <= 0){
 						userScrollExp[id] = playedTime(id);
@@ -3730,11 +3716,12 @@ public playerRandomInfo(){
 }
 
 public fw_SetClientListening(iReceiver, iSender, bool:bListen){
-	if (get_systime() < userMute[iSender]/* || get_systime() < userMute[iReceiver]*/ || userMutePlayer[iReceiver][iSender]){
+	if (get_systime() < userMute[iSender]|| userMutePlayer[iReceiver][iSender]){
 		engfunc(EngFunc_SetClientListening, iReceiver, iSender, false);
 		forward_return(FMV_CELL, false);
 		return FMRES_SUPERCEDE;
 	}
+
 	engfunc(EngFunc_SetClientListening, iReceiver, iSender, true);
 	forward_return(FMV_CELL, true);
 	return FMRES_SUPERCEDE;
@@ -3778,31 +3765,30 @@ public ChatOff(id){
 	serverOffChat =! serverOffChat;
 }
 
-
-
-
-
-
 public createNugget(id, id2){
-	new Float:fOrigin[3];
+	static Float:fOrigin[3];
 	pev(id2, pev_origin, fOrigin);
 	
+	
 	for(new i = 0; i < random(5); i ++){
+	
 		switch(random(100)){
-			case 0: 		createNuggetOrigin(fOrigin, 1,1, BLACK_NUGGET, 	.owner=id)		
-			case 1..5: 	createNuggetOrigin(fOrigin, 1,1, PINK_NUGGET, 	.owner=id)		
-			case 6..16: 	createNuggetOrigin(fOrigin, 1,1, BLUE_NUGGET, 	.owner=id)		
-			case 17..32:	createNuggetOrigin(fOrigin, 1,1, YELLOW_NUGGET, 	.owner=id)		
-			case 33..53:	createNuggetOrigin(fOrigin, 1,1, GREEN_NUGGET, 	.owner=id)		
-			default:	createNuggetOrigin(fOrigin, 1,1, RED_NUGGET, 	.owner=id)	
+			case 0: 		createNuggetOrigin(fOrigin, 1,1, BLACK_NUGGET, 	.owner=id);		
+			case 1..5: 	createNuggetOrigin(fOrigin, 1,1, PINK_NUGGET, 	.owner=id);		
+			case 6..16: 	createNuggetOrigin(fOrigin, 1,1, BLUE_NUGGET, 	.owner=id);		
+			case 17..32:	createNuggetOrigin(fOrigin, 1,1, YELLOW_NUGGET, 	.owner=id);		
+			case 33..53:	createNuggetOrigin(fOrigin, 1,1, GREEN_NUGGET, 	.owner=id);		
+			default:	createNuggetOrigin(fOrigin, 1,1, RED_NUGGET, 	.owner=id);
 		}
 	}
 }
+
+
 public nuggetThink(ent){
 	if( !pev_valid(ent) ) return;
 		
 	engfunc( EngFunc_SetSize, ent , Float:{-16.0, -16.0, -16.0}, Float:{16.0,16.0,16.0});
-	new Float:fAngles[3];
+	static Float:fAngles[3];
 	pev(ent, pev_angles, fAngles);
 	fAngles[1] += pev(ent, pev_fuser2);
 	
@@ -3812,26 +3798,31 @@ public nuggetThink(ent){
 		pev(ent, pev_origin, fOrigin);
 		fOrigin[2] += 20.0;
 		
+		
 		if( get_gametime() - pev(ent, pev_fuser1) > 3.0 ){
 			if( pev(ent, pev_flags) & FL_ONGROUND ){
-				new Float:fVelocity[3];
+				static Float:fVelocity[3];
 				pev(ent, pev_velocity, fVelocity);
 				fVelocity[2] = random_float(45.0, 65.0);			
-				//set_pev(ent, pev_velocity, fVelocity)
+				set_pev(ent, pev_velocity, fVelocity);
 			}
 		}
 		set_pev(ent, pev_fuser3, get_gametime());
 	}
+	
 	if( get_gametime() - pev(ent, pev_fuser1) > 10.0 ){
 		
 		listNuggetOnFloor[pev(ent, pev_iuser1)] = 0;
 		if( ent!= 0 ) remove_entity(ent);
 		
-	}else set_pev(ent, pev_nextthink, get_gametime()+0.1)	
+	}else set_pev(ent, pev_nextthink, get_gametime()+0.1);	
 }
+
+
+
 createNuggetOrigin(Float:fOrigin[3], minN, maxN, type, owner = 0){
 
-	new Float:fVelocity[3];
+	static Float:fVelocity[3];
 			
 	new ent = -1;
 	for( new i = 0 ; i < random_num(minN,maxN); i ++ ){		
@@ -3857,6 +3848,7 @@ createNuggetOrigin(Float:fOrigin[3], minN, maxN, type, owner = 0){
 		fVelocity[2] = random_float(100.0, 300.0);
 		set_pev(ent, pev_velocity, fVelocity);
 
+
 		set_rendering(ent, kRenderFxGlowShell, 	colorNugget[type][0], colorNugget[type][1] ,     colorNugget[type][2], 	kRenderNormal, 5);
 
 		entity_set_model(ent, modelNuggetDrop);
@@ -3864,23 +3856,25 @@ createNuggetOrigin(Float:fOrigin[3], minN, maxN, type, owner = 0){
 		
 		if(is_user_connected(owner)){
 			message_begin(MSG_ONE, SVC_TEMPENTITY, _ , owner);
-			write_byte(22);
-			write_short(ent);
-			write_short(thunder);
-			write_byte(5); 
-			write_byte(8); 
-			write_byte(colorNugget[type][0]);
-			write_byte(colorNugget[type][1]); 
-			write_byte(colorNugget[type][2]); 
+			write_byte(22) ;
+			write_short(ent) ;
+			write_short(thunder) ;
+			write_byte(5) ;
+			write_byte(8) ;
+			write_byte(colorNugget[type][0]) ;
+			write_byte(colorNugget[type][1]) ;
+			write_byte(colorNugget[type][2]) ;
 			write_byte(75);
 			message_end();
 		}
 	}
 }
+
+
 public findCoinArround(id){
 	
-	new Float:fOrigin[3];
-	new Float:fOriginCoin[3];
+	static Float:fOrigin[3];
+	static Float:fOriginCoin[3];
 	new pickUp = false;
 	
 	pev(id, pev_origin, fOrigin);
@@ -3889,8 +3883,8 @@ public findCoinArround(id){
 	
 	for( new i = 0 ; i < MAXNUGGETSFLOOR; i ++ ){
 		ent = listNuggetOnFloor[i];
-		if(!pev_valid(ent)) continue;		
-		if(get_gametime() - pev(ent, pev_fuser1) < random_float(1.50,2.50)) continue;
+		if( !pev_valid(ent) ) continue;	
+		if( get_gametime() - pev(ent, pev_fuser1) < random_float(1.50,2.50) ) continue;
 		
 	
 		if(teamWorks(id)){
@@ -3899,7 +3893,7 @@ public findCoinArround(id){
 			if(pev(ent, pev_iuser3) != id) continue;
 		}
 		
-		if(pev(ent, pev_iuser3) != id) continue;
+		if(pev(ent, pev_iuser3) != id)  continue;
 			
 		pev(ent, pev_origin, fOriginCoin);
 		
@@ -3909,7 +3903,7 @@ public findCoinArround(id){
 				if( get_gametime() - pev(ent, pev_fuser1) < random_float(1.50,2.50) ) continue;
 				if( get_distance_f(fOrigin, fOriginCoin)  < 300.0 ){
 					new Float:fVeloc[3];
-					xs_vec_sub(fOrigin, fOriginCoin, fVeloc)				
+					xs_vec_sub(fOrigin, fOriginCoin, fVeloc)	;			
 					xs_vec_normalize( fVeloc , fVeloc );				
 					xs_vec_mul_scalar( fVeloc , 300.0 , fVeloc );
 					set_pev(ent, pev_velocity, fVeloc);
@@ -3922,33 +3916,27 @@ public findCoinArround(id){
 		switch(pev(ent, pev_skin)){
 			case RED_NUGGET:  {
 				value = random_num(1,3);
-				tutorBB(id, TUTOR_YELLOW, "%dx Czerwona Brylka", value);
 			}
 			
 			case GREEN_NUGGET: {
 				value = 4;
-				tutorBB(id, TUTOR_YELLOW, "%dx Zielona Brylka", value);
 			}
 			case YELLOW_NUGGET: {
 				value = 5;
-				addSecretMission(id, mission_secret_GOLDNUGGET, value)
+				addSecretMission(id, mission_secret_GOLDNUGGET, value);
 				
 				#if defined CHRISTMAS_ADDON
 		
 					addChristmasMission(id, CH_PICKUPGOLD, 1);
 				
-				#endif
-				tutorBB(id, TUTOR_YELLOW, "%dx Zolta Brylka", value);
-				
+				#endif	
 			}
 			case BLUE_NUGGET:{
-				if(userNugget[id] == 0 ) addSecretMission(id, mission_secret_BLUE, 1)
+				if(userNugget[id] == 0 ) addSecretMission(id, mission_secret_BLUE, 1);
 				value = 6;
-				tutorBB(id, TUTOR_YELLOW, "%dx Niebieska Brylka", value);
 			}
 			case PINK_NUGGET:  {
 				value = 9;
-				tutorBB(id, TUTOR_YELLOW, "%dx Rozowa Brylka", value);
 			}
 			case BLACK_NUGGET:  {
 				value = random_num(12,28);
@@ -3958,7 +3946,6 @@ public findCoinArround(id){
 					addChristmasMission(id, CH_BLACKNUGGET, 1);
 				
 				#endif
-				tutorBB(id, TUTOR_YELLOW, "%dx Czarna Brylka", value);
 			}
 		}
 		
@@ -3981,7 +3968,7 @@ public findCoinArround(id){
 		#endif
 		
 		spkGameSound(id, sound_PICKUP);
-		listNuggetOnFloor[pev(ent, pev_iuser1)] = 0
+		listNuggetOnFloor[pev(ent, pev_iuser1)] = 0;
 		remove_entity(ent);
 	}
 }
@@ -3989,48 +3976,21 @@ public findCoinArround(id){
 public addNuggetEnt(){
 	new slotCoin = freeNgugetSlot();
 	if( slotCoin!=-1){
-		new ent = create_entity("info_target")
+		new ent = create_entity("info_target");
 		if( !pev_valid(ent) ) return 0;
 		listNuggetOnFloor[slotCoin] = ent;
 		set_pev(ent, pev_iuser1, slotCoin);
 		return ent;
 	}
-	return 0
+	return 0;
 }
 public freeNgugetSlot(){
 	for( new i = 0 ; i < MAXNUGGETSFLOOR; i ++ ){
-		if( listNuggetOnFloor[i] == 0 ) return i;
+		if( listNuggetOnFloor[i] == 0 )
+			return i;
 	}
 	return -1;
 }
-
-public tutorBB(id, TutorColor:colorTUTOR, const textTUTOR[], any:...){	
-
-	new szMessage[181], gText[181], iLen = 0;
-	vformat(szMessage, sizeof(szMessage) - 1, textTUTOR, 4);
-	
-	szMessage[180] = '^0';
-	
-	if(userTutorMsg[id][0]) iLen += format(gText[iLen], sizeof(gText) - 1 - iLen, "%s^n", userTutorMsg[id]);
-	iLen += format(gText[iLen], sizeof(gText) - 1 - iLen, "%s", szMessage);
-	
-	userTutorMsg[id] = gText;
-	
-	if(get_gametime() - userLastTutor[id] < 2.0 ){
-		if(task_exists( id + TASK_TUTORFINAL ))
-			remove_task( id + TASK_TUTORFINAL);
-	}
-	userLastTutor[id] = get_gametime();
-	
-	if(strlen(gText) < 180) tutorMake(id, colorTUTOR, 2.0, "%s", gText);
-	else {
-		tutorBB_Final(id + TASK_TUTORFINAL);
-		tutorMake(id, colorTUTOR, 2.0, "%s", szMessage);
-	}
-	
-	set_task(2.0, "tutorBB_Final", id+ TASK_TUTORFINAL);
-}
-public tutorBB_Final(id){
-	id -= TASK_TUTORFINAL;
-	userTutorMsg[id] = "";
-}
+/* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
+*{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
+*/

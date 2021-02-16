@@ -16,13 +16,13 @@
 #include <	regex		>
 #include <	colorchat	>
 
-enum { CHRISTMAS_V, CHRISTMAS_W, CHRISTMAS_ALL } 	
+enum { CHRISTMAS_V, CHRISTMAS_W, CHRISTMAS_ALL }; 	
 new const modelGranade[CHRISTMAS_ALL][] = {
 	"models/basebuildervt/christmas/v_snowball.mdl",
 	"models/basebuildervt/christmas/w_snowball.mdl"
-}
+};
 
-new const szChristmasTree[] 	= 	"christmasTree"
+new const szChristmasTree[] 	= 	"christmasTree";
 new const szTreeModel[]		=	"models/basebuildervt/christmas/treeNew.mdl";
 new const szTreeSprite[]		=	"sprites/basebuildervt/christmas/treespot.spr";
 new const szChristmasTreeSprite[]=	"christmasTreeSpr";
@@ -40,29 +40,23 @@ public addChristmasMission(id, mission, val){
 	
 	if( mission == userChristmasType[id]){
 		if( userChristmasMission[id] != -1){
-			userChristmasMission[id] = min(userChristmasMission[id]+val, str_to_num(christmasMission[mission][1]))	
+			userChristmasMission[id] = min(userChristmasMission[id]+val, str_to_num(christmasMission[mission][1]));	
 		}
 	}
 }
 public christmasPrecache(){
 	
-	create_entity("env_snow")
+	create_entity("env_snow");
 
-	for(new i = 1; i < sizeof(timePlayChristmas); i ++){
-
-		precache_sound(formatm("basebuildervt/christmas/%d.mp3", i))
-	}
+	for(new i = 1; i < sizeof(timePlayChristmas); i ++) precache_sound(formatm("basebuildervt/christmas/%d.mp3", i));
+	for(new i = 0; i < CHRISTMAS_ALL; i++) precache_model(modelGranade[i]);
 		
-	for(new i = 0; i < CHRISTMAS_ALL; i++){
-		precache_model(modelGranade[i])
-	}	
-		
-	precache_model(szTreeModel)
-	precache_model(szTreeSprite)
+	precache_model(szTreeModel);
+	precache_model(szTreeSprite);
 
 }
 public christmasTouchTree(id, ent){
-	if( !pev_valid(ent)  ) return 
+	if( !pev_valid(ent)  ) return;
 
 	new szClass[15];
 	entity_get_string(ent, EV_SZ_classname, szClass, sizeof(szClass));
@@ -81,8 +75,8 @@ public checkChristmas(){
 public numTree(){
 	new ent = -1, iNum = 0;
 	while((ent = find_ent_by_class(ent, szChristmasTree)) > 0){
-		iNum++
-		entChristmas[iNum] = ent
+		iNum++;
+		entChristmas[iNum] = ent;
 	}
 	return iNum;
 }
@@ -94,9 +88,9 @@ public menuCreateChristmas(id){
 	new menu = menu_create(gText, "menuCreateChristmas_2");
 	new cb = 	menu_makecallback("menuCreateChristmas_3");
 	
-	menu_additem(menu, "Sworz Choinke", .callback=cb)
-	menu_additem(menu, "Usun", .callback=cb)
-	menu_additem(menu, "Zapisz^n")
+	menu_additem(menu, "Sworz Choinke", .callback=cb);
+	menu_additem(menu, "Usun", .callback=cb);
+	menu_additem(menu, "Zapisz^n");
 	menu_display(id, menu, 0);
 	
 }
@@ -113,7 +107,7 @@ public menuCreateChristmas_2(id, menu, item){
 		case 0:{
 		
 			while((ent = find_ent_by_class(ent, szChristmasTree)) > 0){
-				menuCreateChristmas(id)
+				menuCreateChristmas(id);
 				return PLUGIN_CONTINUE;
 				
 			}
@@ -122,13 +116,13 @@ public menuCreateChristmas_2(id, menu, item){
 		
 			entity_get_vector(id,	EV_VEC_origin, 	fOrigin );
 		
-			createTree(fOrigin, SOLID_NOT)
+			createTree(fOrigin, SOLID_NOT);
 			new Float:fMin[3];
 			entity_get_vector(id, EV_VEC_mins, fMin);
-			if(fMin[2]==-18.0) fOrigin[2] -= 18.0
-			else fOrigin[2] -= 36.0
-			createSprite(fOrigin)
-			menuCreateChristmas(id)
+			if(fMin[2]==-18.0) fOrigin[2] -= 18.0;
+			else fOrigin[2] -= 36.0;
+			createSprite(fOrigin);
+			menuCreateChristmas(id);
 		}
 		case 1:{
 			while ((ent = find_ent_by_class(ent, szChristmasTree)) > 0) {
@@ -140,18 +134,17 @@ public menuCreateChristmas_2(id, menu, item){
 			}
 			while ((ent = find_ent_by_class(ent, szChristmasTreeSprite)) > 0) {
 		
-				if (ent > 0){
-					remove_entity(ent);
-				}
+				if (ent > 0) remove_entity(ent);
+				
 			}
 	
-			menuCreateChristmas(id)
+			menuCreateChristmas(id);
 		}
 		
 		case 2:{
 			saveChristmas();
 			ColorChat(id, GREEN, "---^x01 Zapisales^x04 ---");
-			menuCreateChristmas(id)
+			menuCreateChristmas(id);
 		}
 	}
 
@@ -167,7 +160,7 @@ public menuCreateChristmas_3(id, menu, item) {
 			if(numTree() == 1) return ITEM_ENABLED;
 			else return ITEM_DISABLED;
 		}
-		default: return ITEM_ENABLED
+		default: return ITEM_ENABLED;
 	}	
 	return ITEM_ENABLED;
 }
@@ -176,21 +169,21 @@ public openMenuTree(id, ent, Float:cordx,  Float:cordy){
 	if( !pev_valid(ent) || userMenuChristmas[id] || !isTree(ent)) return;		
 	new button =  pev(id, pev_button);
 	new Float:fOrigin[3], Float:fOriginEnt[3]
-	entity_get_vector(id,	EV_VEC_origin, 	fOrigin)
-	entity_get_vector(ent,	EV_VEC_origin, 	fOriginEnt)
+	entity_get_vector(id,	EV_VEC_origin, 	fOrigin);
+	entity_get_vector(ent,	EV_VEC_origin, 	fOriginEnt);
 
 
 	if( get_distance_f( fOrigin, fOriginEnt ) <= distanceOpen){		
 		
 		if( get_gametime()-userAimingHud[id] >= 0.2){
-			set_dhudmessage(153, 255, 102, cordx, cordy, 0, 0.1, 0.1, 0.1, 0.1)
-			show_dhudmessage(id, "^nAby sprawdzic dzisiejsze wyzwanie!^nKliknij: [ E ]^n")
+			set_dhudmessage(153, 255, 102, cordx, cordy, 0, 0.1, 0.1, 0.1, 0.1);
+			show_dhudmessage(id, "^nAby sprawdzic dzisiejsze wyzwanie!^nKliknij: [ E ]^n");
 								
 			userAimingHud[id] = get_gametime();			
 		}
 	}	
 	if( ( button & IN_USE ) && get_distance_f( fOrigin, fOriginEnt ) <= distanceOpen ){
-		menuChristmas(id)
+		menuChristmas(id);
 		userMenuChristmas[id] = true;
 		
 	}
@@ -202,7 +195,7 @@ public dayCount(){
 public menuChristmas(id){	
 	new gText[712], iLen = 0;
 
-	new mission = dayCount()
+	new mission = dayCount();
 
 	if(dayCount() >= 0 && userChristmasType[id] != mission){
 		
@@ -240,58 +233,58 @@ public menuChristmas(id){
 		} else {
 			if(userChristmasMission[id] == -1)
 				menu_additem(menu, "\dDzis juz losowales!");
-			else if(userChristmasMission[id] < str_to_num(christmasMission[userChristmasType[id]][1]))
+			else if(userChristmasMission[id] < str_to_num(christmasMission[userChristmasType[id]][1]));
 				menu_additem(menu, "\rWykonaj najpierw wyzwanie");
 			else menu_additem(menu, "\yZacznij Losowac\d |\r POWODZENIA!");
 		}
 	}
-	menu_display(id,menu, 0)
+	menu_display(id,menu, 0);
 }
 
 
 public menuChristmas_2(id, menu, item){
 	
 	if(item == MENU_EXIT){
-		menu_destroy(menu)
-		userMenuChristmas[id] = false
-		return
+		menu_destroy(menu);
+		userMenuChristmas[id] = false;
+		return;
 		
 	}
-	new ent = find_ent_by_class(ent, szChristmasTree)
+	new ent = find_ent_by_class(ent, szChristmasTree);
 
-	new Float:fOrigin[3], Float:fOriginEnt[3]
-	entity_get_vector(id,	EV_VEC_origin, 	fOrigin)
-	entity_get_vector(ent,	EV_VEC_origin, 	fOriginEnt)
+	new Float:fOrigin[3], Float:fOriginEnt[3];
+	entity_get_vector(id,	EV_VEC_origin, 	fOrigin);
+	entity_get_vector(ent,	EV_VEC_origin, 	fOriginEnt);
 	
 	if( get_distance_f( fOrigin, fOriginEnt ) >= distanceOpen+10.0){		
 		ColorChat(id, GREEN, "---^x01 Wroc do choinki!^x04 ---");
-		userMenuChristmas[id] = false
+		userMenuChristmas[id] = false;
 		return;
 	}
 	switch(item){
 		
 		case 0:{
 			if(dayCount() < 0 || dayCount() >= CHRISTMAS_TOTAL_MISSION){
-				ColorChat(id, GREEN, "---^x01 Na dzisiaj nic nie jest przewidziane^x03 |^x01 Przepraszam!^x04 ---" )
-				userMenuChristmas[id] = false
+				ColorChat(id, GREEN, "---^x01 Na dzisiaj nic nie jest przewidziane^x03 |^x01 Przepraszam!^x04 ---" );
+				userMenuChristmas[id] = false;
 				return;
 				
 			} else  if(!userChristmasStart[id]){
 				userChristmasStart[id] = 1;
-				ColorChat(id, GREEN, "---^x01 Dziekuje, ze podjoles sie^x03 wyzwania!^x04 ---" )
-				userMenuChristmas[id] = false
+				ColorChat(id, GREEN, "---^x01 Dziekuje, ze podjoles sie^x03 wyzwania!^x04 ---" );
+				userMenuChristmas[id] = false;
 				return;
 				
 			} else if( userChristmasMission[id] == -1){
-				ColorChat(id, GREEN, "---^x01 Dzisiaj juz^x04 losowales!^x03 Poczekaj do jutra^x04 ---" )
-				userMenuChristmas[id] = false
+				ColorChat(id, GREEN, "---^x01 Dzisiaj juz^x04 losowales!^x03 Poczekaj do jutra^x04 ---" );
+				userMenuChristmas[id] = false;
 				return;
 					
 			}else if( userChristmasMission[id] < str_to_num(christmasMission[userChristmasType[id]][1]) ){
 				
-				ColorChat(id, GREEN, "---^x01 Wykonaj najpierw twoje wyzwanie jakie masz zrobic!^x04 ---")
-				ColorChat(id, GREEN, "---^x01 I jak zrobisz^x03 wroc do mnie^x01 zalosowac!^x04 ---")
-				userMenuChristmas[id] = false
+				ColorChat(id, GREEN, "---^x01 Wykonaj najpierw twoje wyzwanie jakie masz zrobic!^x04 ---");
+				ColorChat(id, GREEN, "---^x01 I jak zrobisz^x03 wroc do mnie^x01 zalosowac!^x04 ---");
+				userMenuChristmas[id] = false;
 				return;
 					
 			}
@@ -306,7 +299,7 @@ public menuChristmas_2(id, menu, item){
 				case 1:{
 				
 					value = 500;
-					addExpToFinal(id, float(value)) 
+					addExpToFinal(id, float(value)) ;
 					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Expa^x04 ---", value);
 				}
 				case 2:{
@@ -316,32 +309,32 @@ public menuChristmas_2(id, menu, item){
 				}
 				case 3:{
 					value = random_num(24,48);
-					timeVip[id]	= 	max( timeVip[id] + (HOUR*value), get_systime() + (HOUR*value) )
+					timeVip[id]	= 	max( timeVip[id] + (HOUR*value), get_systime() + (HOUR*value) );
 					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 VIPA^x04 ---");
 				}
 				case 4:{
-					new userTimeScrool = (HOUR*random_num(1,4))
+					new userTimeScrool = (HOUR*random_num(1,4));
 					new newLeftExp  =  userScrollExp[id] - playedTime(id);
 					if(newLeftExp <= 0){
-						userScrollExp[id] = playedTime(id)
-						userScrollExp[id] += userTimeScrool	
-					} else userScrollExp[id] += userTimeScrool	
+						userScrollExp[id] = playedTime(id);
+						userScrollExp[id] += userTimeScrool;	
+					} else userScrollExp[id] += userTimeScrool;	
 					
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Doswiadczenia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" )
+					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Doswiadczenia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
 				}
 				case 5:{
 					
-					new userTimeScrool = (HOUR*random_num(1,4))
+					new userTimeScrool = (HOUR*random_num(1,4));
 					new newLeftNugget  =  userScrollNugget[id] - playedTime(id);
 					if(newLeftNugget <= 0){
-						userScrollNugget[id] = playedTime(id)
-						userScrollNugget[id] += userTimeScrool	
-					} else userScrollNugget[id] += userTimeScrool
+						userScrollNugget[id] = playedTime(id);
+						userScrollNugget[id] += userTimeScrool;
+					} else userScrollNugget[id] += userTimeScrool;
 					
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Szczescia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" )
+					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Szczescia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
 					
 					if(random(100) < 20){
-						addCostumes(id, HAT_AUREOLA)
+						addCostumes(id, HAT_AUREOLA);
 						ColorChat(id, GREEN, "---^x01 Gratulacje! Udalo Ci sie zdobyc kostium!^x04 |^x03 Aureola^x04 ---");
 					}
 				
@@ -354,7 +347,7 @@ public menuChristmas_2(id, menu, item){
 				case 7:{
 					
 					value = random_num(24,48);
-					timeVip[id]	= 	max( timeVip[id] + (HOUR*value), get_systime() + (HOUR*value) )
+					timeVip[id]	= 	max( timeVip[id] + (HOUR*value), get_systime() + (HOUR*value) );
 					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 VIPA^x04 ---", value);
 				}
 				case 8:{
@@ -369,7 +362,7 @@ public menuChristmas_2(id, menu, item){
 				}
 				case 10:{
 					value = 900;
-					addExpToFinal(id, float(value)) 
+					addExpToFinal(id, float(value)); 
 					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Expa^x04 ---", value);
 					
 					
@@ -380,14 +373,14 @@ public menuChristmas_2(id, menu, item){
 					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Brylek^x04 ---", value);
 				}
 				case 12:{
-					new userTimeScrool = (HOUR*random_num(1,4))
+					new userTimeScrool = (HOUR*random_num(1,4));
 					new newLeftNugget  =  userScrollNugget[id] - playedTime(id);
 					if(newLeftNugget <= 0){
-						userScrollNugget[id] = playedTime(id)
-						userScrollNugget[id] += userTimeScrool	
-					} else userScrollNugget[id] += userTimeScrool
+						userScrollNugget[id] = playedTime(id);
+						userScrollNugget[id] += userTimeScrool;	
+					} else userScrollNugget[id] += userTimeScrool;
 					
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Szczescia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" )
+					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Szczescia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
 					
 				}
 				case 13:{
@@ -397,11 +390,11 @@ public menuChristmas_2(id, menu, item){
 				}
 				case 14:{
 					value = random_num(24,48);
-					timeVip[id]	= 	max( timeVip[id] + (HOUR*value), get_systime() + (HOUR*value) )
+					timeVip[id]	= 	max( timeVip[id] + (HOUR*value), get_systime() + (HOUR*value) );
 					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 VIPA^x04 ---", value);
 					
 					if(random(100) < 15){
-						addCostumes(id, HAT_NIEDZWIEDZ)
+						addCostumes(id, HAT_NIEDZWIEDZ);
 						ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 zdobyl kostium!!^x04 ---", userName[id]);
 						ColorChat(id, GREEN, "---^x01 Gratulacje! Udalo Ci sie zdobyc kostium!^x04 |^x03 Czapka Niedzwiedzia^x04 ---");
 					}
@@ -414,12 +407,12 @@ public menuChristmas_2(id, menu, item){
 				}
 				case 16:{
 					value = 950;
-					addExpToFinal(id, float(value)) 
+					addExpToFinal(id, float(value)); 
 					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Expa^x04 ---", value);
 				}
 				case 17:{
 					value = 750;
-					addExpToFinal(id, float(value)) 
+					addExpToFinal(id, float(value)) ;
 					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Expa^x04 ---", value);
 				}
 				case 18:{
@@ -428,34 +421,34 @@ public menuChristmas_2(id, menu, item){
 					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Brylek^x04 ---", value);
 				}
 				case 19:{
-					new userTimeScrool = (HOUR*random_num(1,4))
+					new userTimeScrool = (HOUR*random_num(1,4));
 					new newLeftNugget  =  userScrollNugget[id] - playedTime(id);
 					if(newLeftNugget <= 0){
-						userScrollNugget[id] = playedTime(id)
-						userScrollNugget[id] += userTimeScrool	
-					} else userScrollNugget[id] += userTimeScrool
+						userScrollNugget[id] = playedTime(id);
+						userScrollNugget[id] += userTimeScrool;
+					} else userScrollNugget[id] += userTimeScrool;
 					
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Szczescia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" )
+					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Szczescia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
 					
 				}
 				case 20:{
-					new userTimeScrool = (HOUR*random_num(1,4))
+					new userTimeScrool = (HOUR*random_num(1,4));
 					new newLeftExp  =  userScrollExp[id] - playedTime(id);
 					if(newLeftExp <= 0){
-						userScrollExp[id] = playedTime(id)
-						userScrollExp[id] += userTimeScrool	
-					} else userScrollExp[id] += userTimeScrool	
+						userScrollExp[id] = playedTime(id);
+						userScrollExp[id] += userTimeScrool;	
+					} else userScrollExp[id] += userTimeScrool;	
 					
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Doswiadczenia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" )
+					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Doswiadczenia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
 				
 					if(random(100) < 20){
-						addCostumes(id, HAT_SWIATECZNASKARPETA)
+						addCostumes(id, HAT_SWIATECZNASKARPETA);
 						ColorChat(id, GREEN, "---^x01 Gratulacje! Udalo Ci sie zdobyc kostium!^x04 |^x03 Swiateczna Skarpeta^x04 ---");
 					}
 				}
 				case 21:{
 					value = random_num(24,48);
-					timeVip[id]	= 	max( timeVip[id] + (HOUR*value), get_systime() + (HOUR*value) )
+					timeVip[id]	= 	max( timeVip[id] + (HOUR*value), get_systime() + (HOUR*value) );
 					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 VIPA^x04 ---", value);
 				}
 				case 22:{
@@ -465,7 +458,7 @@ public menuChristmas_2(id, menu, item){
 				}
 				case 23:{
 					value = random_num(24,48);
-					timeVip[id]	= 	max( timeVip[id] + (HOUR*value), get_systime() + (HOUR*value) )
+					timeVip[id]	= 	max( timeVip[id] + (HOUR*value), get_systime() + (HOUR*value) );
 					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 VIPA^x04 ---", value);
 				}
 				case 24:{
@@ -474,7 +467,7 @@ public menuChristmas_2(id, menu, item){
 					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Brylek^x04 ---", value);
 					
 					if(random(100) < 20){
-						addCostumes(id, HAT_BALWAN)
+						addCostumes(id, HAT_BALWAN);
 						ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 zdobyl kostium!!^x04 ---", userName[id]);
 						ColorChat(id, GREEN, "---^x01 Gratulacje! Udalo Ci sie zdobyc kostium!^x04 |^x03 Glowa Balwana^x04 ---");
 					}
@@ -485,24 +478,24 @@ public menuChristmas_2(id, menu, item){
 					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Luzaczkow^x04 ---", value);
 				}
 				case 26:{
-					new userTimeScrool = (HOUR*random_num(1,4))
+					new userTimeScrool = (HOUR*random_num(1,4));
 					new newLeftNugget  =  userScrollNugget[id] - playedTime(id);
 					if(newLeftNugget <= 0){
-						userScrollNugget[id] = playedTime(id)
-						userScrollNugget[id] += userTimeScrool	
-					} else userScrollNugget[id] += userTimeScrool
+						userScrollNugget[id] = playedTime(id);
+						userScrollNugget[id] += userTimeScrool;
+					} else userScrollNugget[id] += userTimeScrool;
 					
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Szczescia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" )
+					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Szczescia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
 				}
 				case 27:{
-					new userTimeScrool = (HOUR*random_num(1,4))
+					new userTimeScrool = (HOUR*random_num(1,4));
 					new newLeftNugget  =  userScrollNugget[id] - playedTime(id);
 					if(newLeftNugget <= 0){
-						userScrollNugget[id] = playedTime(id)
-						userScrollNugget[id] += userTimeScrool	
-					} else userScrollNugget[id] += userTimeScrool
+						userScrollNugget[id] = playedTime(id);
+						userScrollNugget[id] += userTimeScrool;	
+					} else userScrollNugget[id] += userTimeScrool;
 					
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Szczescia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" )
+					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Szczescia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
 				}
 				case 28:{
 					value = random_num(1,10);
@@ -511,21 +504,21 @@ public menuChristmas_2(id, menu, item){
 				}
 				case 29:{
 					value = random_num(24,48);
-					timeVip[id]	= 	max( timeVip[id] + (HOUR*value), get_systime() + (HOUR*value) )
+					timeVip[id]	= 	max( timeVip[id] + (HOUR*value), get_systime() + (HOUR*value) );
 					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 VIPA^x04 ---", value);
 				}
 				case 30:{
-					new userTimeScrool = (HOUR*random_num(1,4))
+					new userTimeScrool = (HOUR*random_num(1,4));
 					new newLeftExp  =  userScrollExp[id] - playedTime(id);
 					if(newLeftExp <= 0){
-						userScrollExp[id] = playedTime(id)
-						userScrollExp[id] += userTimeScrool	
-					} else userScrollExp[id] += userTimeScrool	
+						userScrollExp[id] = playedTime(id);
+						userScrollExp[id] += userTimeScrool;	
+					} else userScrollExp[id] += userTimeScrool;	
 					
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Doswiadczenia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" )
+					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Doswiadczenia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
 				
 					if(random(100) < 20){
-						addCostumes(id, HAT_PINGWINNAPLECACH)
+						addCostumes(id, HAT_PINGWINNAPLECACH);
 						ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 zdobyl kostium!!^x04 ---", userName[id]);
 						ColorChat(id, GREEN, "---^x01 Gratulacje! Udalo Ci sie zdobyc kostium!^x04 |^x03 Pingwin na Plecach^x04 ---");
 					}
@@ -535,7 +528,7 @@ public menuChristmas_2(id, menu, item){
 			
 		}
 	}
-	userMenuChristmas[id] = false
+	userMenuChristmas[id] = false;
 }
 createTree(Float:fOrigin[3], solid){
 	new ent = create_entity("info_target");
@@ -546,14 +539,14 @@ createTree(Float:fOrigin[3], solid){
 	entity_set_model(	ent, 	szTreeModel);
 	entity_set_vector(	ent, 	EV_VEC_origin, 		fOrigin );
 	
-	if(solid == SOLID_BBOX) entity_set_size(ent, 	Float:{-15.0, -15.0, -0.0}, Float:{15.0, 15.0, 125.0})	
+	if(solid == SOLID_BBOX) entity_set_size(ent, 	Float:{-15.0, -15.0, -0.0}, Float:{15.0, 15.0, 125.0});
 	
 	entity_set_int(		ent, 	EV_INT_solid, 		solid );
-	entity_set_int(		ent, 	EV_INT_movetype, 	MOVETYPE_FLY )	
-	entity_set_int(		ent, 	EV_INT_sequence, 	1)
+	entity_set_int(		ent, 	EV_INT_movetype, 	MOVETYPE_FLY );	
+	entity_set_int(		ent, 	EV_INT_sequence, 	1);
 	entity_set_float(	ent,	EV_FL_nextthink,	get_gametime() + 0.1 );
 	
-	drop_to_floor(ent)
+	drop_to_floor(ent);
 	return ent;
 }
 
@@ -566,7 +559,7 @@ createSprite(Float:fOrigin[3]){
 	
 	entity_set_string(	ent, 	EV_SZ_classname, 	szChristmasTreeSprite);
 	entity_set_model(	ent, 	szTreeSprite);
-	entity_set_int(		ent, 	EV_INT_movetype, 	MOVETYPE_FLY)	;
+	entity_set_int(		ent, 	EV_INT_movetype, 	MOVETYPE_FLY);
 	entity_set_int(		ent, 	EV_INT_solid, 		SOLID_NOT);
 	entity_set_vector(	ent, 	EV_VEC_origin, 		fOrigin);
 	entity_set_vector(	ent, 	EV_VEC_angles, 		Float:{90.0, 0.0, 0.0});
@@ -584,29 +577,29 @@ createSprite(Float:fOrigin[3]){
 	return ent;
 }
 public treeThink(ent){
-	if( !pev_valid(ent) && !isTree(ent)) return
+	if( !pev_valid(ent) && !isTree(ent)) return;
 	
-	new Float:fAngles[3]
-	new frame = floatround(entity_get_float( ent, EV_FL_frame) + 1.0 ) % 9
-	entity_set_float(	ent, 	EV_FL_frame, 		float(frame))
+	new Float:fAngles[3];
+	new frame = floatround(entity_get_float( ent, EV_FL_frame) + 1.0 ) % 9;
+	entity_set_float(	ent, 	EV_FL_frame, 		float(frame));
 
-	new Float:fOriginTarget[3]
+	new Float:fOriginTarget[3];
 
-	entity_get_vector(ent, EV_VEC_origin, fOriginTarget)
+	entity_get_vector(ent, EV_VEC_origin, fOriginTarget);
 	if(get_gametime() - entity_get_float(ent, EV_FL_fuser1) > 0.2 ){
 		fOriginTarget[2] += 132.5;
-		Particles(fOriginTarget, 3.0, sprite_pouIce, random_num(1,4), 2, random_num(2,3), random_num(4,10), 2)
+		Particles(fOriginTarget, 3.0, sprite_pouIce, random_num(1,4), 2, random_num(2,3), random_num(4,10), 2);
 		entity_set_float(ent, EV_FL_fuser1, get_gametime());
 	}
 	
 	entity_get_vector(	ent, 	EV_VEC_angles, 		fAngles);
-	fAngles[1] += 5.0
+	fAngles[1] += 5.0;
 	entity_set_vector(	ent, 	EV_VEC_angles, 		fAngles);
 	entity_set_float(	ent,	EV_FL_nextthink,	get_gametime() + 0.1 );
 }
 stock bool:isTree(ent){
-	new szClass[14]
-	entity_get_string(ent, EV_SZ_classname, szClass, sizeof(szClass) )
+	new szClass[14];
+	entity_get_string(ent, EV_SZ_classname, szClass, sizeof(szClass) );
 	if(equal(szClass, szChristmasTree) )
 		return true;		
 	return false;
@@ -618,7 +611,7 @@ saveChristmas( ) {
 	new file = fopen(configFile, "wt");
 	
 	new szData[128];
-	new Float:fOrigin[ 3 ]
+	new Float:fOrigin[ 3 ];
 	new ent = -1;
 	
 	if(file){
@@ -629,7 +622,7 @@ saveChristmas( ) {
 			entity_get_vector( ent, EV_VEC_origin, fOrigin );
 
 			format(szData, sizeof(szData), "%f %f %f^n", fOrigin[ 0 ], fOrigin[ 1 ], fOrigin[ 2 ]);
-			fputs(file, szData)
+			fputs(file, szData);
 		}
 		fclose(file);
 	}
@@ -657,17 +650,16 @@ loadChristmas(){
 	
 	new szData[1024];
 	
-	new Float:fOrigin[3]
+	new Float:fOrigin[3];
 
-	new szOrigin[3][17]
+	new szOrigin[3][17];
 
 	
 	while(!feof(file)){
 		fgets(file, szData, sizeof( szData ) );
 		trim( szData );
 		
-		if( !szData[ 0 ] )
-			continue;
+		if( !szData[ 0 ] ) continue;
 		
 		parse(szData,
 			szOrigin[0], 	sizeof(szOrigin[]),
@@ -675,9 +667,8 @@ loadChristmas(){
 			szOrigin[2], 	sizeof(szOrigin[])
 		);
 		
-		for( new i = 0;i <3; i ++ ){
-			fOrigin[i]=str_to_float(szOrigin[i])
-		}
+		for( new i = 0;i <3; i ++ ) fOrigin[i]=str_to_float(szOrigin[i]);
+		
 		
 		createTree( fOrigin, SOLID_BBOX );
 		createSprite(fOrigin);
@@ -687,9 +678,9 @@ loadChristmas(){
 	return PLUGIN_CONTINUE;
 }
 public granadeSetModel(id){
-	new weapon = get_user_weapon(id)
+	new weapon = get_user_weapon(id);
 	if(weapon == CSW_HEGRENADE || weapon == CSW_SMOKEGRENADE || weapon == CSW_FLASHBANG){
-		entity_set_string(id , EV_SZ_viewmodel , modelGranade[CHRISTMAS_V])  
+		entity_set_string(id , EV_SZ_viewmodel , modelGranade[CHRISTMAS_V]);
 	}
 
 }
@@ -706,27 +697,27 @@ public cmdUnstuckTree(id){
 	static Float:vec[3];
 	static o;
 	if (is_user_connected(id) && is_user_alive(id)){
-		pev(id, pev_origin, origin)
-		hull = pev(id, pev_flags) & FL_DUCKING ? HULL_HEAD : HULL_HUMAN
+		pev(id, pev_origin, origin);
+		hull = pev(id, pev_flags) & FL_DUCKING ? HULL_HEAD : HULL_HUMAN;
 		if (!is_hull_vacant(origin, hull,id) && !get_user_noclip(id) && !(pev(id,pev_solid) & SOLID_NOT)) {
-			++stuck[id]
-			pev(id, pev_mins, mins)
-			vec[2] = origin[2]
+			++stuck[id];
+			pev(id, pev_mins, mins);
+			vec[2] = origin[2];
 			for (o=0; o < sizeof size; ++o) {
-				vec[0] = origin[0] - mins[0] * size[o][0]
-				vec[1] = origin[1] - mins[1] * size[o][1]
-				vec[2] = origin[2] - mins[2] * size[o][2]
+				vec[0] = origin[0] - mins[0] * size[o][0];
+				vec[1] = origin[1] - mins[1] * size[o][1];
+				vec[2] = origin[2] - mins[2] * size[o][2];
 				if (is_hull_vacant(vec, hull,id)) {
-					engfunc(EngFunc_SetOrigin, id, vec)
+					engfunc(EngFunc_SetOrigin, id, vec);
 					Display_Fade(id, 512,512,512, 255,32,32, 90);
-					set_dhudmessage(255, 32, 32, -1.0, 0.3, 0, 0.5, 0.9, 0.5, 0.5)
-					show_dhudmessage(id, "!! Odblokowano !!")
-					set_pev(id,pev_velocity,{0.0,0.0,0.0})
-					o = sizeof size
+					set_dhudmessage(255, 32, 32, -1.0, 0.3, 0, 0.5, 0.9, 0.5, 0.5);
+					show_dhudmessage(id, "!! Odblokowano !!");
+					set_pev(id,pev_velocity,{0.0,0.0,0.0});
+					o = sizeof size;
 				}	
 			}
 		}
-		else stuck[id] = 0	
+		else stuck[id] = 0;	
 	}
 	return PLUGIN_CONTINUE;
 

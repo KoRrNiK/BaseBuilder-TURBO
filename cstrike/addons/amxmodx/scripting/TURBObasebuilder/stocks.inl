@@ -37,28 +37,28 @@ public barTime(id, timeBonus){
 	
 	if (!msgBarTime) msgBarTime = get_user_msgid("BarTime");
 	
-	message_begin(MSG_ONE_UNRELIABLE, msgBarTime, .player=id)
-	write_short(timeBonus)
-	message_end()	
+	message_begin(MSG_ONE_UNRELIABLE, msgBarTime, .player=id);
+	write_short(timeBonus);
+	message_end();
 }
 
 stock bool:is_hull_vacant(const Float:origin[3], hull,id) {
-	static tr
-	engfunc(EngFunc_TraceHull, origin, origin, 0, hull, id, tr)
+	static tr;
+	engfunc(EngFunc_TraceHull, origin, origin, 0, hull, id, tr);
 	
-	if (!get_tr2(tr, TR_StartSolid) || !get_tr2(tr, TR_AllSolid)) //get_tr2(tr, TR_InOpen))
-		return true
-	return false
+	if (!get_tr2(tr, TR_StartSolid) || !get_tr2(tr, TR_AllSolid))
+		return true;
+	return false;
 }
 stock BeamCylinder(Float:fOrigin[3], Float:height, sprite, startframe, framerate,life,width,noise,red,green,blue,bright,speed){
 	message_begin(MSG_BROADCAST, SVC_TEMPENTITY);
 	write_byte(TE_BEAMCYLINDER);
-	engfunc(EngFunc_WriteCoord,fOrigin[0])
-	engfunc(EngFunc_WriteCoord,fOrigin[1])
-	engfunc(EngFunc_WriteCoord,fOrigin[2])	
-	engfunc(EngFunc_WriteCoord,fOrigin[0])
-	engfunc(EngFunc_WriteCoord,fOrigin[1])
-	engfunc(EngFunc_WriteCoord,fOrigin[2]+height)	
+	engfunc(EngFunc_WriteCoord,fOrigin[0]);
+	engfunc(EngFunc_WriteCoord,fOrigin[1]);
+	engfunc(EngFunc_WriteCoord,fOrigin[2]);
+	engfunc(EngFunc_WriteCoord,fOrigin[0]);
+	engfunc(EngFunc_WriteCoord,fOrigin[1]);
+	engfunc(EngFunc_WriteCoord,fOrigin[2]+height);	
 	write_short(sprite); // sprite
 	write_byte(startframe); // startframe
 	write_byte(framerate); // framerate
@@ -73,26 +73,26 @@ stock BeamCylinder(Float:fOrigin[3], Float:height, sprite, startframe, framerate
 	message_end();
 }
 stock BeamLight(Float:fOriginStart[3], Float:fOriginEnd[3], sprite, framestart, framerate, life, width, noise, r, g, b, bright, scroll){
-	message_begin(MSG_BROADCAST,SVC_TEMPENTITY) 
-	write_byte(TE_BEAMPOINTS)
-	engfunc(EngFunc_WriteCoord,fOriginStart[0])
-	engfunc(EngFunc_WriteCoord,fOriginStart[1])
-	engfunc(EngFunc_WriteCoord,fOriginStart[2])
-	engfunc(EngFunc_WriteCoord,fOriginEnd[0])
-	engfunc(EngFunc_WriteCoord,fOriginEnd[1])
-	engfunc(EngFunc_WriteCoord,fOriginEnd[2])
-	write_short(sprite)
-	write_byte(framestart)
-	write_byte(framerate)
-	write_byte(life) 
-	write_byte(width) 
-	write_byte(noise)
-	write_byte(r)
-	write_byte(g)
-	write_byte(b)
-	write_byte(bright)
-	write_byte(scroll)
-	message_end()
+	message_begin(MSG_BROADCAST,SVC_TEMPENTITY) ;
+	write_byte(TE_BEAMPOINTS);
+	engfunc(EngFunc_WriteCoord,fOriginStart[0]);
+	engfunc(EngFunc_WriteCoord,fOriginStart[1]);
+	engfunc(EngFunc_WriteCoord,fOriginStart[2]);
+	engfunc(EngFunc_WriteCoord,fOriginEnd[0]);
+	engfunc(EngFunc_WriteCoord,fOriginEnd[1]);
+	engfunc(EngFunc_WriteCoord,fOriginEnd[2]);
+	write_short(sprite);
+	write_byte(framestart);
+	write_byte(framerate);
+	write_byte(life) ;
+	write_byte(width); 
+	write_byte(noise);
+	write_byte(r);
+	write_byte(g);
+	write_byte(b);
+	write_byte(bright);
+	write_byte(scroll);
+	message_end();
 }
 stock Create_TE_PLAYERATTACHMENT(id, entity, vOffset, iSprite, life){
 
@@ -108,23 +108,18 @@ stock Create_TE_PLAYERATTACHMENT(id, entity, vOffset, iSprite, life){
 }
 
 public takeWeapon(id, weaponName[]){
-	if(!equal(weaponName, "weapon_", 7)) 
-		return 0;
+	if(!equal(weaponName, "weapon_", 7))  return 0;
 		
 	new weaponId = get_weaponid(weaponName);
-	if(!weaponId) 
-		return 0;
+	if(!weaponId)  return 0;
 		
 	new ent;
 	while((ent = engfunc(EngFunc_FindEntityByString,ent,"classname", weaponName)) && pev(ent, pev_owner) != id) {}
-	if(!weaponId) 
-		return 0;
+	if(!weaponId)  return 0;
 	
-	if(get_user_weapon(id) == weaponId) 
-		ExecuteHamB(Ham_Weapon_RetireWeapon, ent);
+	if(get_user_weapon(id) == weaponId)  ExecuteHamB(Ham_Weapon_RetireWeapon, ent);
 	
-	if(!ExecuteHamB(Ham_RemovePlayerItem, id, ent)) 
-		return 0;
+	if(!ExecuteHamB(Ham_RemovePlayerItem, id, ent))  return 0;
 	ExecuteHamB(Ham_Item_Kill, ent);
 	
 	set_pev(id, pev_weapons, pev(id, pev_weapons) & ~(1<<weaponId));
@@ -132,14 +127,14 @@ public takeWeapon(id, weaponName[]){
 }
 
 public drawLine(id, Float:fOriginStart[3], Float:fOriginEnd[3],red, green, blue, life, width, noise){
-	message_begin(MSG_ONE,SVC_TEMPENTITY, _, id) 
-	write_byte(TE_BEAMPOINTS)
-	engfunc(EngFunc_WriteCoord,fOriginStart[0])
-	engfunc(EngFunc_WriteCoord,fOriginStart[1])
-	engfunc(EngFunc_WriteCoord,fOriginStart[2])
-	engfunc(EngFunc_WriteCoord,fOriginEnd[0])
-	engfunc(EngFunc_WriteCoord,fOriginEnd[1])
-	engfunc(EngFunc_WriteCoord,fOriginEnd[2])
+	message_begin(MSG_ONE,SVC_TEMPENTITY, _, id) ;
+	write_byte(TE_BEAMPOINTS);
+	engfunc(EngFunc_WriteCoord,fOriginStart[0]);
+	engfunc(EngFunc_WriteCoord,fOriginStart[1]);
+	engfunc(EngFunc_WriteCoord,fOriginStart[2]);
+	engfunc(EngFunc_WriteCoord,fOriginEnd[0]);
+	engfunc(EngFunc_WriteCoord,fOriginEnd[1]);
+	engfunc(EngFunc_WriteCoord,fOriginEnd[2]);
 	write_short(sprite_bluez);
 	write_byte(0);
 	write_byte(25);
@@ -151,7 +146,7 @@ public drawLine(id, Float:fOriginStart[3], Float:fOriginEnd[3],red, green, blue,
 	write_byte(blue);
 	write_byte(255);
 	write_byte(255);
-	message_end()
+	message_end();
 }
 stock showBeam( fOriginStart[3], fOriginEnd[3], sprite, life, width,noise, red,green,blue)
 {
@@ -190,92 +185,100 @@ public refreshStats(id){
 }
 
 stock makeLight(Float:fOrigin[3], radius, r,g,b,life, bright){
-	engfunc(EngFunc_MessageBegin, MSG_PVS, SVC_TEMPENTITY, fOrigin, 0)
-	write_byte(TE_DLIGHT)	
-	engfunc(EngFunc_WriteCoord,fOrigin[0])
-	engfunc(EngFunc_WriteCoord,fOrigin[1])
-	engfunc(EngFunc_WriteCoord,fOrigin[2])					
-	write_byte(radius)	
-	write_byte(r)			//r
-	write_byte(g)			//g
-	write_byte(b)			//b				
-	write_byte(life)		//life		
-	write_byte(bright)		//
-	message_end()
+	engfunc(EngFunc_MessageBegin, MSG_PVS, SVC_TEMPENTITY, fOrigin, 0);
+	write_byte(TE_DLIGHT);
+	engfunc(EngFunc_WriteCoord,fOrigin[0]);
+	engfunc(EngFunc_WriteCoord,fOrigin[1]);
+	engfunc(EngFunc_WriteCoord,fOrigin[2]);					
+	write_byte(radius);	
+	write_byte(r);			//r
+	write_byte(g);			//g
+	write_byte(b);			//b				
+	write_byte(life);		//life		
+	write_byte(bright);		//
+	message_end();
 }
 stock makePou(fOrigin[3], sprite){
-	message_begin(MSG_BROADCAST,SVC_TEMPENTITY, fOrigin, 0)
-	write_byte (TE_SPRITETRAIL)		
+	message_begin(MSG_BROADCAST,SVC_TEMPENTITY, fOrigin, 0);
+	write_byte (TE_SPRITETRAIL);		
 	write_coord(fOrigin[0] -  random(20));
 	write_coord(fOrigin[1]);
 	write_coord(fOrigin[2] - random_num(10,70));
 	write_coord(fOrigin[0]);
 	write_coord(fOrigin[1]);
 	write_coord(fOrigin[2] + random(20));
-	write_short(sprite)
-	write_byte(random_num(5,15)) 
-	write_byte(random_num(1,5))
-	write_byte(random_num(1,2))
-	write_byte(random_num(15,30))
-	write_byte(random(10))
-	message_end()
+	write_short(sprite);
+	write_byte(random_num(5,15)) ;
+	write_byte(random_num(1,5));
+	write_byte(random_num(1,2));
+	write_byte(random_num(15,30));
+	write_byte(random(10));
+	message_end();
 }
 public laserMaker(id, Float:fOrigin[3], sprite, startframe, framerate ,life, size, noise,r , g, b, brightness){
 
-	message_begin(MSG_BROADCAST, SVC_TEMPENTITY)
-	write_byte (TE_BEAMENTPOINT)
-	write_short(id | 0x1000)
-	engfunc(EngFunc_WriteCoord, fOrigin[0])
-	engfunc(EngFunc_WriteCoord, fOrigin[1])
-	engfunc(EngFunc_WriteCoord, fOrigin[2])
-	write_short(sprite)
-	write_byte(startframe) // startframe
-	write_byte(framerate) // framerate 
-	write_byte(life) // life
-	write_byte(size) // wielkoœæ
-	write_byte(noise) // noise
-	write_byte(r)     // Czerwony
-	write_byte(g)  // Zielony
-	write_byte(b) // Niebieski
-	write_byte(brightness) // brightness
-	write_byte(0) // speed
-	message_end()
+	message_begin(MSG_BROADCAST, SVC_TEMPENTITY);
+	write_byte (TE_BEAMENTPOINT);
+	write_short(id | 0x1000);
+	engfunc(EngFunc_WriteCoord, fOrigin[0]);
+	engfunc(EngFunc_WriteCoord, fOrigin[1]);
+	engfunc(EngFunc_WriteCoord, fOrigin[2]);
+	write_short(sprite);
+	write_byte(startframe); // startframe
+	write_byte(framerate); // framerate 
+	write_byte(life); // life
+	write_byte(size); // wielkoœæ
+	write_byte(noise); // noise
+	write_byte(r);     // Czerwony
+	write_byte(g);  // Zielony
+	write_byte(b); // Niebieski
+	write_byte(brightness); // brightness
+	write_byte(0); // speed
+	message_end();
 }
 
 stock Particles(Float:fOrigin[3], Float:randomm, sprite, count, life, scale, velocity, randompart){
-	message_begin(MSG_BROADCAST,SVC_TEMPENTITY)
-	write_byte (15)	// line of moving glow sprites with gravity, fadeout, and collisions			
-	engfunc(EngFunc_WriteCoord,fOrigin[0])
-	engfunc(EngFunc_WriteCoord,fOrigin[1])			
-	engfunc(EngFunc_WriteCoord,fOrigin[2] - random_float(-randomm, randomm))
-	engfunc(EngFunc_WriteCoord,fOrigin[0])			
-	engfunc(EngFunc_WriteCoord,fOrigin[1])
-	engfunc(EngFunc_WriteCoord,fOrigin[2] + random_float(-randomm, randomm))
+	message_begin(MSG_BROADCAST,SVC_TEMPENTITY);
+	write_byte (15);	// line of moving glow sprites with gravity, fadeout, and collisions			
+	engfunc(EngFunc_WriteCoord,fOrigin[0]);
+	engfunc(EngFunc_WriteCoord,fOrigin[1]);		
+	engfunc(EngFunc_WriteCoord,fOrigin[2] - random_float(-randomm, randomm));
+	engfunc(EngFunc_WriteCoord,fOrigin[0]);			
+	engfunc(EngFunc_WriteCoord,fOrigin[1]);
+	engfunc(EngFunc_WriteCoord,fOrigin[2] + random_float(-randomm, randomm));
 	// +random_float(-random, random)
-	write_short(sprite) // (sprite index)
-	write_byte(count) 
-	write_byte(life) // (life in 0.1's) 
-	write_byte(scale) // byte (scale in 0.1's) 
-	write_byte(velocity) // (velocity along vector in 10's)
-	write_byte(randompart) // (randomness of velocity in 10's)
-	message_end()
+	write_short(sprite); // (sprite index)
+	write_byte(count); 
+	write_byte(life); // (life in 0.1's) 
+	write_byte(scale); // byte (scale in 0.1's) 
+	write_byte(velocity); // (velocity along vector in 10's)
+	write_byte(randompart) ;// (randomness of velocity in 10's)
+	message_end();
 }
 
 stock makeTrail(id, sprite, life, widht, r, g, b, bright){	
-	message_begin(MSG_BROADCAST, SVC_TEMPENTITY)
-	write_byte(22)	// TE_BEAMFOLLOW
-	write_short(id)
-	write_short(sprite)
-	write_byte(life)
-	write_byte(widht)
-	write_byte(r)
-	write_byte(g)
-	write_byte(b)
-	write_byte(bright)
-	message_end()
+	message_begin(MSG_BROADCAST, SVC_TEMPENTITY);
+	write_byte(22);	// TE_BEAMFOLLOW
+	write_short(id);
+	write_short(sprite);
+	write_byte(life);
+	write_byte(widht);
+	write_byte(r);
+	write_byte(g);
+	write_byte(b);
+	write_byte(bright);
+	message_end();
 
 }
-
+showMenu(id, keys, const menu[], time_show = 0, const tittle[], vis = 0){
+	
+	new gText[1536], iLen = 0;
+	
+	if(vis) iLen += format(gText[iLen], sizeof(gText)-iLen-1, formatm("%s^n", symbolsCustom[SYMBOL_BB]));
+	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "%s", menu);
+	
+	show_menu(id, keys, gText, time_show, tittle );
+}
 stock Float:distanceToFloor(Float:start[3], ignoremonsters = 1){
 	new Float:dest[3], Float:end[3];
 	dest[0] = start[0];
@@ -301,36 +304,46 @@ stock screenShake(id, amplitude, duration, frequency){
 }
 
 stock setFov(id, value){
-	message_begin( MSG_ONE, get_user_msgid("SetFOV"), { 0, 0, 0 }, id )
-	write_byte( value )
-	message_end( )  
+	if (!is_user_alive(id)) return;
+
+	static msgSetFov;
+
+	if (!msgSetFov) msgSetFov = get_user_msgid("SetFOV");
+	
+	message_begin( MSG_ONE, msgSetFov, { 0, 0, 0 }, id );
+	write_byte( value );
+	message_end( ) ;
 }
 stock createBarText(gText[], iLen, const symbol[], coolDown, seconds=10){
 	new iAmt = max(1, coolDown), timeAdd;
-	while(((iAmt-=seconds)>=(1>>seconds)) && add(gText, iLen, symbol))
+	while(((iAmt-=seconds)>=(1>>seconds)) && add(gText, iLen, symbol));
 		timeAdd++;
 	return timeAdd;
 }
 stock setGlow(id, r,g,b,d){
-	set_rendering(id, kRenderFxGlowShell, 	r,g,b,	kRenderNormal, 	d)
+	if (!is_user_alive(id)) return;
+	
+	set_rendering(id, kRenderFxGlowShell, 	r,g,b,	kRenderNormal, 	d);
 }
 public removeGlow(id){
-	setGlow(id,0,0,0,0)
+	if (!is_user_alive(id)) return;
+	
+	setGlow(id,0,0,0,0);
 }
 stock bool:hasOption(var, option){
 	return !!(var&(1<<option));
 }
 stock addOption(&var, option){
-	var |= (1<<option)
+	var |= (1<<option);
 }
 stock removeOption(&var, option){
-	var &= ~(1<<option)
+	var &= ~(1<<option);
 }
 stock formatNumber(num){
 	
 	
-	new value[16][5]
-	new szVal[32]
+	new value[16][5];
+	new szVal[32];
 	new szNum[32];
 		
 	
@@ -344,20 +357,20 @@ stock formatNumber(num){
 		case 4,5,6:{
 			copy(value[2],	iLen - 3, 	szVal);
 			copy(value[1],	3, 		szVal[iLen - 3]);
-			format(szNum, 	sizeof(szNum), "%s%s.%s",  num < 0 ? "-" : "",value[2], value[1])
+			format(szNum, 	sizeof(szNum), "%s%s.%s",  num < 0 ? "-" : "",value[2], value[1]);
 		}
 		case 7,8,9:{
 			copy(value[3],	iLen - 6, 	szVal);
 			copy(value[2],	3, 		szVal[iLen - 6]);
 			copy(value[1],	3, 		szVal[iLen - 3]);
-			format(szNum, 	sizeof(szNum), "%s%s.%s.%s", num < 0 ? "-" : "",value[3], value[2], value[1])	
+			format(szNum, 	sizeof(szNum), "%s%s.%s.%s", num < 0 ? "-" : "",value[3], value[2], value[1]);	
 		}
 		case 10,11,12:{
 			copy(value[4],	iLen - 9, 	szVal);
 			copy(value[3],	3, 		szVal[iLen - 9]);
 			copy(value[2],	3, 		szVal[iLen - 6]);
 			copy(value[1],	3, 		szVal[iLen - 3]);
-			format(szNum, 	sizeof(szNum), "%s%s.%s.%s.%s",  num < 0 ? "-" : "",value[4], value[3], value[2], value[1])
+			format(szNum, 	sizeof(szNum), "%s%s.%s.%s.%s",  num < 0 ? "-" : "",value[4], value[3], value[2], value[1]);
 		}
 		default: format(szNum, sizeof(szNum), "%s%s", num < 0 ? "-" : "", szVal);
 			

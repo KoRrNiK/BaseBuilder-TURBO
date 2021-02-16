@@ -21,11 +21,11 @@ public plugin_init_sql(){
 	new ipserver[64], host[64], user[64], pass[64], db[64], szIp[33], error[128], errorNum;
 	
 
-	get_cvar_string("bb_sql_host", host, sizeof(host));
-	get_cvar_string("bb_sql_user", user, sizeof(user));
-	get_cvar_string("bb_sql_pass", pass, sizeof(pass));
-	get_cvar_string("bb_sql_db", db, sizeof(db));
-	get_cvar_string("bb_ip_server", ipserver, sizeof(ipserver));
+	get_cvar_string("bb_sql_host", 	host, sizeof(host));
+	get_cvar_string("bb_sql_user", 	user, sizeof(user));
+	get_cvar_string("bb_sql_pass", 	pass, sizeof(pass));
+	get_cvar_string("bb_sql_db", 	db, sizeof(db));
+	get_cvar_string("bb_ip_server", 	ipserver, sizeof(ipserver));
 	
 	get_user_ip(0, szIp, sizeof(szIp));
 		
@@ -169,14 +169,13 @@ public plugin_init_sql(){
 }
 public loadStatsSql(id, typeLoad){
 	
-	if(is_user_hltv(id))
-		return PLUGIN_CONTINUE;
+	if(is_user_hltv(id)) return PLUGIN_CONTINUE;
 		
 	if (!sqlConnected) {
 		log_amx("[SQL-LOG] Brak polaczenia");
 		return PLUGIN_CONTINUE;
 	}
-	new queryData[256]
+	new queryData[256];
 	new tempId[2];
 	
 	tempId[0] = id;
@@ -189,14 +188,14 @@ public loadStatsSql(id, typeLoad){
 			format( queryData, sizeof(queryData), "\
 			SELECT * \
 				FROM `players` \
-				WHERE `name`='%s'", userName[id])
+				WHERE `name`='%s'", userName[id]);
 		}
 		case 1: format(queryData, sizeof(queryData), "\
 			SELECT `name`, `kills`, `deaths`, `points` \
 				FROM `players` \
 				WHERE 1 \
 				ORDER BY `points` \
-				DESC LIMIT 10")
+				DESC LIMIT 10");
 		case 2: format(queryData, sizeof(queryData), "\
 			SELECT rank, count \
 				FROM (SELECT COUNT(*) as count \
@@ -204,20 +203,20 @@ public loadStatsSql(id, typeLoad){
 				CROSS JOIN (SELECT COUNT(*) as rank \
 				FROM `players` \
 				WHERE `points` > '%d' \
-				ORDER BY `points` DESC) b", userPoints[id])
+				ORDER BY `points` DESC) b", userPoints[id]);
 		
 		case 3: format(queryData, sizeof(queryData), "\
 			SELECT `name`, `timePlay` \
 				FROM `players` \
 				WHERE 1 \
 				ORDER BY `timePlay` \
-				DESC LIMIT 10")
+				DESC LIMIT 10");
 		case 4: format(queryData, sizeof(queryData), "\
 			SELECT a.flag, b.*\
 				FROM `players` a \
 				JOIN `clans` b \
 				ON a.clan = b.idclans \
-				WHERE a.name = '%s'", userName[id])
+				WHERE a.name = '%s'", userName[id]);
 		case 5: format(queryData, sizeof(queryData), "\
 			SELECT name, members, kills, level, createDate \
 				FROM `clans` \
@@ -244,57 +243,57 @@ public loadStatsSql(id, typeLoad){
 		case 9: format(queryData, sizeof(queryData), "\
 			SELECT COUNT(*) \
 				FROM `warnings` \
-				WHERE `idplayer`='%d';", userSqlId[id])
+				WHERE `idplayer`='%d';", userSqlId[id]);
 		case 10: format(queryData, sizeof(queryData), "\
 			SELECT `idwarning`, `desc`, `time` \
 				FROM `warnings` \
 				WHERE `idplayer`='%d' \
-				ORDER BY `idwarning` ASC", userSqlId[userWarningInfo[id]])
+				ORDER BY `idwarning` ASC", userSqlId[userWarningInfo[id]]);
 		case 11: format( queryData, sizeof(queryData), "\
 			SELECT * \
 				FROM `classzombies` \
-				WHERE `idplayer`='%d'", userSqlId[id])
+				WHERE `idplayer`='%d'", userSqlId[id]);
 		case 12: format( queryData, sizeof(queryData), "\
 			SELECT * \
 				FROM `classhumans` \
-				WHERE `idplayer`='%d'", userSqlId[id])
+				WHERE `idplayer`='%d'", userSqlId[id]);
 		case 13: format(queryData, sizeof(queryData), "\
 			SELECT `name`, `level`, `xp`, `reset` \
 				FROM `players` \
 				WHERE 1 \
 				ORDER BY `level` DESC, `xp` \
-				DESC LIMIT 10")
+				DESC LIMIT 10");
 		case 14: format(queryData, sizeof(queryData), "\
 			SELECT `classhumans`.*, `playerName`.`name` AS `gracz` \
 				FROM `classhumans` \
 				LEFT JOIN `players` AS `playerName` ON `classhumans`.`idplayer` = `playerName`.`idplayer` \
 				WHERE 1 \
 				ORDER BY `level` DESC, `xp` \
-				DESC LIMIT 10")
+				DESC LIMIT 10");
 		case 15: format(queryData, sizeof(queryData), "\
 			SELECT `name`, `maxDamage` \
 				FROM `players` \
 				WHERE 1 \
 				ORDER BY `maxDamage` \
-				DESC LIMIT 10")
+				DESC LIMIT 10");
 		case 16: format(queryData, sizeof(queryData), "\
 			SELECT rank, count \
 				FROM (SELECT COUNT(*) as count FROM `players`) a \
 				CROSS JOIN (SELECT COUNT(*) as rank \
 				FROM `players` \
 				WHERE `points` > '%d' \
-				ORDER BY `points` DESC) b", userPoints[id])
+				ORDER BY `points` DESC) b", userPoints[id]);
 		case 17: format( queryData, sizeof(queryData), "\
 			SELECT * \
 				FROM `weapons` \
-				WHERE `idplayer`='%d'", userSqlId[id])
+				WHERE `idplayer`='%d'", userSqlId[id]);
 		case 18: format(queryData, sizeof(queryData), "\
 			SELECT `weapons`.*, `playerName`.`name` AS `gracz` \
 				FROM `weapons` \
 				LEFT JOIN `players` AS `playerName` ON `weapons`.`idplayer` = `playerName`.`idplayer` \
 				WHERE 1 \
 				ORDER BY `kills` \
-				DESC LIMIT 10")
+				DESC LIMIT 10");
 	}
 	SQL_ThreadQuery(sql, "loadStatsHandlerSql", queryData, tempId, sizeof(tempId));
 	return PLUGIN_CONTINUE;
@@ -302,8 +301,8 @@ public loadStatsSql(id, typeLoad){
 
 public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[], dataSize){
 	
-	new id = tempId[0]
-	new typeLoad = tempId[1]
+	new id = tempId[0];
+	new typeLoad = tempId[1];
 
 	
 	if (failState){
@@ -319,30 +318,30 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 				format(queryData, sizeof(queryData), "INSERT INTO `players` (`name`, `pass`,`firstlogin`) VALUES ('%s', '_', NOW())",userName[id]);
 				SQL_ThreadQuery(sql, "saveStatsHandlerSql", queryData, tempId, sizeof(tempId));
 				
-				loadStatsSql(id, 0)
+				loadStatsSql(id, 0);
 				
 			} else {
 				
 	
-				userTime[id] = playedTime(id)
+				userTime[id] = playedTime(id);
 				
-				new szPassword[12]
+				new szPassword[12];
 				new szDate[33];
 				
-				userSqlId[id]	=	SQL_ReadResult(query, 0)
+				userSqlId[id]	=	SQL_ReadResult(query, 0);
 				
-				SQL_ReadResult(query, 2, szPassword, sizeof(szPassword)-1)
-				replace_all(szPassword, sizeof(szPassword), " ", "")
+				SQL_ReadResult(query, 2, szPassword, sizeof(szPassword)-1);
+				replace_all(szPassword, sizeof(szPassword), " ", "");
 				
 				
 				new szIp[MAXBITIP], szSid[MAXBITAUTHID];
-				SQL_ReadResult(query, 13, szIp, sizeof(szIp)-1)
-				SQL_ReadResult(query, 14, szSid, sizeof(szSid)-1)
-				userIp[id] 	= 	szIp
-				userSid[id] 	= 	szSid
+				SQL_ReadResult(query, 13, szIp, sizeof(szIp)-1);
+				SQL_ReadResult(query, 14, szSid, sizeof(szSid)-1);
+				userIp[id] 	= 	szIp;
+				userSid[id] 	= 	szSid;
 				
 				if( strlen(szPassword) > 1 ){		
-					copy( userPassword[id], sizeof(userPassword[])-1, szPassword)
+					copy( userPassword[id], sizeof(userPassword[])-1, szPassword);
 						
 				
 					new szSavedIP[MAXBITIP], szSavedSID[MAXBITAUTHID];
@@ -351,70 +350,66 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 					
 					if( equal(szSavedIP, szIp ) && equal(szSavedSID, szSid ) ){	
 						userLogged[id]=true;
-						ColorChat(id, TEAM_COLOR, "%s Zostales zalogowany automatycznie!", PREFIXSAY)
-						
-						
+						ColorChat(id, TEAM_COLOR, "%s Zostales zalogowany automatycznie!", PREFIXSAY);
 					}else{
-						userLogged[id]=false									
+						userLogged[id]=false;								
 					}
 				}else{
-					userLogged[id]=false
+					userLogged[id]=false;
 				}
 				
 		
-				userKills[id] 	=  	SQL_ReadResult(query, 3)
-				userDeaths[id] 	=  	SQL_ReadResult(query, 4)
-				userPoints[id] 	=  	SQL_ReadResult(query, 5)
+				userKills[id] 	=  	SQL_ReadResult(query, 3);
+				userDeaths[id] 	=  	SQL_ReadResult(query, 4);
+				userPoints[id] 	=  	SQL_ReadResult(query, 5);
 			
 				
-				userTime[id] 	=  	SQL_ReadResult(query, 6)
+				userTime[id] 	=  	SQL_ReadResult(query, 6);
 				
 				
-				SQL_ReadResult(query, 7, szDate, sizeof(szDate)-1)
-				userFirstLogin[id] = szDate
+				SQL_ReadResult(query, 7, szDate, sizeof(szDate)-1);
+				userFirstLogin[id] = szDate;
 				
-				userMaxDmg[id] 	=  	SQL_ReadResult(query, 9)
+				userMaxDmg[id] 	=  	SQL_ReadResult(query, 9);
 
 				
-				userNugget[id] 	=  	SQL_ReadResult(query, 15)
-				userBone[id] 	=  	SQL_ReadResult(query, 16)
+				userNugget[id] 	=  	SQL_ReadResult(query, 15);
+				userBone[id] 	=  	SQL_ReadResult(query, 16);
 				
 				
-				userLevel[id]	=	SQL_ReadResult(query, 17)
+				userLevel[id]	=	SQL_ReadResult(query, 17);
 				new Float:XP;
-				SQL_ReadResult(query, 18, XP)
+				SQL_ReadResult(query, 18, XP);
 				
-				userReset[id] 	=	SQL_ReadResult(query, 19)
+				userReset[id] 	=	SQL_ReadResult(query, 19);
 				
-				userExp[id]	= 	XP
+				userExp[id]	= 	XP;
 				
-				refreshStats(id)
+				refreshStats(id);
 				userLoaded[id] = true;
 				
 				saveStatsSql(id, 0);
 				
-				fVaultLoad(id)	
+				fVaultLoad(id);
 				
-				loadStatsSql(id, 4)		// KLANY
-				loadStatsSql(id, 9)		// OSTRZEZENIA
-				loadStatsSql(id, 11)		// KLASY ZOMBIE
-				loadStatsSql(id, 12)		// KLASY LUDZI
-				loadStatsSql(id, 17)		// BRONIE 
+				loadStatsSql(id, 4);		// KLANY
+				loadStatsSql(id, 9);		// OSTRZEZENIA
+				loadStatsSql(id, 11);		// KLASY ZOMBIE
+				loadStatsSql(id, 12);		// KLASY LUDZI
+				loadStatsSql(id, 17);		// BRONIE 
 				
 				if(superAdminLocalhost) addFlags(id);
 			}
 			
 		}
 		case 1:{
-			new iStats[3], szName[33];		
-			new gText[2048], iLen=0, top=0;
+			static iStats[3], szName[33];		
+			static gText[2048], iLen, top;
 	
-	
-	
-			new sizeText = sizeof(gText)-iLen-1;
+			top=0;
 	
 
-			iLen += format(gText[iLen], sizeText, "<head><link href=^"https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700^" rel=^"stylesheet^"></head>");
+			iLen = format(gText[iLen], sizeof(gText)-iLen-1, "<head><link href=^"https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700^" rel=^"stylesheet^"></head>");
 			
 			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<style type=^"text/css^">\
 									*{ font-size: 15px; font-family: Montserrat; color: white; text-align: center; padding: 0; margin: 0;}\
@@ -422,16 +417,16 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 									b{color:%s; text-shadow: 0 0 5px %s;}\
 								</style>",accentMotdColor,accentMotdColor,accentMotdColor);
 			
-			iLen += format(gText[iLen], sizeText, "<p>TOP 10 graczy!</p><hr size=1 color=%s>",accentMotdColor)
+			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<p>TOP 10 graczy!</p><hr size=1 color=%s>",accentMotdColor);
 				
-			iLen += format(gText[iLen], sizeText, "<table style=^"margin-top: 20px;margin-left: auto;margin-right: auto;width:710%^">");	
-			iLen += format(gText[iLen], sizeText, "<tr><td><b>#</b></td><td><b>Nazwa</b></td><td><b>Zabici</b></td><td><b>Zgony</b></td><td><b>Punkty</b></td><td><b>Stosunek</b></td></tr></br>");
+			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<table style=^"margin-top: 20px;margin-left: auto;margin-right: auto;width:710%^">");	
+			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<tr><td><b>#</b></td><td><b>Nazwa</b></td><td><b>Zabici</b></td><td><b>Zgony</b></td><td><b>Punkty</b></td><td><b>Stosunek</b></td></tr></br>");
 			
 			
 			while(SQL_MoreResults(query)){	
 				top ++;
 							
-				SQL_ReadResult(query, 0, szName, sizeof(szName))
+				SQL_ReadResult(query, 0, szName, sizeof(szName));
 				
 				replace_all(szName, sizeof(szName), "<", "");
 				replace_all(szName, sizeof(szName), ">", "");
@@ -441,33 +436,33 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 				
 				
 				
-				new Float:deathToKills;
-				deathToKills=float(iStats[0])/float(iStats[1])	
+				static Float:deathToKills;
+				deathToKills=float(iStats[0])/float(iStats[1]);
 				
 				if(iStats[2] > 0 )
-				iLen += format(gText[iLen], sizeText, "<tr><td>%d</td><td>%s</td><td>%d</td><td>%d</td><td>%d</td><td>%0.2f</td></tr>",top, szName,iStats[0],iStats[1],iStats[2], deathToKills)
+				iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<tr><td>%d</td><td>%s</td><td>%d</td><td>%d</td><td>%d</td><td>%0.2f</td></tr>",top, szName,iStats[0],iStats[1],iStats[2], deathToKills);
 				
-				SQL_NextRow(query)	
+				SQL_NextRow(query);	
 				
 			}
-			iLen += format(gText[iLen], sizeText, "</table>")
-			show_motd(id, gText, "Top 10 Graczy")
+			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "</table>");
+			show_motd(id, gText, "Top 10 Graczy");
 
 		}
 		case 2:{
-			new rank, count;
+			static rank, count;
 			rank = SQL_ReadResult(query, SQL_FieldNameToNum(query, "rank")) + 1;
 			count = SQL_ReadResult(query, SQL_FieldNameToNum(query, "count")); 
     
-			ColorChat(id, GREEN, "---^x01 Twoj ranking:^x03 %d/%d^x04 |^x01 Twoje punkty:^x03 %d^x04 |^x01 Kile:^x03 %d^x04 /^x01 Dedy:^x03 %d^x04 ---",rank,count,  userPoints[id] ,userKills[id], userDeaths[id] )	
+			ColorChat(id, GREEN, "---^x01 Twoj ranking:^x03 %d/%d^x04 |^x01 Twoje punkty:^x03 %d^x04 |^x01 Kile:^x03 %d^x04 /^x01 Dedy:^x03 %d^x04 ---",rank,count,  userPoints[id] ,userKills[id], userDeaths[id] );
 		}
 		case 3:{
-			new szTime, szName[33];		
-			new gText[2048], iLen=0, top=0;
+			static szTime, szName[33];		
+			static gText[2048], iLen, top;
 	
-			new sizeText = sizeof(gText)-iLen-1;
-
-			iLen += format(gText[iLen], sizeText, "<head><link href=^"https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700^" rel=^"stylesheet^"></head>");
+			top=0;
+			
+			iLen = format(gText[iLen], sizeof(gText)-iLen-1, "<head><link href=^"https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700^" rel=^"stylesheet^"></head>");
 			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<style type=^"text/css^">\
 									*{ font-size: 15px; font-family: Montserrat; color: white; text-align: center; padding: 0; margin: 0;}\
 									body{border: 1px solid %s; background: #111}\
@@ -478,14 +473,14 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<p><b>%d</b> godz <b>%s%d</b> min<b> %s%d</b> sek</p>",playedTime(id)/HOUR, (playedTime(id)/MINUTE)<10?"0":"",playedTime(id)/MINUTE%MINUTE, playedTime(id)%MINUTE<10?"0":"", playedTime(id)%MINUTE);
 			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<hr size=1 color=%s>", accentMotdColor);
 			
-			iLen += format(gText[iLen], sizeText, "<p>TOP 10 graczy!</p><hr size=1 color=%s>", accentMotdColor)
-			iLen += format(gText[iLen], sizeText, "<table style=^"margin-top: 20px;margin-left: auto;margin-right: auto;width:710%^">");	
-			iLen += format(gText[iLen], sizeText, "<tr><td><b>#</b></td><td><b>Nazwa</b></td><td><b>Czas</b></td></tr></br>");
+			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<p>TOP 10 graczy!</p><hr size=1 color=%s>", accentMotdColor);
+			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<table style=^"margin-top: 20px;margin-left: auto;margin-right: auto;width:710%^">");	
+			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<tr><td><b>#</b></td><td><b>Nazwa</b></td><td><b>Czas</b></td></tr></br>");
 			
 			while(SQL_MoreResults(query)){	
 				top ++;
 							
-				SQL_ReadResult(query, 0, szName, sizeof(szName))
+				SQL_ReadResult(query, 0, szName, sizeof(szName));
 
 				szTime = SQL_ReadResult(query, 1); 	
 				
@@ -494,17 +489,14 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 				replace_all(szName, sizeof(szName), "%", "%%");	
 				
 				if(szTime > 0)
-				iLen += format(gText[iLen], sizeText, "<tr><td>%d</td><td>%s</td><td>%d<b> godz</b> %s%d<b> min</b> %s%d<b> sek</b></td></tr>",top, szName,szTime/HOUR, (szTime/MINUTE)<10?"0":"",szTime/MINUTE%MINUTE,szTime%MINUTE<10?"0":"", szTime%MINUTE)
+				iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<tr><td>%d</td><td>%s</td><td>%d<b> godz</b> %s%d<b> min</b> %s%d<b> sek</b></td></tr>",top, szName,szTime/HOUR, (szTime/MINUTE)<10?"0":"",szTime/MINUTE%MINUTE,szTime%MINUTE<10?"0":"", szTime%MINUTE);
 				
-				
-				
-				
-				SQL_NextRow(query)	
+				SQL_NextRow(query);
 				
 			}
-			iLen += format(gText[iLen], sizeText, "</table>")
+			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "</table>");
 			
-			show_motd(id, gText, "Info Czasu")
+			show_motd(id, gText, "Info Czasu");
 
 		}
 		case 4:{
@@ -553,72 +545,75 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 			}
 		}
 		case 5:{
-			new clanName[64], members, kills, level, dateCreate[64];		
-			new gText[2048], iLen=0, top=0;
+			static clanName[64], members, kills, level, dateCreate[64];		
+			static gText[2048], iLen, top;
 			
-			new sizeText = sizeof(gText)-iLen-1;
+			clanName = "", dateCreate = "";
+			top=0;
 			
 			
-			iLen += format(gText[iLen], sizeText, "<head><link href=^"https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700^" rel=^"stylesheet^"></head>");
-			iLen += format(gText[iLen], sizeText, "\
+			
+			iLen = format(gText[iLen], sizeof(gText)-iLen-1, "<head><link href=^"https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700^" rel=^"stylesheet^"></head>");
+			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\
 							<style>\
 									*{ font-size: 16px; font-family: Montserrat; color: white; text-align: center; padding: 0; margin: 0;}\
 									body{border: 1px solid %s; background: #111}\
 									b{color:%s; text-shadow: 0 0 5px %s;}\
 							</style>",accentMotdColor,accentMotdColor,accentMotdColor);		
 											
-			iLen += format(gText[iLen], sizeText, "<p>Top 10 Klanow!</p><hr size=1 color=%s>",accentMotdColor)
-			iLen += format(gText[iLen], sizeText, "<table style=^"margin-top: 20px;margin-left: auto;margin-right: auto;width:710%^">");	
-			iLen += format(gText[iLen], sizeText, "<tr><td><b>#</b></td><td><b>Nazwa</b></td><td><b>Czlonkowie</b></td><td><b>Poziom</b></td><td><b>Zabojstwa</b></td><td><b>Data Zalozenia</b></td></tr></br>");
+			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<p>Top 10 Klanow!</p><hr size=1 color=%s>",accentMotdColor);
+			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<table style=^"margin-top: 20px;margin-left: auto;margin-right: auto;width:710%^">");	
+			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<tr><td><b>#</b></td><td><b>Nazwa</b></td><td><b>Czlonkowie</b></td><td><b>Poziom</b></td><td><b>Zabojstwa</b></td><td><b>Data Zalozenia</b></td></tr></br>");
 					
 					
 			while(SQL_MoreResults(query)){	
 				top ++;
 									
-				SQL_ReadResult(query, 0, clanName, sizeof(clanName))
+				SQL_ReadResult(query, 0, clanName, sizeof(clanName));
 				
 				members = SQL_ReadResult(query, 1);
 				kills = SQL_ReadResult(query, 2);
 				level = SQL_ReadResult(query, 3);
 				
-				SQL_ReadResult(query, 4, dateCreate, sizeof(dateCreate))
+				SQL_ReadResult(query, 4, dateCreate, sizeof(dateCreate));
 				
 				
 				replace_all(clanName, sizeof(clanName), "<", "");
 				replace_all(clanName, sizeof(clanName), ">", "");
 				replace_all(clanName, sizeof(clanName), "%", "%%");	
 							
-				iLen += format(gText[iLen], sizeText, "<tr><td>%d</td><td>%s</td><td>%d</td><td>%d</td><td>%d</td><td>%s</td></tr>",top, clanName, members, level, kills, dateCreate)
+				iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<tr><td>%d</td><td>%s</td><td>%d</td><td>%d</td><td>%d</td><td>%s</td></tr>",top, clanName, members, level, kills, dateCreate);
 						
-				SQL_NextRow(query)	
+				SQL_NextRow(query);
 					
 			}
-			iLen += format(gText[iLen], sizeText, "</table>")
-			show_motd(id, gText, "Top 10 Klanow")	
+			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "</table>");
+			show_motd(id, gText, "Top 10 Klanow");
 		}
 		case 6:{
-			new nugget, szName[33];		
-			new gText[2048], iLen=0, top=0;
+			static nugget, szName[33];		
+			static gText[2048], iLen, top;
 			
-			new sizeText = sizeof(gText)-iLen-1;
+			top=0;
 			
-			iLen += format(gText[iLen], sizeText, "<head><link href=^"https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700^" rel=^"stylesheet^"></head>");
-			iLen += format(gText[iLen], sizeText, "\
+			
+			iLen = format(gText[iLen], sizeof(gText)-iLen-1, "<head><link href=^"https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700^" rel=^"stylesheet^"></head>");
+			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\
 							<style>\
 									*{ font-size: 16px; font-family: Montserrat; color: white; text-align: center; padding: 0; margin: 0;}\
 									body{border: 1px solid %s; background: #111}\
 									b{color:%s; text-shadow: 0 0 5px %s;}\
 							</style>",accentMotdColor,accentMotdColor,accentMotdColor);		
 											
-			iLen += format(gText[iLen], sizeText, "<p>Lista Wplacajacych!</p><hr size=1 color=%s>",accentMotdColor)
-			iLen += format(gText[iLen], sizeText, "<table style=^"margin-top: 20px;margin-left: auto;margin-right: auto;width:710%^">");
-			iLen += format(gText[iLen], sizeText, "<tr><td><b>#</b></td><td><b>Nazwa</b></td><td><b>Brylki</b></td></tr></br>");
+			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<p>Lista Wplacajacych!</p><hr size=1 color=%s>",accentMotdColor);
+			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<table style=^"margin-top: 20px;margin-left: auto;margin-right: auto;width:710%^">");
+			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<tr><td><b>#</b></td><td><b>Nazwa</b></td><td><b>Brylki</b></td></tr></br>");
 					
 					
 			while(SQL_MoreResults(query)){	
 				top ++;
 									
-				SQL_ReadResult(query, 0, szName, sizeof(szName))
+				SQL_ReadResult(query, 0, szName, sizeof(szName));
 				
 				nugget = SQL_ReadResult(query, 1);
 				
@@ -626,16 +621,18 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 				replace_all(szName, sizeof(szName), ">", "");
 				replace_all(szName, sizeof(szName), "%", "%%");	
 							
-				iLen += format(gText[iLen], sizeText, "<tr><td>%d</td><td>%s</td><td>%s</td></tr>",top, szName,formatNumber(nugget))
+				iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<tr><td>%d</td><td>%s</td><td>%s</td></tr>",top, szName,formatNumber(nugget));
 						
-				SQL_NextRow(query)	
+				SQL_NextRow(query);	
 					
 			}
-			iLen += format(gText[iLen], sizeText, "</table>")
-			show_motd(id, gText, "Lista Wplacajacych")	
+			iLen += format(gText[iLen], sizeof(gText)-iLen-1, "</table>");
+			show_motd(id, gText, "Lista Wplacajacych");
 		}
 		case 7:{
-			new gText[128], clanName[33], szName[33], count = 0
+			static gText[128], clanName[33], szName[33], count;
+			clanName = "", count = 0;
+			
 			format(gText, sizeof(gText), "\r[BaseBuilder]\y Lista Klanow!\d ");
 			new menu = menu_create(gText, "listClanMenu_2");
 		
@@ -649,11 +646,8 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 				menu_additem(menu, gText );
 		
 				userViewClan[id][count++] = SQL_ReadResult(query, SQL_FieldNameToNum(query, "idclan"));
-	
 		
 				SQL_NextRow(query);
-		
-				
 			}
 		
 			menu_setprop(menu, MPROP_BACKNAME, "Poprzednie");
@@ -662,7 +656,6 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 		
 			if (!count) {
 				menu_destroy(menu);
-		
 				ColorChat(id, GREEN,"%s Nie ma zadnego klanu!", PREFIXSAY);
 			} else menu_display(id, menu, 0);
 		}
@@ -695,9 +688,7 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 		}
 		
 		case 9:{
-		
 			userWarningAmount[id] = SQL_ReadResult(query, 0);
-			
 		}
 		case 10:{
 			new target = userWarningInfo[id];
@@ -725,7 +716,7 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 				else menu_additem(menu, formatm("\d%s\w |\y %s", szInfo[0], szInfo[1]));
 					
 				
-				userWarningMenu[id][count++] = SQL_ReadResult(query, 0)
+				userWarningMenu[id][count++] = SQL_ReadResult(query, 0);
 				
 				SQL_NextRow(query);
 				
@@ -738,7 +729,7 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 			
 			if(!count) {
 				menu_destroy(menu);
-				warningInfo(id)
+				warningInfo(id);
 				ColorChat(id, GREEN, "---^x01 Gracz nie posiada rzadnych ostrzezen!^x04 ---");
 			} else menu_display(id, menu, 0 );
 			
@@ -769,7 +760,7 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 			
 				userHumanLevel[id][class] = SQL_ReadResult(query, 2);
 				SQL_ReadResult(query, 3, XP);
-				userExpClass[id][class] = XP
+				userExpClass[id][class] = XP;
 				
 				SQL_NextRow(query);
 					
@@ -790,7 +781,7 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 									b{color:%s; text-shadow: 0 0 5px %s;}\
 							</style>",accentMotdColor,accentMotdColor,accentMotdColor);		
 											
-			iLen += format(gText[iLen], sizeText, "<p>TOP 10 najwiekszych poziomow Postaci!</p><hr size=1 color=%s>",accentMotdColor)
+			iLen += format(gText[iLen], sizeText, "<p>TOP 10 najwiekszych poziomow Postaci!</p><hr size=1 color=%s>",accentMotdColor);
 			iLen += format(gText[iLen], sizeText, "<table style=^"margin-top: 20px;margin-left: auto;margin-right: auto;width:710%^">");	
 			iLen += format(gText[iLen], sizeText, "<tr><td><b>#</b></td><td><b>Nazwa</b></td><td><b>Poziom</b></td><td><b>XP</b></td></tr></br>");
 					
@@ -798,7 +789,7 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 			while(SQL_MoreResults(query)){	
 				top ++;
 									
-				SQL_ReadResult(query, 0, szName, sizeof(szName))
+				SQL_ReadResult(query, 0, szName, sizeof(szName));
 				level = SQL_ReadResult(query, 1);
 				SQL_ReadResult(query, 2, exp);
 				reset = SQL_ReadResult(query, 3);
@@ -807,13 +798,13 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 				replace_all(szName, sizeof(szName), ">", "");
 				replace_all(szName, sizeof(szName), "%", "%%");	
 							
-				iLen += format(gText[iLen], sizeText, "<tr><td>%d</td><td>%s</td><td>%d</td><td>%0.2f %%</td></tr>",top, szName,level, (exp*100.0/float(level * 45 + 45 * reset)))
+				iLen += format(gText[iLen], sizeText, "<tr><td>%d</td><td>%s</td><td>%d</td><td>%0.2f %%</td></tr>",top, szName,level, (exp*100.0/float(level * 45 + 45 * reset)));
 						
-				SQL_NextRow(query)	
+				SQL_NextRow(query);	
 					
 			}
-			iLen += format(gText[iLen], sizeText, "</table>")
-			show_motd(id, gText, "Top 10 Postaci")	
+			iLen += format(gText[iLen], sizeText, "</table>");
+			show_motd(id, gText, "Top 10 Postaci");
 		}
 		case 14:{
 			
@@ -830,7 +821,7 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 									b{color:%s; text-shadow: 0 0 5px %s;}\
 							</style>",accentMotdColor,accentMotdColor,accentMotdColor);		
 											
-			iLen += format(gText[iLen], sizeText, "<p>TOP 10 najwiekszych poziomow Klas!</p><hr size=1 color=%s>",accentMotdColor)
+			iLen += format(gText[iLen], sizeText, "<p>TOP 10 najwiekszych poziomow Klas!</p><hr size=1 color=%s>",accentMotdColor);
 			iLen += format(gText[iLen], sizeText, "<table style=^"margin-top: 20px;margin-left: auto;margin-right: auto;width:710%^">");	
 			iLen += format(gText[iLen], sizeText, "<tr><td><b>#</b></td><td><b>Nazwa</b></td><td><b>Klasa</b></td><td><b>Poziom</b></td><td><b>XP</b></td></tr></br>");
 					
@@ -838,7 +829,7 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 			while(SQL_MoreResults(query)){	
 				top ++;
 									
-				SQL_ReadResult(query, SQL_FieldNameToNum(query, "gracz"), szName, sizeof(szName))
+				SQL_ReadResult(query, SQL_FieldNameToNum(query, "gracz"), szName, sizeof(szName));
 				SQL_ReadResult(query, SQL_FieldNameToNum(query, "xp"), exp);
 				idclass	= 	SQL_ReadResult(query, SQL_FieldNameToNum(query, "idclass"));
 				level 	= 	SQL_ReadResult(query, SQL_FieldNameToNum(query, "level"));
@@ -848,13 +839,13 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 				replace_all(szName, sizeof(szName), "%", "%%");	
 							
 			
-				iLen += format(gText[iLen], sizeText, "<tr><td>%d</td><td>%s</td><td>%s</td><td>%d</td><td>%0.2f %%</td></tr>",top, szName,classesHuman[idclass][0],level, (exp*100.0/float(level * 45)))
+				iLen += format(gText[iLen], sizeText, "<tr><td>%d</td><td>%s</td><td>%s</td><td>%d</td><td>%0.2f %%</td></tr>",top, szName,classesHuman[idclass][0],level, (exp*100.0/float(level * 45)));
 						
-				SQL_NextRow(query)	
+				SQL_NextRow(query);	
 					
 			}
-			iLen += format(gText[iLen], sizeText, "</table>")
-			show_motd(id, gText, "Top 10 Klas")	
+			iLen += format(gText[iLen], sizeText, "</table>");
+			show_motd(id, gText, "Top 10 Klas");
 		}
 		case 15:{
 			
@@ -871,7 +862,7 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 									b{color:%s; text-shadow: 0 0 5px %s;}\
 							</style>",accentMotdColor,accentMotdColor,accentMotdColor);		
 											
-			iLen += format(gText[iLen], sizeText, "<p>TOP 10 najwiekszych Obrazen!</p><hr size=1 color=%s>",accentMotdColor)
+			iLen += format(gText[iLen], sizeText, "<p>TOP 10 najwiekszych Obrazen!</p><hr size=1 color=%s>",accentMotdColor);
 			iLen += format(gText[iLen], sizeText, "<table style=^"margin-top: 20px;margin-left: auto;margin-right: auto;width:710%^">");
 			iLen += format(gText[iLen], sizeText, "<tr><td><b>#</b></td><td><b>Nazwa</b></td><td><b>Obrazenia</b></td></tr></br>");
 					
@@ -879,7 +870,7 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 			while(SQL_MoreResults(query)){	
 				top ++;
 									
-				SQL_ReadResult(query, 0, szName, sizeof(szName))
+				SQL_ReadResult(query, 0, szName, sizeof(szName));
 				maxdmg = SQL_ReadResult(query, 1);
 				
 				replace_all(szName, sizeof(szName), "<", "");
@@ -891,8 +882,8 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 				SQL_NextRow(query);	
 					
 			}
-			iLen += format(gText[iLen], sizeText, "</table>")
-			show_motd(id, gText, "Top 10 Obrazen")	
+			iLen += format(gText[iLen], sizeText, "</table>");
+			show_motd(id, gText, "Top 10 Obrazen");
 		}
 		case 16:{
 
@@ -924,13 +915,11 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 				
 				new weapon = SQL_ReadResult(query, 1);
 				
-				
-					
 				userWeaponKill[id][weapon] = SQL_ReadResult(query, 3);
 				userWeaponHs[id][weapon] = SQL_ReadResult(query, 4);
 				userWeaponLevel[id][weapon] = SQL_ReadResult(query, 5);
 				SQL_ReadResult(query, 6, DAMAGE);
-				userWeaponDamage[id][weapon] = DAMAGE
+				userWeaponDamage[id][weapon] = DAMAGE;
 					
 				
 				SQL_NextRow(query);
@@ -954,7 +943,7 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 									b{color:%s; text-shadow: 0 0 5px %s;}\
 							</style>",accentMotdColor,accentMotdColor,accentMotdColor);		
 											
-			iLen += format(gText[iLen], sizeText, "<p>TOP 10 Zabojst Bronia!</p><hr size=1 color=%s>",accentMotdColor)
+			iLen += format(gText[iLen], sizeText, "<p>TOP 10 Zabojst Bronia!</p><hr size=1 color=%s>",accentMotdColor);
 			iLen += format(gText[iLen], sizeText, "<table style=^"margin-top: 20px;margin-left: auto;margin-right: auto;width:710%^">");
 			iLen += format(gText[iLen], sizeText, "<tr><td><b>#</b></td><td><b>Nazwa</b></td><td><b>Bron</b></td><td><b>Zabojstwa</b></td><td><b>Hs</b></td></tr></br>");
 					
@@ -962,14 +951,14 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 			while(SQL_MoreResults(query)){	
 				top ++;
 									
-				SQL_ReadResult(query, SQL_FieldNameToNum(query, "gracz"), szName, sizeof(szName))
-				SQL_ReadResult(query, SQL_FieldNameToNum(query, "nameweapon"), szWeapon, sizeof(szWeapon))
+				SQL_ReadResult(query, SQL_FieldNameToNum(query, "gracz"), szName, sizeof(szName));
+				SQL_ReadResult(query, SQL_FieldNameToNum(query, "nameweapon"), szWeapon, sizeof(szWeapon));
 				kills	= 	SQL_ReadResult(query, SQL_FieldNameToNum(query, "kills"));
 				hs	= 	SQL_ReadResult(query, SQL_FieldNameToNum(query, "hs"));
 				
 				
 				new Float:hsToKills;
-				hsToKills=float(hs)/float(kills)	
+				hsToKills=float(hs)/float(kills);	
 				
 				replace_all(szName, sizeof(szName), "<", "");
 				replace_all(szName, sizeof(szName), ">", "");
@@ -980,8 +969,8 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 				SQL_NextRow(query);	
 					
 			}
-			iLen += format(gText[iLen], sizeText, "</table>")
-			show_motd(id, gText, "TOP 10 Zabojst Bronia")	
+			iLen += format(gText[iLen], sizeText, "</table>");
+			show_motd(id, gText, "TOP 10 Zabojst Bronia");
 		}
 		default:{ }
 	}
@@ -993,22 +982,20 @@ public topMenu_2(id, menu, item){
 		return;
 	}
 	switch(item){
-		case 0: loadStatsSql(id, 2)
-		case 1: loadStatsSql(id, 1)
-		case 2: loadStatsSql(id, 3)
-		case 3: loadStatsSql(id, 13)
-		case 4: loadStatsSql(id, 14)
-		case 5: loadStatsSql(id, 15)
+		case 0: loadStatsSql(id, 2);
+		case 1: loadStatsSql(id, 1);
+		case 2: loadStatsSql(id, 3);
+		case 3: loadStatsSql(id, 13);
+		case 4: loadStatsSql(id, 14);
+		case 5: loadStatsSql(id, 15);
 		case 6: loadStatsSql(id,5);
 		case 7: loadStatsSql(id,18);
 	}
-	loadStatsSql(id, 16)
+	loadStatsSql(id, 16);
 }
 public saveStatsSql(id, typeSave){
 	
-	if(is_user_hltv(id))
-		return PLUGIN_CONTINUE;
-	
+	if(is_user_hltv(id)) return PLUGIN_CONTINUE;
 	if(!sqlConnected) return PLUGIN_CONTINUE;
 	if(!userLoaded[id]) return PLUGIN_CONTINUE;
 	
@@ -1057,9 +1044,7 @@ public saveStatsSql(id, typeSave){
 }
 public saveInsert(id, typeSave, typeSlot){
 	
-	if(is_user_hltv(id))
-		return PLUGIN_CONTINUE;
-	
+	if(is_user_hltv(id)) return PLUGIN_CONTINUE;
 	if(!sqlConnected) return PLUGIN_CONTINUE;
 	if(!userLoaded[id]) return PLUGIN_CONTINUE;
 	
@@ -1103,7 +1088,7 @@ public saveInsert(id, typeSave, typeSlot){
 			SQL_ThreadQuery(sql, "saveStatsHandlerSql", queryData, tempId, sizeof(tempId));
 			
 		}
-		default:{}
+		default:{ return PLUGIN_CONTINUE; }
 	}
 	return PLUGIN_CONTINUE;
 
@@ -1135,13 +1120,14 @@ public save_clan(clan){
 
 public mysqlSave(id){
 	
+	if(is_user_hltv(id)) return PLUGIN_CONTINUE;
 	if(!sqlConnected) return PLUGIN_CONTINUE;
 	if(!userLoaded[id]) return PLUGIN_CONTINUE;
 	
 	for(new i = 0; i < 5; i++) saveStatsSql(id, i);
 	
-	saveInsert(id, 0, 0)
-	saveInsert(id, 2, userWeaponSelect[id])
+	saveInsert(id, 0, 0);
+	saveInsert(id, 2, userWeaponSelect[id]);
 
 	userLoaded[id] = false;
 	userLogged[id] = false;
