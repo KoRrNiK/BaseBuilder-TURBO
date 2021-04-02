@@ -49,37 +49,37 @@ public happyMenu_2(id, menu, item){
 		case 0:{
 			hourTime =! hourTime;
 			randomHappyHour = random(happy_TOTAL);
-			ColorChat(0, GREEN, "---^x01 Admin^x03 %s^x01 %s^x03 HappyTime^x04 ---", userName[id], hourTime ? "wlaczy" : "wylaczyl" );
+			chatPrint(0, PREFIX_LINE, "Admin^3 %s^1 %s^3 HappyTime", userName[id], hourTime ? "wlaczy" : "wylaczyl" );
 			happyMenu(id);
 		}
 		case 1:{
 			if(!hourTime){
-				ColorChat(id, GREEN, "---^x01 Wlacz najpierw HappyTime^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Wlacz najpierw HappyTime");
 				happyMenu(id);
 				return;
 			}
 			new randomHappy = random(happy_TOTAL);
 			
-			ColorChat(0, GREEN, "---^x01 Admin^x03 %s^x01 zmienil^x03 HappyTime^x04 ---", userName[id]);
-			ColorChat(0, GREEN, "---^x01 Teraz jest:^x03 %s^x04 ---", happyHourDesc[randomHappy][0]);
+			chatPrint(0, PREFIX_LINE, "Admin^3 %s^1 zmienil^3 HappyTime", userName[id]);
+			chatPrint(0, PREFIX_LINE, "Teraz jest:^3 %s", happyHourDesc[randomHappy][0]);
 			
 			randomHappyHour = randomHappy;
 			happyMenu(id);
 		}
 		default:{
 			if(!hourTime){
-				ColorChat(id, GREEN, "---^x01 Wlacz najpierw HappyTime^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Wlacz najpierw HappyTime");
 				happyMenu(id);
 				return;
 			}
 			if(randomHappyHour == item-2){
-				ColorChat(id, GREEN, "---^x01 Juz jest wlaczone!^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Juz jest wlaczone!");
 				happyMenu(id);
 				return;
 			}
 			randomHappyHour = item-2;
-			ColorChat(0, GREEN, "---^x01 Admin^x03 %s^x01 wlaczyl^x03 HappyTime^x04 ---", userName[id]);
-			ColorChat(0, GREEN, "---^x01 Teraz jest:^x03 %s^x04 ---", happyHourDesc[item-2][0]);
+			chatPrint(0, PREFIX_LINE, "Admin^3 %s^1 wlaczyl^3 HappyTime", userName[id]);
+			chatPrint(0, PREFIX_LINE, "Teraz jest:^3 %s", happyHourDesc[item-2][0]);
 			happyMenu(id);
 		}
 	}

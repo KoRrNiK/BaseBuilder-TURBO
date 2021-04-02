@@ -35,16 +35,16 @@ public shopBuilder_2(id, menu, item){
 		return PLUGIN_CONTINUE;
 	}
 	if(buildTime  || roundEnd || !gameTime ){
-		ColorChat(id, GREEN, "%s Za wczesnie na to!", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Za wczesnie na to!");
 		return PLUGIN_CONTINUE;
 	}
 	if( !is_user_alive(id) ){
-		ColorChat(id, TEAM_COLOR, "%s Nie zyjesz!", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Nie zyjesz!");
 		shopGlobalMenu(id);
 		return PLUGIN_CONTINUE;
 	}
 	if( get_user_team(id) != 2 ){
-		ColorChat(id, GREEN,"---^x01 Twoja druzyna sie zmienila! ^x04 ---");
+		chatPrint(id, PREFIX_LINE, "Twoja druzyna sie zmienila! ");
 		shopGlobalMenu(id);
 		return PLUGIN_CONTINUE;	
 	}
@@ -54,18 +54,18 @@ public shopBuilder_2(id, menu, item){
 	get_user_weapons(id, weapons, num);
 
 	if(userNugget[id] < cost){
-		ColorChat(id, GREEN, "%s Nie posiadasz wystarczajacej ilosci Brylek!", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Nie posiadasz wystarczajacej ilosci Brylek!");
 		return PLUGIN_CONTINUE;
 	}
 	if(userShopBuilder[id][item] >= str_to_num(shopDescBuilder[item][2])){
-		ColorChat(id, GREEN, "%s Kupiles juz wszystkie na ta runde!", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Kupiles juz wszystkie na ta runde!");
 		shopBuilder(id);
 		return PLUGIN_CONTINUE;
 	}
 	switch(item){
 		case shopB_HP:{
 			set_user_health(id, min(userMaxHealth[id], get_user_health(id) + str_to_num(shopDescBuilder[item][1])));
-			ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 kupil:^x04 +%sHP!", PREFIXSAY, userName[id],shopDescBuilder[item][1]);
+			chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 kupil:^4 +%sHP!", userName[id],shopDescBuilder[item][1]);
 			addMission(id, mission_BUYHEALTH, 1);
 			addPro(id, pro_BETON, 1);
 			#if defined CHRISTMAS_ADDON
@@ -76,35 +76,35 @@ public shopBuilder_2(id, menu, item){
 		case shopB_AMMO:{
 		
 			if( get_gametime() < userUnlimited[id] ){				
-				ColorChat(id, GREEN,"---^x01 Juz masz^x03 Bezlik Ammo^x01 !^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Juz masz^3 Bezlik Ammo^1 !");
 				shopBuilder(id);
 				return PLUGIN_CONTINUE;
 			}
 			userUnlimited[id] = get_gametime() + str_to_float(shopDescBuilder[item][1]);	
-			ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 kupil:^x04 Bezlik na %s Sekund", PREFIXSAY, userName[id], shopDescBuilder[item][1]);
+			chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 kupil:^4 Bezlik na %s Sekund", userName[id], shopDescBuilder[item][1]);
 		}
 		case shopB_DMG:{
 			if( userExtraDmg[id]){
 				
-				ColorChat(id, GREEN,"---^x01 Juz masz^x03 Dodatkowy DMG!^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Juz masz^3 Dodatkowy DMG!");
 				shopBuilder(id);
 				return PLUGIN_CONTINUE;
 			}
 			userExtraDmg[id] = true;
-			ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 kupil:^x04 +%sDMG", PREFIXSAY, userName[id], shopDescBuilder[item][1]);
+			chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 kupil:^4 +%sDMG", userName[id], shopDescBuilder[item][1]);
 		}
 		
 		
 		case shopB_RECOIL:{
 			if( userNoRecoil[id] ){
 							
-				ColorChat(id, GREEN,"---^x01 Juz masz^x03 NoRecoil!^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Juz masz^3 NoRecoil!");
 				shopBuilder(id);
 				return PLUGIN_CONTINUE;
 			}
 			
 			userNoRecoil[id] = true;
-			ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 kupil:^x04 NoRecoil", PREFIXSAY,  userName[id]);
+			chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 kupil:^4 NoRecoil",  userName[id]);
 		}
 		
 		case shopB_NADE:{
@@ -117,10 +117,10 @@ public shopBuilder_2(id, menu, item){
 				}
 			}
 			if(grenade){
-				ColorChat(id, GREEN, "---^x01 Juz masz^x03 Granat Podpalajacy^x01 !^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Juz masz^3 Granat Podpalajacy^1 !");
 				return PLUGIN_CONTINUE;
 			}
-			ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 kupil:^x04 Granat Podpalajacy", PREFIXSAY,  userName[id]);
+			chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 kupil:^4 Granat Podpalajacy",  userName[id]);
 			give_item(id, "weapon_hegrenade");
 			
 			granadeMission[id][0] = true;
@@ -143,12 +143,12 @@ public shopBuilder_2(id, menu, item){
 			}
 			
 			if(smoke){
-				ColorChat(id, GREEN,"---^x01 Juz masz^x03 Granat Zamrazajacy^x01 !^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Juz masz^3 Granat Zamrazajacy^1 !");
 				return PLUGIN_CONTINUE;
 			}
 			
 			
-			ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 kupil:^x04 Granat Zamrazajacy", PREFIXSAY,  userName[id]);
+			chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 kupil:^4 Granat Zamrazajacy",  userName[id]);
 			give_item(id, "weapon_smokegrenade");
 			
 			granadeMission[id][1] = true;
@@ -171,12 +171,12 @@ public shopBuilder_2(id, menu, item){
 			}
 			
 			if(flash){
-				ColorChat(id, GREEN,"---^x01 Juz masz^x03 Granat Odpychajacy^x01 !^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Juz masz^3 Granat Odpychajacy^1 !");
 				return PLUGIN_CONTINUE;
 			}
 			
 			
-			ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 kupil:^x04 Granat Odpychajacy", PREFIXSAY,  userName[id]);
+			chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 kupil:^4 Granat Odpychajacy",  userName[id]);
 			give_item(id, "weapon_flashbang");
 			
 			granadeMission[id][3] = true;
@@ -198,7 +198,7 @@ public shopBuilder_2(id, menu, item){
 				}
 			}
 			if(autoCamp){
-				ColorChat(id, GREEN,"---^x01 Juz masz^x03 Auto Kampe^x01 !^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Juz masz^3 Auto Kampe^1 !");
 				return PLUGIN_CONTINUE;
 			}
 					
@@ -206,7 +206,7 @@ public shopBuilder_2(id, menu, item){
 			
 			userAutoSniper[id] = get_gametime() + str_to_float(shopDescBuilder[item][1]);
 			set_task(str_to_float(shopDescBuilder[item][1]), "removeWeapon", id);
-			ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 kupil:^x04 AutoKampe na %ssekund", PREFIXSAY,  userName[id], shopDescBuilder[item][1]);
+			chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 kupil:^4 AutoKampe na %ssekund",  userName[id], shopDescBuilder[item][1]);
 				
 		}
 		case shopB_KROWA:{
@@ -218,14 +218,14 @@ public shopBuilder_2(id, menu, item){
 				}
 			}
 			if(machineGun){
-				ColorChat(id, GREEN,"---^x01 Juz masz^x03 Krowe^x01 !^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Juz masz^3 Krowe^1 !");
 				return PLUGIN_CONTINUE;
 			}
 			give_item(id, "weapon_m249");
 			
 			userMiniGun[id] = get_gametime() + str_to_float(shopDescBuilder[item][1]);
 			set_task(str_to_float(shopDescBuilder[item][1]), "removeWeapon", id);
-			ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 kupil:^x04 Krowe na %ssekund", PREFIXSAY,  userName[id], shopDescBuilder[item][1]);
+			chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 kupil:^4 Krowe na %ssekund",  userName[id], shopDescBuilder[item][1]);
 		}
 		
 	}
@@ -271,22 +271,22 @@ public shopZombie_2(id, menu, item){
 		return PLUGIN_CONTINUE;
 	}
 	if(buildTime  || roundEnd || !gameTime ){
-		ColorChat(id, GREEN, "%s Za wczesnie na to!", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Za wczesnie na to!");
 		return PLUGIN_CONTINUE;
 	}
 	if( get_user_team(id) != 1 ){
-		ColorChat(id, GREEN,"---^x01 Twoja druzyna sie zmienila! ^x04 ---");
+		chatPrint(id, PREFIX_LINE, "Twoja druzyna sie zmienila! ");
 		shopGlobalMenu(id);
 		return PLUGIN_CONTINUE;	
 	}
 	new cost = str_to_num(shopDescZombie[item][3]) + 50 * userReset[id];
 	
 	if(userNugget[id] < cost){
-		ColorChat(id, GREEN, "%s Nie posiadasz wystarczajacej ilosci Brylek!", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Nie posiadasz wystarczajacej ilosci Brylek!");
 		return PLUGIN_CONTINUE;
 	}
 	if(userShopZombie[id][item] >= str_to_num(shopDescZombie[item][2])){
-		ColorChat(id, GREEN, "%s Kupiles juz wszystkie na ta runde!", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Kupiles juz wszystkie na ta runde!");
 		shopZombie(id);
 		return PLUGIN_CONTINUE;
 	}
@@ -297,36 +297,36 @@ public shopZombie_2(id, menu, item){
 			userHPAddRound[id] += str_to_num(shopDescZombie[item][1]);
 			set_user_health(id, get_user_health(id) + str_to_num(shopDescZombie[item][1]));
 			userMaxHealth[id] +=  str_to_num(shopDescZombie[item][1]);
-			ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 kupil:^x04 %sHP^x01 na cala runde!^x04 [^x03 %dHP^x04 ]", PREFIXSAY,  userName[id], shopDescZombie[item][1], get_user_health(id));
+			chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 kupil:^4 %sHP^1 na cala runde!^4 [^3 %dHP^4 ]",  userName[id], shopDescZombie[item][1], get_user_health(id));
 		}
 		
 		case 1:{
 			if(buildTime || prepTime){
-				ColorChat(id, GREEN, "%s Za wczesnie na to!", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Za wczesnie na to!");
 				return PLUGIN_CONTINUE;
 			}
 			userMaxHealth[id] += str_to_num(shopDescZombie[item][1]);
 			set_user_health(id, get_user_health(id) + str_to_num(shopDescZombie[item][1]));
-			ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 kupil:^x04 %sHP! [^x03 %dHP^x04 ]", PREFIXSAY,  userName[id], shopDescZombie[item][1],  get_user_health(id));
+			chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 kupil:^4 %sHP! [^3 %dHP^4 ]",  userName[id], shopDescZombie[item][1],  get_user_health(id));
 		}
 		
 		case 2:{
 			if(buildTime || prepTime){
-				ColorChat(id, GREEN, "%s Za wczesnie na to!", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Za wczesnie na to!");
 				return PLUGIN_CONTINUE;
 			}
 			
 			if(userClass[id] == class_HEALTH){
-				ColorChat(id, GREEN, "---^x01 Zmien Zombie! Nie mozna tego kupic majac Pielegniarke!^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Zmien Zombie! Nie mozna tego kupic majac Pielegniarke!");
 				return PLUGIN_CONTINUE;
 			}
 			
 			if(userHPRegen[id] ){
-				ColorChat(id, GREEN,"---^x01 Juz masz^x03 Regeneracje^x01 !^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Juz masz^3 Regeneracje^1 !");
 				shopZombie(id);
 				return PLUGIN_CONTINUE;
 			}
-			ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 kupil:^x04 Regeneracje HP!", PREFIXSAY,  userName[id]);
+			chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 kupil:^4 Regeneracje HP!",  userName[id]);
 			userHPRegen[id] = true;
 			set_task(1.0, "regenHP", id);
 			

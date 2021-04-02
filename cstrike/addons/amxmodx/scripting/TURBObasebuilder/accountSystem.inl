@@ -70,7 +70,7 @@ public mainMenuAccount_2(id, menu, item){
 				format(gText, sizeof(gText), "wylogowal sie !!");
 				logBB(id, gText);
 			} 
-			ColorChat(id, GREEN, "%s Wylogowales sie!", PREFIXSAY );
+			chatPrint(id, PREFIX_NORMAL, "Wylogowales sie!" );
 		}
 		case 2:{
 			settingAccount(id);	
@@ -81,12 +81,12 @@ public mainMenuAccount_2(id, menu, item){
 				get_user_ip(id, szSavedIP, sizeof(szSavedIP)-1, 1);
 				get_user_authid(id, szSavedSID, sizeof(szSavedSID)-1);
 				if(equal(szSavedIP, userIp[id] ) && equal(szSavedSID, userSid[id] ) ){
-					ColorChat(id, GREEN, "---^x01 Masz juz wlaczone^x03 Automatyczne^x01 Logowanie!^x04 ---");
+					chatPrint(id, PREFIX_LINE, "Masz juz wlaczone^3 Automatyczne^1 Logowanie!");
 					mainMenuAccount(id);
 					return PLUGIN_CONTINUE; 
 				}
 				
-				ColorChat(id, GREEN, "---^x01 Zaktualizowales swoje^x03 Automatyczne^x01 Logowanie!^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Zaktualizowales swoje^3 Automatyczne^1 Logowanie!");
 				new ip[MAXBITIP], sid[MAXBITAUTHID];
 				get_user_ip(id, ip, sizeof(ip)-1, 1);
 				get_user_authid(id, sid, sizeof(sid)-1);
@@ -108,12 +108,12 @@ public readPassword(id){
 	replace_all(szArg, sizeof(szArg), " ", "");
 	
 	if( strlen(szArg) < 3 ){
-		ColorChat(id, GREEN, "%s Podane haslo jest za krotkie^x03 ( Limit 11 symboli )", PREFIXSAY );
+		chatPrint(id, PREFIX_NORMAL, "Podane haslo jest za krotkie^3 ( Limit 11 symboli )" );
 		mainMenuAccount(id);
 		return PLUGIN_CONTINUE;
 	}
 	if( strlen(szArg) > 11 ){
-		ColorChat(id, GREEN, "%s Podane haslo jest zadlugie", PREFIXSAY );
+		chatPrint(id, PREFIX_NORMAL, "Podane haslo jest zadlugie" );
 		mainMenuAccount(id);
 		return PLUGIN_CONTINUE;
 	}
@@ -129,7 +129,7 @@ public readPassword(id){
 				logBB(id, gText);
 			}
 			
-			ColorChat(id, GREEN, "%s Zalogowano pomyslnie", PREFIXSAY );
+			chatPrint(id, PREFIX_NORMAL, "Zalogowano pomyslnie" );
 			mainMenuAccount(id);
 		}else{
 			logType[id] = LOG_ERROR;
@@ -137,11 +137,11 @@ public readPassword(id){
 				format(gText, sizeof(gText), "bledne haslo !! [Wpisal: %s][Aktualne haslo: %s]",szArg, userPassword[id]);
 				logBB(id, gText);
 			}
-			ColorChat(id, GREEN, "%s Podales zle haslo:^x03 %s", PREFIXSAY, szArg );
+			chatPrint(id, PREFIX_NORMAL, "Podales zle haslo:^3 %s", szArg );
 		}
 	} else {
 		userLogged[id]=true;	
-		ColorChat(id, GREEN, "%s Ustawiles haslo:^x04 %s", PREFIXSAY, szArg );		
+		chatPrint(id, PREFIX_NORMAL, "Ustawiles haslo:^4 %s", szArg );		
 		cmd_execute(id, "setinfo _pw %s",szArg);
 		
 		logType[id] = LOG_LOGIN;
@@ -220,16 +220,16 @@ public settingAccount_2(id, menu, item){
 		case 3:{
 			if( hasOption(userSaveOption[id], save_MODELS) ){
 				removeOption(userSaveOption[id], save_MODELS);
-				ColorChat(id, GREEN, "---^x01 Modele do kosy^x03 wlaczone^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Modele do kosy^3 wlaczone");
 			}else{
 				addOption(userSaveOption[id], save_MODELS);
-				ColorChat(id, GREEN, "---^x01 Modele do kosy^x03 wylaczone^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Modele do kosy^3 wylaczone");
 			}
 			settingAccount(id);
 		}
 		case 4:{
 			if(cs_get_user_zoom(id) == CS_SET_AUGSG552_ZOOM || cs_get_user_zoom(id) == CS_SET_FIRST_ZOOM || cs_get_user_zoom(id)  == CS_SET_SECOND_ZOOM){
-				ColorChat(id, GREEN, "---^x01 Wylacz^x03 ZOOM'a^x01 aby zmienic^x03 FOV'a^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Wylacz^3 ZOOM'a^1 aby zmienic^3 FOV'a");
 				settingAccount(id);
 				return PLUGIN_CONTINUE;
 			}
@@ -244,10 +244,10 @@ public settingAccount_2(id, menu, item){
 		case 5:{
 			if( hasOption(userSaveOption[id], save_INVIS) ){
 				removeOption(userSaveOption[id], save_INVIS);
-				ColorChat(id, GREEN, "---^x01 Widzenie osob wlaczone^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Widzenie osob wlaczone");
 			}else{
 				addOption(userSaveOption[id], save_INVIS);
-				ColorChat(id, GREEN, "---^x01 Widzenie osob wylaczone^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Widzenie osob wylaczone");
 			}
 			settingAccount(id);
 			

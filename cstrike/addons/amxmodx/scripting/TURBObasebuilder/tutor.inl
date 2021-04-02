@@ -1,22 +1,6 @@
-// rewritten tutor - KoRrNiK
+#include <amxmodx>
 
-#if defined _tutor_included
-	#endinput
-#endif
-#define _tutor_included
-
-#if !defined _amxmodx_included
-	#include <amxmodx>
-#endif
-
-#define TASK_TUTOR 0xACFF
-
-enum TutorColor { 
-	TUTOR_RED = 1, 
-	TUTOR_BLUE, 
-	TUTOR_YELLOW, 
-	TUTOR_GREEN,
-}
+enum TutorColor { TUTOR_RED = 1, TUTOR_BLUE, TUTOR_YELLOW, TUTOR_GREEN };
 
 new const gTutorPrecache[][] = { 
 	"gfx/career/icon_!.tga",
@@ -30,7 +14,7 @@ new const gTutorPrecache[][] = {
 	"gfx/career/round_corner_sw.tga",
 	"resource/TutorScheme.res",
 	"resource/UI/TutorTextWindow.res" 
-}
+};
 stock tutorPrecache(){
 	for(new i = 0; i < sizeof(gTutorPrecache); i++)  precache_generic(gTutorPrecache[i]);
 }
@@ -38,7 +22,7 @@ stock tutorMake(id, TutorColor:ColorSelect, Float:fTime = 0.0, const szText[], a
 	
 	if(!is_user_connected(id) || is_user_bot(id) || is_user_hltv(id)) return; 
 	
-	new szMessage[512];
+	static szMessage[192];
 	vformat(szMessage, sizeof(szMessage) - 1, szText, 5);
 	
 	static msgTutorText;
@@ -53,7 +37,7 @@ stock tutorMake(id, TutorColor:ColorSelect, Float:fTime = 0.0, const szText[], a
 	write_short( 1 << _:ColorSelect );
 	message_end( );
 
-	if(fTime){
+	if(fTime != 0.0){
 		if(!id){
 			for(new i = 1; i < 33; i++){
 				if(!is_user_connected(i) || is_user_bot(i) || is_user_hltv(i)) continue; 

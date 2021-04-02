@@ -6,12 +6,11 @@
 #include <fakemeta>
 #include <fakemeta_util>
 #include <engine>
-#include <colorchat>
 
 public menuTeamOption(id){
 	new gText[256], iLen = 0;
 	if(userTeam[id] == 0){
-		ColorChat(id, GREEN, "---^x01 Nie posiadasz z tym graczem juz teamu!^x04 ---");
+		chatPrint(id, PREFIX_LINE, "Nie posiadasz z tym graczem juz teamu!");
 		return;	
 	}
 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "\r[BaseBuilder]\y Menu Druzyny^n^n");
@@ -56,22 +55,22 @@ public menuTeamOption_2(id, menu, item){
 							return;
 						}
 						menuTeamOption(id);
-						ColorChat(id, GREEN, "%s Kucnij aby uzyc teleportu", PREFIXSAY);
+						chatPrint(id, PREFIX_NORMAL, "Kucnij aby uzyc teleportu");
 					}
 				}
 			} else {
-				ColorChat(id, GREEN, "%s Teleport jest wylaczony podczas rundy!", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Teleport jest wylaczony podczas rundy!");
 				menuTeamOption(id);
 			}
 		}
 		case 1:{
 			userTeamExp[id] 		= (userTeamExp[id]+1) 	% sizeof(typeExpParty);
-			ColorChat(userTeam[id], 	GREEN, "%s Gracz:^x03 %s^x01 %s", PREFIXSAY, userName[id], typeExpParty[userTeamExp[id]][1]);
+			chatPrint(userTeam[id], PREFIX_NORMAL, "Gracz:^3 %s^1 %s", userName[id], typeExpParty[userTeamExp[id]][1]);
 			menuTeamOption(id);	
 		}
 		case 2:{
 			userTeamNugget[id] 	= (userTeamNugget[id]+1) % sizeof(typeNuggetParty);
-			ColorChat(userTeam[id], 	GREEN, "%s Gracz:^x03 %s^x01 %s", PREFIXSAY, userName[id], typeNuggetParty[userTeamNugget[id]][1]);
+			chatPrint(userTeam[id], PREFIX_NORMAL, "Gracz:^3 %s^1 %s", userName[id], typeNuggetParty[userTeamNugget[id]][1]);
 			menuTeamOption(id);	
 		}
 		case 3:{
@@ -83,10 +82,10 @@ public menuTeamOption_2(id, menu, item){
 				userTeam[target] = 0;
 				userTeam[id] 	 = 0;
 				
-				ColorChat(id, GREEN,"---^x01 Twoja druzyna zostala rozlaczona^x04 ---");
-				ColorChat(target, GREEN,"---^x01 Twoja druzyna zostala rozlaczona^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Twoja druzyna zostala rozlaczona");
+				chatPrint(target, PREFIX_LINE, "Twoja druzyna zostala rozlaczona");
 			}else{
-				ColorChat(id, GREEN,"---^x01 Nie mozna rozlaczyc w trakcie rundy^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Nie mozna rozlaczyc w trakcie rundy");
 			}	
 		}
 	}
@@ -94,7 +93,7 @@ public menuTeamOption_2(id, menu, item){
 public teamOption(id){
 	if( userTeam[id] == 0 ){
 		if( menuTeam(id) == 0 ){				
-			ColorChat(id, GREEN,"---^x01 Brakuje graczy^x04 ---");
+			chatPrint(id, PREFIX_LINE, "Brakuje graczy");
 			return;
 		}	
 	} else menuTeamOption(id);
@@ -126,10 +125,10 @@ public menuTeam_2(id,menu,item){
 		case 0:{
 			if( hasOption(userSaveOption[id], save_TEAM) ){
 				removeOption(userSaveOption[id], save_TEAM);
-				ColorChat(id, GREEN, "---^x01 Druzyna odblokowana^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Druzyna odblokowana");
 			}else{
 				addOption(userSaveOption[id], save_TEAM);
-				ColorChat(id, GREEN, "---^x01 Druzyna zablokowana^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Druzyna zablokowana");
 			}
 			menuTeam(id);
 		}
@@ -138,15 +137,15 @@ public menuTeam_2(id,menu,item){
 			new target = userVarList[id][item];
 			
 			if( !is_user_connected(target) || userRoundTeam[target] != userRoundTeam[id] || userTeamBlock[target] || userTeam[target] != 0 || get_user_team(target) != get_user_team(id)) {
-				ColorChat(id, GREEN, "%s Nie mozna stworzyc druzyny z tym graczem!", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Nie mozna stworzyc druzyny z tym graczem!");
 				menuTeam(id);
 			}
 			userTeamMenu[id] 	= userMenuId;
 			userTeamMenu[target] 	= userMenuId;
 			userTeamSend[target] 	= id;
 			
-			ColorChat(id, GREEN, "---^x01 Wyslales zaproszenie do druzyny graczowi:^x03 %s^x04 ---", userName[target]);
-			ColorChat(target, GREEN, "---^x01 Otrzymales zaproszenie do druzyny od gracza:^x03 %s^x04 ---", userName[id]);
+			chatPrint(id, PREFIX_LINE, "Wyslales zaproszenie do druzyny graczowi:^3 %s", userName[target]);
+			chatPrint(target, PREFIX_LINE, "Otrzymales zaproszenie do druzyny od gracza:^3 %s", userName[id]);
 			
 			menuConfirmationTeam(target);
 		}
@@ -177,12 +176,12 @@ public menuConfirmationTeam_2(id,menu,item){
 	switch(item){
 		case 0:{
 			if( userTeamMenu[id] != userTeamMenu[target] ){
-				ColorChat(id, GREEN,"---^x01 Za pozno zeby zaakceptowac^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Za pozno zeby zaakceptowac");
 				return;
 			}
 			
 			if(get_user_team(id) != get_user_team(target)){
-				ColorChat(id, GREEN,"---^x01 Osoba jest w innej druzynie^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Osoba jest w innej druzynie");
 				return;
 			}
 			if(userTeam[id] == 0 && userTeam[target] == 0){
@@ -190,17 +189,17 @@ public menuConfirmationTeam_2(id,menu,item){
 				userTeam[id]		= target;
 				userTeam[target] 	= id;
 				
-				ColorChat(id, GREEN,"---^x01 Druzyna z^x04 %s^x01 aktywna^x04 ---", userName[target]);
-				ColorChat(target, GREEN,"---^x01 Druzyna z^x04 %s^x01 aktywna^x04 ---", userName[id]);
+				chatPrint(id, PREFIX_LINE, "Druzyna z^4 %s^1 aktywna", userName[target]);
+				chatPrint(target, PREFIX_LINE, "Druzyna z^4 %s^1 aktywna", userName[id]);
 				
 				menuTeamOption(id);
 				menuTeamOption(target);
 				
-			} else  ColorChat(id, GREEN,"---^x01 Posiadasz juz team^x04 ---");
+			} else  chatPrint(id, PREFIX_LINE, "Posiadasz juz team");
 		}
 		case 1:{
-			ColorChat(id, GREEN,"---^x01 Druzyna od^x04 %s^x01 zostala odrzucona^x04 ---", userName[target]);
-			ColorChat(target, GREEN,"---^x01 Druzyna z^x04 %s^x01 odrzucona^x04 ---", userName[id]);
+			chatPrint(id, PREFIX_LINE, "Druzyna od^4 %s^1 zostala odrzucona", userName[target]);
+			chatPrint(target, PREFIX_LINE, "Druzyna z^4 %s^1 odrzucona", userName[id]);
 			userTeam[id]		= 0;
 			userTeam[target] 	= 0;
 		}
@@ -212,7 +211,7 @@ public leaveParty(id){
 	userTeam[id] 		= 0 ;
 	userTeam[target] 	= 0;
 	reWriteBlocksParty(id, target);
-	ColorChat(target, GREEN,"---^x01 Druzyna rozlaczona^x04 ---");
+	chatPrint(target, PREFIX_LINE, "Druzyna rozlaczona");
 }
 public teamLineOrSprite(id){
 	if (userTeam[id] && !gameTime && !hasOption(userSaveOption[id], save_INVIS) ){

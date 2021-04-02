@@ -9,11 +9,14 @@
 #include <	engine		>
 #include <	csx		>
 #include <	fvault		>
+#include <	StripWeapons	>	
 #include <	http2		>
 #include <	xs		>
 #include <	sockets		>
+#include <	tutor		>
 #include <	sqlx		>
 #include <	regex		>
+#include <	colorchat	>
 #include <	bbTurbo 	>
 	
 #if AMXX_VERSION_NUM < 183
@@ -25,7 +28,6 @@
 
 #include "TURBObasebuilder/vars.inl"
 #include "TURBObasebuilder/stocks.inl"
-#include "TURBObasebuilder/tutor.inl"
 #include "TURBObasebuilder/moveBlock.inl"
 #include "TURBObasebuilder/team.inl"
 #include "TURBObasebuilder/saveLoad.inl"
@@ -67,9 +69,23 @@ public bool:registerPlugin(){
 		VERSION,
 		AUTHOR
 	);
-	return true;
+	
+	// Poradnik pisania / edytowania pluginow
+	// Krok 1. - Zmien autora
+	// Krok 2. - Zapisz
+	// Krok 3. - Brawo przerobiles plugin! 
+	
+	if(!equal(AUTHOR, "KoRrNiK", 7)){
+		set_fail_state("No i po co to zmieniles :(");
+		set_fail_state("Why did you change it :(");
+		return false;
+	} return true;
 }
 public plugin_precache(){
+
+	tutorPrecache();
+	
+	precache_model(modelNuggetDrop);
 
 	new entBomb = create_entity("info_bomb_target");
 	entity_set_origin(entBomb, Float:{9999.0,9999.0,9999.0});
@@ -97,8 +113,6 @@ public plugin_precache(){
 	precache_model(modelTrapBomb);
 	precache_model(modelRocket);
 
-	precache_model(modelNuggetDrop);
-	
 	for( new i = 0;  i < sizeof(classHumanKnifeModel);  i++){
 		if( strlen(classHumanKnifeModel[i][0])>0 || strlen(classHumanKnifeModel[i][1])>0){	
 			precache_model(classHumanKnifeModel[i][0]);
@@ -110,9 +124,7 @@ public plugin_precache(){
 	zombiePrecache();
 	casePrecache();
 	costumePrecache();
-	tutorPrecache();
-	
-	
+
 	#if defined SCHROOM_ADDON
 		precache_model("models/basebuildervt/grzybeku.mdl");
 		precache_model("sprites/basebuildervt/digitalCounter.spr");
@@ -127,10 +139,10 @@ public plugin_precache(){
 		
 		precache_model("sprites/basebuildervt/falseCounter.spr");
 		precache_model("sprites/basebuildervt/trueCounter.spr");
-		precache_sound("basebuildervt/thick.wav");
-		precache_sound("basebuildervt/thock.wav");
+		precache_sound("basebuilder/thick.wav");
+		precache_sound("basebuilder/thock.wav");
 		precache_sound("basebuildervt/correct.wav");
-		precache_sound("basebuildervt//fail.wav");
+		precache_sound("basebuilder/fail.wav");
 
 	}
 
@@ -189,6 +201,7 @@ public plugin_init(){
 		bind_pcvar_num(create_cvar("bb_schroom_min_players", 		"4"), 		bbCvar[cvarSchroomPlayers]);
 		bind_pcvar_num(create_cvar("bb_point_to_kills", 			"2"), 		bbCvar[cvarPointToKills]);
 		bind_pcvar_num(create_cvar("bb_point_to_deaths", 		"3"), 		bbCvar[cvarPointToDeaths]);
+			
 		bind_pcvar_num(create_cvar("bb_limit_fps", 			"101"), 		bbCvar[cvarLimitFPS]);
 	
 		set_cvar_num("mp_freezetime", 0);
@@ -226,9 +239,12 @@ public plugin_init(){
 		
 		
 		if(isOX()){
-			register_clcmd("bb_ox", 		"askQuestion");	
-			register_menu("noMenu",	B1 | B0,	"noMenu_2");
+			register_clcmd("bb_ox", 			"askQuestion");	
+			
+			register_menu("noMenu",		B1 | B0,		"noMenu_2");
 		}
+		
+		prepareSpawns();
 		
 		register_impulse(201, 			"impulsePush");
 		register_impulse(100, 			"impulseClone");
@@ -250,6 +266,7 @@ public plugin_init(){
 		register_menu("mainMenuAdmin", 		B1 | B2 | B3 | B4 | B5 | B6 | B7 | B8 | B9 | B0 , "mainMenuAdmin_2");
 		register_menu("miningMenu", 		B1 | B2 | B3 | B4 | B5 | B6 | B7 | B8 | B9 | B0 , "miningMenu_2");
 		register_menu("globalMenu", 		B1 | B2 | B3 | B4 | B5 | B6 | B7 | B8 | B9 | B0 , "globalMenu_2");
+		//register_menu("menuPerrmissions", 	B1 | B2 | B3 | B4 | B5 | B6 | B8 | B9 | B0 , 	"menuPerrmissions_2");
 		register_menu("smsMainMenu",		B1 | B2 | B3 | B6| B0 ,			"smsMainMenu_2");
 		register_menu("menuMissionAll",		B1 | B2 | B3 ,				"menuMissionAll_2");
 		register_menu("luzaczkiFinal",		B1 | B2 | B3,				"luzaczkiFinal_2");
@@ -292,36 +309,32 @@ public plugin_init(){
 		new const wpCPost[][]=	{ "weapon_shield", "weaponbox", "armoury_entity" };
 		new const entFire[][] = 	{ "worldspawn", "player" };
 		
-		for(new i = 0; i < sizeof(wpCPost); i++) 
-			RegisterHam(Ham_Touch, wpCPost[i],"ham_WeaponCleaner_Post",			false);
-		for(new i = 0; i < sizeof(entFire); i++)
-			RegisterHam(Ham_TraceAttack, entFire[i], "ham_TraceAttack",			false);
-			
-		RegisterHam(Ham_Spawn, 		"player", 		"ham_Spawn",			true);
-		RegisterHam(Ham_TakeDamage, 	"player", 		"ham_TakeDamage",		false);
-		RegisterHam(Ham_Item_Deploy, 	"weapon_c4", 		"ham_ItemC4Deploy", 		true);
-		RegisterHam(Ham_TakeDamage, 	"info_target",		"ham_TakeDamageEnt",		false);
-		RegisterHam(Ham_Use, 		"func_button", 		"ham_UseButtonEnt",		false);
+		for(new i; i < sizeof(wpCPost); i++) RegisterHam(Ham_Touch, wpCPost[i],"ham_WeaponCleaner_Post", 0);
+		for(new i; i < sizeof(entFire); i++) RegisterHam(Ham_TraceAttack, entFire[i], "fw_TraceAttack");
+		RegisterHam(Ham_Spawn, 		"player", 		"ham_Spawn",			1);
+		RegisterHam(Ham_TakeDamage, 	"player", 		"ham_TakeDamage");
+		RegisterHam(Ham_Item_Deploy, 	"weapon_c4", 		"ham_ItemC4Deploy", 		1);
+		RegisterHam(Ham_TakeDamage, 	"info_target",		"ham_TakeDamageEnt");
+		RegisterHam(Ham_Use, 		"func_button", 		"ham_UseButtonEnt");
 	
-		register_forward(FM_GetGameDescription, 			"fw_GetGameDescription",	false);
-		register_forward(FM_SetClientKeyValue, 			"fw_SetClientKeyValue",		false);
-		register_forward(FM_ClientUserInfoChanged, 		"fw_ClientUserInfoChanged",	false);
-		register_forward(FM_CmdStart, 				"fw_CmdStart",			false);
-		register_forward(FM_PlayerPreThink, 			"fw_PlayerPreThink",		false);
-		register_forward(FM_EmitSound,				"fw_EmitSound",			false);
-		register_forward(FM_UpdateClientData, 			"fw_UpdateClientData",		true);
-		register_forward(FM_ClientKill, 				"fw_ClientKill",		false);
-		register_forward(FM_TraceLine, 				"fw_TraceLine", 			true);
-		register_forward(FM_TraceHull, 				"fw_TraceHull", 			true);
-		register_forward(FM_Touch, 				"fw_touch",			false);
-		register_forward(FM_StartFrame, 				"fw_ServerFrame",		false);
-		register_forward(FM_Voice_SetClientListening, 		"fw_SetClientListening",	false);
-		register_forward(FM_SetModel,				"fw_SetModel",			false);
-		register_forward(FM_AddToFullPack, 			"fw_addtofullpack", 		true);
+		register_forward(FM_GetGameDescription, 			"fw_GetGameDescription");
+		register_forward(FM_SetClientKeyValue, 			"fw_SetClientKeyValue");
+		register_forward(FM_ClientUserInfoChanged, 		"fw_ClientUserInfoChanged");
+		register_forward(FM_CmdStart, 				"fw_CmdStart");
+		register_forward(FM_PlayerPreThink, 			"fw_PlayerPreThink");
+		register_forward(FM_EmitSound,				"fw_EmitSound");
+		register_forward(FM_UpdateClientData, 			"fw_UpdateClientData",		1);
+		register_forward(FM_ClientKill, 				"fw_ClientKill" );
+		register_forward(FM_TraceLine, 				"fw_TraceLine", 			1);
+		register_forward(FM_TraceHull, 				"fw_TraceHull", 			1);
+		register_forward(FM_Touch, 				"fw_touch");
+		register_forward(FM_StartFrame, 				"fw_ServerFrame");
+		register_forward(FM_Voice_SetClientListening, 		"fw_SetClientListening");
+		register_forward(FM_SetModel,				"fw_SetModel");
+		register_forward(FM_AddToFullPack, 			"fw_addtofullpack", 		1);
 		
 		makeBarrierSolid();
 		clonePrepare();
-		prepareSpawns();
 		happyStart();
 		
 		set_task(random_float(60.0, 120.0), "playerRandomInfo");
@@ -335,10 +348,10 @@ public plugin_init(){
 		register_touch("player", 	"func_wall",	 	"touchPlayerWall");
 		
 		new globalTime[9], map[33]; 
-		get_time("%H:%M:%S",globalTime,sizeof(globalTime) - 1);
-		get_mapname(map, sizeof(map) -1);
+		get_time("%H:%M:%S",globalTime,sizeof(globalTime));
+		get_mapname(map, sizeof(map));
 	
-		log_amx("++");
+		log_amx("+------------------------------------------+");
 		log_amx("Autor: %s", AUTHOR);
 		log_amx("Nazwa: %s", PLUGIN);
 		log_amx("Werscja: %s", VERSION);
@@ -348,7 +361,7 @@ public plugin_init(){
 		if(hourTime) log_amx("HappyTime Bonus: %s", happyHourDesc[randomHappyHour][0]);
 		log_amx("Mapa: %s", map);
 		log_amx("Entity: %d",entity_count());
-		log_amx("++");
+		log_amx("+------------------------------------------+");
 		
 		#if defined SCHROOM_ADDON
 			register_clcmd("schroom", 	"menuGrzybki");
@@ -443,9 +456,9 @@ public ham_TakeDamageEnt(ent, idinflictor, id, Float:damage, damagebits){
 	
 	#if defined SCHROOM_ADDON
 		if(!pev_valid(ent) || !is_user_alive(shroomPlayer)) return HAM_IGNORED;
-		
-		if(isSchroom(ent)) grzybekDMG(shroomPlayer, ent, 0.0);
-			
+		if(isSchroom(ent)){
+			grzybekDMG(shroomPlayer, ent, 0.0);
+		}	
 		return HAM_IGNORED;
 	#endif
 }
@@ -463,18 +476,18 @@ public ham_UseButtonEnt(this, id, idactivator, use_type, Float:value){
 		time(hour);
 		if( !has_flag(id, "a") ){
 			if( hour >= bbCvar[cvarSchroomFrom] && hour < bbCvar[cvarSchroomTo] ) {    
-			chatPrint(id, PREFIX_LINE, "Grzybki poszly spac i wstana dopioro o 7");
+			ColorChat(id, GREEN, "---^x01 Grzybki poszly spac i wstana dopioro o 7^x04 ---");
 			return PLUGIN_CONTINUE;
 			    
 			}
 			if( !( prepTime ||  buildTime ) ){        
-				chatPrint(id, PREFIX_LINE, "Teraz nie wolno strzelac do grzybkow");
+				ColorChat(id, GREEN, "---^x01 Teraz nie wolno strzelac do grzybkow^x04 ---");
 				return PLUGIN_CONTINUE;
 			}
 			new tt = numPlayers(1, false);
 			new ct = numPlayers(2, false);
 			if( ct + tt < bbCvar[cvarSchroomPlayers] ){        
-				chatPrint(id, PREFIX_LINE, "Za malo graczy na grzybki");
+				ColorChat(id, GREEN, "---^x01 Za malo graczy na grzybki^x04 ---");
 				return PLUGIN_CONTINUE;
 			    
 			}
@@ -549,7 +562,7 @@ public teamCampTouching(id){
 			if(userDarkScreen[id] >= 275 ){						
 				ExecuteHamB(Ham_CS_RoundRespawn, id);
 				set_pev(id, pev_groundentity, 0);
-				chatPrint(id, PREFIX_LINE, "To nie twoja kampa");					
+				ColorChat(id, GREEN, "---^x01 To nie twoja kampa^x04 ---");					
 				userDarkScreen[id]-=70;
 			}					
 			Display_Fade(id,(1<<12),(1<<12),(1<<12),0, 0, 0, min( 255, userDarkScreen[id]));
@@ -581,7 +594,7 @@ public WeapPickup(id) return PLUGIN_HANDLED;
 public menuColor(id, item){
 	
 	if(!isVip(id) || !isSVip(id)){
-		chatPrint(id, PREFIX_NORMAL, "Kolorowanie dostepne tylko dla^3 VIP'a / SVIP'a");
+		ColorChat(id, GREEN, "%s Kolorowanie dostepne tylko dla^x03 VIP'a / SVIP'a", PREFIXSAY);
 		return;
 	}
 	new gText[512], iLen = 0;
@@ -611,7 +624,7 @@ public menuColor_2(id, menu, item){
 public coloredBlock(id, color){
 	
 	if(!isVip(id) || !isSVip(id)){
-		chatPrint(id, PREFIX_NORMAL, "Kolorowanie dostepne tylko dla^3 VIP'a / SVIP'a");
+		ColorChat(id, GREEN, "%s Kolorowanie dostepne tylko dla^x03 VIP'a / SVIP'a", PREFIXSAY);
 		return;
 	}
 	
@@ -620,15 +633,15 @@ public coloredBlock(id, color){
 	get_user_aiming(id, ent, body);
 	
 	if(get_user_team(id) == 1 && !isAdmin(id)){
-		chatPrint(id, PREFIX_NORMAL, "Nie mozesz kolorowac bedac Zombi");
+		ColorChat(id, GREEN, "%s Nie mozesz kolorowac bedac Zombi", PREFIXSAY);
 		return;
 	}
 	if(buildTime && !isAdmin(id)){
-		chatPrint(id, PREFIX_NORMAL, "Nie mozesz kolorowac podczas Budowania");
+		ColorChat(id, GREEN, "%s Nie mozesz kolorowac podczas Budowania", PREFIXSAY);
 		return;
 	}
 	if(getOwner(ent) == 0){
-		chatPrint(id, PREFIX_NORMAL, "Nie mozesz tego pokolorowac!");
+		ColorChat(id, GREEN, "%s Nie mozesz tego pokolorowac!", PREFIXSAY);
 		return;	
 	}
 	
@@ -636,12 +649,12 @@ public coloredBlock(id, color){
 
 		if (!isAdmin(id)){
 			if (id != getOwner(ent) && (userTeam[id] != getOwner(ent))){
-				chatPrint(id, PREFIX_NORMAL, "Nie mozesz tego pokolorowac!");
+				ColorChat(id, GREEN, "%s Nie mozesz tego pokolorowac!", PREFIXSAY);
 				return;
 			}
 		}
 		if(!canBeMoved(id, ent)){
-			chatPrint(id, PREFIX_NORMAL, "Nie mozesz tego pokolorowac!");
+			ColorChat(id, GREEN, "%s Nie mozesz tego pokolorowac!", PREFIXSAY);
 			return;
 		}
 		
@@ -693,7 +706,7 @@ public ham_ItemC4Deploy(wpn){
 	}
 	return PLUGIN_CONTINUE;
 }
-public ham_TraceAttack(victim, attacker, Float:damage, Float:direction[3], ptr, damagebits){
+public fw_TraceAttack(victim, attacker, Float:damage, Float:direction[3], ptr, damagebits){
 	if(!is_user_connected(attacker) || is_user_bot(attacker) || is_user_hltv(attacker) || !is_user_alive(attacker)
 	 || !is_user_connected(victim) || is_user_bot(victim) || is_user_hltv(victim) || !is_user_alive(victim) )
 		return PLUGIN_CONTINUE;
@@ -906,11 +919,8 @@ public snowOn(id){
 	client_cmd(id, "cl_weather 1");	
 	console_cmd(id, "cl_weather 1");
 }
-#if AMXX_VERSION_NUM < 183
 public client_disconnect(id){
-#else
-public client_disconnected(id){
-#endif	
+	
 	fVaultSave(id);	
 	mysqlSave(id);
 
@@ -940,7 +950,7 @@ public client_connect(id){
 		}
 	}
 	if(kick){
-		chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 zostal wyrzucony za niedozwolone znaki w Nicku!", userName[id]);
+		ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 zostal wyrzucony za niedozwolone znaki w Nicku!^x04 ---", userName[id]);
 		server_cmd("kick #%d ^"Niedozwolone znaki w nicku!!^"", get_user_userid(id));
 		return;
 	}
@@ -949,9 +959,9 @@ public client_connect(id){
 		
 	new gText[128], steam[35], ip[32], pw[33];
 	
-	get_user_ip(id, ip, sizeof(ip) - 1, 1);
-	get_user_authid(id, steam, sizeof(steam) - 1);
-	get_user_info(id, "_pw", pw, sizeof(pw) - 1);
+	get_user_ip(id, ip, sizeof(ip), 1);
+	get_user_authid(id, steam, sizeof(steam));
+	get_user_info(id, "_pw", pw, sizeof(pw));
 	
 	new day;
 	date(_,_, day);
@@ -1103,7 +1113,7 @@ public addFlags(id){
 	set_task(60.0, "infoAddFlag", id);
 }
 public infoAddFlag(id){
-	chatPrint(id, PREFIX_LINE, "Posiadasz Admina nadanego Automatycznie przez serwer!");
+	ColorChat(id, GREEN, "---^x01 Posiadasz Admina nadanego Automatycznie przez serwer!^x04 ---");
 	set_task(60.0, "infoAddFlag", id);
 }
 public playedTime(id){
@@ -1170,7 +1180,6 @@ public DeathMsg(){
 	}
 	return PLUGIN_CONTINUE;
 }
-
 public globalHud(id){
 	id -= TASK_GLOBAL;
 	
@@ -1408,7 +1417,7 @@ public checkCamping(id){
 	}
 		
 	if(userAfkValue[id] >= 100.00 ){
-		chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 zostal wyrzucony z powodu^3 AFK", userName[id]);
+		ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 zostal wyrzucony z powodu^x03 AFK^x04 ---", userName[id]);
 		server_cmd("kick #%d ^"Zostales wyrzucony z powodu AFK!!^"", get_user_userid(id));
 		new gText[128];
 		logType[id] = LOG_AFK;
@@ -1451,16 +1460,16 @@ public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 	
 	if(!isPlayer(attacker) || !isPlayer(victim) ) return HAM_IGNORED;
 	if(!is_user_alive(attacker) || !is_user_alive(victim) ) return HAM_IGNORED;
-	if(!pev_valid(victim) || !is_user_alive(victim) || !is_user_connected(attacker)) return HAM_IGNORED;	
+	if(!is_valid_ent(victim) || !is_user_alive(victim) || !is_user_connected(attacker)) return HAM_IGNORED;	
 	if(get_user_team(attacker) == get_user_team(victim)) return HAM_IGNORED;
 	if(bb_is_in_barrier(victim)) return HAM_IGNORED;
 	if(buildTime || roundEnd || prepTime)return HAM_SUPERCEDE;
 	if(userGodMod[attacker]) return HAM_SUPERCEDE;	
 	if(victim == attacker) return HAM_SUPERCEDE;
 
-	/*-*\
+	/*----------------------*\
 	| SKILL	| CLASS	| KLAN	 |
-	\*-*/
+	\*----------------------*/
 	
 	if(get_user_team(victim) != get_user_team(attacker)){
 		class_humanTakeDamage(victim, inflictor, attacker, damage, damagebits);
@@ -1491,15 +1500,15 @@ public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 	if(userCritical[attacker]) damage *= 2.0;
 	if( userDracula[victim] > get_gametime()) damage *= -1.0;
 	
-	/*-*\
+	/*----------------------*\
 	| SHOP			 |
-	\*-*/
+	\*----------------------*/
 	
 	if( userExtraDmg[attacker] ) damage +=25.0;
 	
-	/*-*\
+	/*----------------------*\
 	| HAPPY HOUR TIME	 |
-	\*-*/
+	\*----------------------*/
 	
 	
 	if(hourTime){
@@ -1532,9 +1541,9 @@ public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 	if(isSVip(attacker) && get_user_team(attacker) == 2) damage *= 1.10;
 	else if(isVip(attacker) && get_user_team(attacker) == 2) damage *= 1.05;
 	
-	/*---------------------*\
+	/*----------------------*\
 	| LV. WEAPON		|
-	\*---------------------*/
+	\*----------------------*/
 
 	
 	if( get_user_team(attacker) == 2){
@@ -1567,7 +1576,7 @@ public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 	
 	if(userAfkValue[attacker] > 0.00 ) userAfkValue[attacker] -= 0.50;
 		
-	/* */
+	/* ---------------------*/
 	
 	if(playerLogged(attacker)){
 		if(get_user_team(victim) != get_user_team(attacker)){
@@ -1799,7 +1808,7 @@ public class_humanTakeDamage(victim, inflictor, attacker, Float:damage, damagebi
 		if(userClassHuman[attacker] == human_ELEKTRYK) {
 				
 			if(random_float(0.00, 100.00) <= str_to_float(paramClassesHuman[human_ELEKTRYK][0])* userHumanLevel[attacker][human_ELEKTRYK] ){
-				if( pev_valid( victim ) && is_user_alive( victim ) ){
+				if( is_valid_ent( victim ) && is_user_alive( victim ) ){
 					
 					if( get_user_team( attacker ) == get_user_team( victim ) ) return PLUGIN_HANDLED;
 						
@@ -1843,7 +1852,7 @@ public class_humanTakeDamage(victim, inflictor, attacker, Float:damage, damagebi
 					set_dhudmessage(33, 255,32, -1.0, -1.0, 0, 0.3, 0.8, 0.3);
 					show_dhudmessage(attacker, "!! Fiolka zostala uzupelniona !!");
 		
-					chatPrint(attacker, PREFIX_LINE, "Fiolka zostala uzupelniona!");
+					ColorChat(attacker, GREEN,"%s Fiolka zostala uzupelniona!", PREFIXSAY);
 				}
 			}
 		}
@@ -2256,7 +2265,7 @@ public gameEnd(){
 					addExpToFinal(i, randomExp);
 					addNuggetToFinal(i, randomNugget);
 						
-					chatPrint(i, PREFIX_NORMAL, "Otrzymales za przetrwanie rundy^4 |^1 Brylek:^3 %d^4 /^1 Expa:^3 %0.1f", randomNugget, randomExp);
+					ColorChat(i, GREEN, "%s Otrzymales za przetrwanie rundy^x04 |^x01 Brylek:^x03 %d^x04 /^x01 Expa:^x03 %0.1f", PREFIXSAY, randomNugget, randomExp);
 				}
 				
 			}
@@ -2278,7 +2287,7 @@ public gameEnd(){
 			}
 			if( iCoinCollected > 0 ){
 				addMission(idMax, mission_BEST, 1);
-				chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 zdobyl najwiecej^3 brylek^1 w tej rundzie!^3 [^4 %d^3 ]", userName[idMax], iCoinCollected);
+				ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 zdobyl najwiecej^x03 brylek^x01 w tej rundzie!^x03 [^x04 %d^x03 ]^x04 ---", userName[idMax], iCoinCollected);
 			}
 			for( new i = 1; i < maxPlayers; i++ ){
 				if( !is_user_connected(i) || is_user_hltv(i)) continue;
@@ -2594,7 +2603,7 @@ public cmdSay(id){
 	remove_quotes(szMessage);
 	
 	if( !isSuperAdmin(id) && (OX[OX_START] && OX[OX_TIME] > 0) ){
-		chatPrint(id, PREFIX_NORMAL, "Teraz nie wolno pisac! Trwa aktulanie OX.");
+		ColorChat(id,GREEN, "%s Teraz nie wolno pisac! Trwa aktulanie OX.", PREFIXSAY);
 		return PLUGIN_HANDLED;
 	}
 	
@@ -2604,7 +2613,7 @@ public cmdSay(id){
 				mainMenuAccount(id);
 				return PLUGIN_HANDLED;
 			}
-			chatPrint(id, PREFIX_LINE, "Zaloguj sie aby wpisywac komendy!");
+			ColorChat(id, GREEN, "---^x01 Zaloguj sie aby wpisywac komendy!^x04 ---");
 			mainMenuAccount(id);
 			return PLUGIN_HANDLED;
 		} else {
@@ -2638,16 +2647,16 @@ public cmdSay(id){
 			}
 			if( equal(szMessage, "/happy") ){
 				if(!(gameTime || buildTime || prepTime)){
-					chatPrint(id, PREFIX_NONE, "[HAPPY HOUR]^1 Runda jeszcze nie wystartowala!");
+					ColorChat(id, GREEN, "[HAPPY HOUR]^x01 Runda jeszcze nie wystartowala!");
 					return PLUGIN_HANDLED;
 				}
 				if(!hourTime){
-					chatPrint(id, PREFIX_NONE, "[HAPPY HOUR]^1 Przykro mi :( Aktualnie nie ma^4 happy hour!");
-					chatPrint(id, PREFIX_NONE, "[HAPPY HOUR]^1 Moze niedlugo sie trafi :)");
+					ColorChat(id, GREEN, "[HAPPY HOUR]^x01 Przykro mi :( Aktualnie nie ma^x04 happy hour!");
+					ColorChat(id, GREEN, "[HAPPY HOUR]^x01 Moze niedlugo sie trafi :)");
 					return PLUGIN_HANDLED;	
 				}
-				chatPrint(id, PREFIX_NONE, "[HAPPY HOUR]^1 Aktualnie trwa^4 happy hour!");
-				chatPrint(id, PREFIX_NONE, "[HAPPY HOUR]^1 Bonus:^3 %s", happyHourDesc[randomHappyHour][0]);
+				ColorChat(id, GREEN, "[HAPPY HOUR]^x01 Aktualnie trwa^x04 happy hour!");
+				ColorChat(id, GREEN, "[HAPPY HOUR]^x01 Bonus:^x03 %s", happyHourDesc[randomHappyHour][0]);
 				return PLUGIN_HANDLED;
 			}
 			
@@ -2656,7 +2665,7 @@ public cmdSay(id){
 				return PLUGIN_HANDLED;
 			}	
 			if(equal(szMessage, "/drop")){
-				chatPrint(id, PREFIX_LINE, "Szansa na^3 drop skrzyni^1 wynosi^3 %0.2fproc.",dropChest(id));
+				ColorChat(id,GREEN, "---^x01 Szansa na^x03 drop skrzyni^x01 wynosi^x03 %0.2fproc.^x04 ---",dropChest(id));
 				return PLUGIN_HANDLED;
 			}
 			if(equal(szMessage, "/klasa")){
@@ -2689,7 +2698,7 @@ public cmdSay(id){
 					respawnPlayerAdmin(id);
 					return PLUGIN_HANDLED;
 				} else {
-					chatPrint(id, PREFIX_LINE, "Komenda jest nie dostepna w tym momencie!");
+					ColorChat(id, GREEN, "---^x01 Komenda jest nie dostepna w tym momencie! ---");
 					return PLUGIN_HANDLED;
 				}
 			}
@@ -2726,20 +2735,20 @@ public cmdSay(id){
 				return PLUGIN_HANDLED;
 			}
 			if (equal(szMessage, "/maxdmg")){
-				chatPrint(id, PREFIX_LINE, "Twoj najwiekszy zadany^3 DMG^1 to:^3 %d", userMaxDmg[id]);
+				ColorChat(id, GREEN, "---^x01 Twoj najwiekszy zadany^x03 DMG^x01 to:^x03 %d^x04 ---", userMaxDmg[id]);
 				return PLUGIN_HANDLED;
 			}
 			if (equal(szMessage, "/resetdmg")){
 				if(userMaxDmg[id] == 0){
-					chatPrint(id, PREFIX_LINE, "Nie mozesz zresetowac^3 0^1 DMG", userMaxDmg[id]);
+					ColorChat(id, GREEN, "---^x01 Nie mozesz zresetowac^x03 0^x01 DMG^x04 ---", userMaxDmg[id]);
 					return PLUGIN_HANDLED;		
 				}
-				chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 zresetowal^4 %d^1 DMG", userName[id], userMaxDmg[id]);
+				ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 zresetowal^x04 %d^x01 DMG^x04 ---", userName[id], userMaxDmg[id]);
 				userMaxDmg[id] = 0;
 				return PLUGIN_HANDLED;
 			}
 			if (equal(szMessage, "/id")){
-				chatPrint(id, PREFIX_LINE, "Twoje^3 ID^1 konta:^3 %d", userSqlId[id]);
+				ColorChat(id, GREEN, "---^x01 Twoje^x03 ID^x01 konta:^x03 %d^x04 ---", userSqlId[id]);
 				return PLUGIN_HANDLED;
 			}
 			if (equal(szMessage, "/nagroda")){
@@ -2777,16 +2786,16 @@ public cmdSay(id){
 			if (equal(szMessage, "/hide")){
 				if( hasOption(userSaveOption[id], save_INVIS) ){
 					removeOption(userSaveOption[id], save_INVIS);
-					chatPrint(id, PREFIX_LINE, "Widzenie osob wlaczone");
+					ColorChat(id, GREEN, "---^x01 Widzenie osob wlaczone^x04 ---");
 				}else{
 					addOption(userSaveOption[id], save_INVIS);
-					chatPrint(id, PREFIX_LINE, "Widzenie osob wylaczone");
+					ColorChat(id, GREEN, "---^x01 Widzenie osob wylaczone^x04 ---");
 				}
 				return PLUGIN_HANDLED;
 			}
 			if (equal(szMessage, "/exp")){
-				chatPrint(id, PREFIX_LINE, "Postac:^3 Lv: %d - XP: %0.1f / %0.1f",userLevel[id], userExp[id],needXp(id, userLevel[id]));
-				chatPrint(id, PREFIX_LINE, "Klasa %s:^3 Lv: %d - XP: %0.1f / %0.1f",classesHuman[userClassHuman[id]][0],  userHumanLevel[id][userClassHuman[id]], userExpClass[id][userClassHuman[id]],needXpClass(userHumanLevel[id][userClassHuman[id]]));
+				ColorChat(id, GREEN, "---^x01 Postac:^x03 Lv: %d - XP: %0.1f / %0.1f^x04 ---",userLevel[id], userExp[id],needXp(id, userLevel[id]));
+				ColorChat(id, GREEN, "---^x01 Klasa %s:^x03 Lv: %d - XP: %0.1f / %0.1f^x04 ---",classesHuman[userClassHuman[id]][0],  userHumanLevel[id][userClassHuman[id]], userExpClass[id][userClassHuman[id]],needXpClass(userHumanLevel[id][userClassHuman[id]]));
 				return PLUGIN_HANDLED;
 			}
 			if( equal(szMessage, "/daj", 4) ){
@@ -2798,7 +2807,7 @@ public cmdSay(id){
 				);
 				new target = cmd_target(id, szPlayer, 0);
 				if( target == id ) {
-					chatPrint(id, PREFIX_NORMAL, "Sobie nie mozesz wyslac Brylek!");
+					ColorChat(id, GREEN, "%s Sobie nie mozesz wyslac Brylek!", PREFIXSAY);
 					return PLUGIN_HANDLED;
 				}
 				if( !target ) {
@@ -2809,11 +2818,11 @@ public cmdSay(id){
 				}
 				new gValue = abs(str_to_num(szValue));
 				if( gValue == 0){
-					chatPrint(id, PREFIX_NORMAL, "Nie mozesz dac 0 Brylek!");
+					ColorChat(id, GREEN, "%s Nie mozesz dac 0 Brylek!", PREFIXSAY);
 					return PLUGIN_CONTINUE;
 				}
 				if( gValue > userNugget[id] ){
-					chatPrint(id, PREFIX_NORMAL, "Nie masz tyle Brylek!");
+					ColorChat(id, GREEN, "%s Nie masz tyle Brylek!", PREFIXSAY);
 					return PLUGIN_CONTINUE;
 				}
 				new gText[128];
@@ -2824,8 +2833,8 @@ public cmdSay(id){
 				}
 				userNugget[id]		-=	gValue;
 				userNugget[target]	+=	gValue;
-				chatPrint(id, PREFIX_NORMAL, "Wyslales^3 %s^1 Brylek do gracza^4 %s!", formatNumber(gValue), userName[target] );
-				chatPrint(target, PREFIX_NORMAL, "Otrzymales^3 %s^1 Brylek do gracza^4 %s!", formatNumber(gValue), userName[id] );
+				ColorChat(id, 		GREEN, 	"%s Wyslales^x03 %s^x01 Brylek do gracza^x04 %s!", PREFIXSAY, formatNumber(gValue), userName[target] );
+				ColorChat(target, 	GREEN, 	"%s Otrzymales^x03 %s^x01 Brylek do gracza^x04 %s!", PREFIXSAY, formatNumber(gValue), userName[id] );
 				return PLUGIN_HANDLED;
 			}
 			if (equal(szMessage, "/kostium")){	
@@ -2850,7 +2859,7 @@ public cmdSay(id){
 			}	
 		}
 		
-		chatPrint(id, PREFIX_LINE, "Nie ma takiej komendy");
+		ColorChat(id, GREEN, "---^x01 Nie ma takiej komendy ---");
 		return PLUGIN_HANDLED;
 	}
 	
@@ -2858,25 +2867,25 @@ public cmdSay(id){
 	trim(szMessage);
 	if( strlen(szMessage) > 0 ){
 		if(!playerLogged(id)){
-			chatPrint(id, PREFIX_LINE, "Zaloguj sie aby moc pisac!");
+			ColorChat(id, GREEN, "---^x01 Zaloguj sie aby moc pisac!^x04 ---");
 			mainMenuAccount(id);
 			return PLUGIN_HANDLED;
 		}
 		
 		if(serverOffChat && !isSuperAdmin(id)){
-			chatPrint(id, PREFIX_LINE, "Chat Zostal wylaczony przez Admina");
-			chatPrint(id, PREFIX_LINE, "Twoja wiadomosc:^3 '%s'", szMessage);
+			ColorChat(id, RED, "^x04---^x03 Chat Zostal wylaczony przez Admina^x04 ---");
+			ColorChat(id, GREEN, "---^x01 Twoja wiadomosc:^x03 '%s'^x04 ---", szMessage);
 			return PLUGIN_HANDLED;
 		}
 		
 		new muteLeft = (userMute[id] - get_systime());	
 		if ((userMute[id] - get_systime() > 0)){
-			chatPrint(id, PREFIX_NONE, "^3Zostales zmutowany!^1 Koniec za:^4 %d godz %s%d min %s%d sek!",  ( muteLeft / HOUR ),(muteLeft / MINUTE % MINUTE)<10?"0":"", ( muteLeft / MINUTE % MINUTE ), (muteLeft%MINUTE)<10?"0":"", ( muteLeft %MINUTE ));
+			ColorChat(id, RED, "Zostales zmutowany!^x01 Koniec za:^x04 %d godz %s%d min %s%d sek!",  ( muteLeft / HOUR ),(muteLeft / MINUTE % MINUTE)<10?"0":"", ( muteLeft / MINUTE % MINUTE ), (muteLeft%MINUTE)<10?"0":"", ( muteLeft %MINUTE ));
 			return PLUGIN_HANDLED;
 		}
 		
 		if(equali( oldMessage[id], szMessage)){
-			chatPrint(id, PREFIX_NORMAL, "Nie powtarzaj tej samej^3 wiadomosci^1 kilka razy!");
+			ColorChat(id, GREEN, "%s Nie powtarzaj tej samej^x03 wiadomosci^x01 kilka razy!", PREFIXSAY);
 			return PLUGIN_HANDLED;
 		} 
 		
@@ -2885,9 +2894,9 @@ public cmdSay(id){
 		new chatPrefix[33];
 		get_clan_info(clan[id], CLAN_NAME, chatPrefix, sizeof(chatPrefix));
 
-		format(chatPrefix, sizeof(chatPrefix), "^3[^1%s^3] ", chatPrefix);	
+		format(chatPrefix, sizeof(chatPrefix), "^x03[^x01%s^x03] ", chatPrefix);	
 		
-		chatPrint(0, PREFIX_NONE, "%s%s^3 %s%s^1:^1 %s",clan[id] ? chatPrefix : "",isSVip(id) ? "^4[SVip]" : isVip(id) ? "^4[Vip]" : "",  userName[id], isSuperAdmin(id) ? "^4*" : "", szMessage);
+		ColorChat(0, get_user_team(id)==1?RED:BLUE,"%s%s^x03 %s%s^x01:^x01 %s",clan[id] ? chatPrefix : "",isSVip(id) ? "^x04[SVip]" : isVip(id) ? "^x04[Vip]" : "",  userName[id], isSuperAdmin(id) ? "^x04*" : "", szMessage);
 		
 		if(userFPS[id] < 30) addSecretMission(id, mission_secret_CHEATER, 1);
 		new gText[192];
@@ -2958,17 +2967,17 @@ public cmdSayClan(id){
 	if( !isPlayer(id) ) return PLUGIN_HANDLED;
 	
 	if(!playerLogged(id)){
-		chatPrint(id, PREFIX_LINE, "Zaloguj sie aby moc pisac!");
+		ColorChat(id, GREEN, "---^x01 Zaloguj sie aby moc pisac!^x04 ---");
 		mainMenuAccount(id);
 		return PLUGIN_HANDLED;
 	}
 	if(!clan[id]){
-		chatPrint(id, PREFIX_LINE, "Dolacz do klanu aby pisac tylko do klanu!");
+		ColorChat(id, GREEN, "---^x01 Dolacz do klanu aby pisac tylko do klanu!^x04 ---");
 		return PLUGIN_HANDLED;
 	}
 	
 	if(OX[OX_START] && OX[OX_TIME] > 0){
-		chatPrint(id, PREFIX_NORMAL, "Teraz nie wolno pisac!");
+		ColorChat(id,GREEN, "%s Teraz nie wolno pisac!", PREFIXSAY);
 		return PLUGIN_HANDLED;
 	}
 		
@@ -2985,7 +2994,7 @@ public cmdSayClan(id){
 		
 		for(new i = 1; i < maxPlayers; i ++)
 			if(is_user_connected(i) && clan[id] == clan[i])
-				chatPrint(i, PREFIX_NONE, "^4[[-^3 %s^4 -]]^1 %s:^4 %s", clanName, userName[id], szMessage);
+				ColorChat(i, get_user_team(i)==1?RED:BLUE,"^x04[[-^x03 %s^x04 -]]^x01 %s:^x04 %s", clanName, userName[id], szMessage);
 		
 		new gText[192];
 		logType[id] = LOG_CHAT;
@@ -3107,7 +3116,7 @@ public fw_CmdStart( id, uc_handle, randseed ){
 			}			
 		}
 	}
-	if (!userGrab[id] || !pev_valid(userGrab[id])) return FMRES_HANDLED;
+	if (!userGrab[id] || !is_valid_ent(userGrab[id])) return FMRES_HANDLED;
 	if(userNoRecoil[id]) set_pev(id, pev_punchangle, Float:{0.0,0.0,0.0});
 	
 	return FMRES_IGNORED;
@@ -3261,14 +3270,14 @@ public globalMenu_2(id, item){
 		
 		if(OX[OX_TIME] && OX[OX_START]){
 			if(item != 9){
-				chatPrint(id, PREFIX_LINE, "Teraz nic nie mozesz sprawdzic! Odpowiadaj na pytania.");
+				ColorChat(id, GREEN, "---^x01 Teraz nic nie mozesz sprawdzic! Odpowiadaj na pytania.^x04 ---");
 				globalMenu(id);
 				return PLUGIN_HANDLED;
 			}	
 		}
 		
 		if(item == 0  || item == 1 || item == 5 || item == 4|| item == 6 || item == 8){	
-			chatPrint(id, PREFIX_LINE, "Teraz jest OX");
+			ColorChat(id, GREEN, "---^x01 Teraz jest OX^x04 ---");
 			globalMenu(id);
 			return PLUGIN_HANDLED;
 		}
@@ -3288,7 +3297,7 @@ public globalMenu_2(id, item){
 			if (!gameTime){
 				if (is_user_alive(id)) cmdUnstuck(id);
 				else respawnPlayerAdmin(id);
-			} else chatPrint(id, PREFIX_NORMAL, "Nie mozesz teraz sie odrodzic");
+			} else ColorChat(id, GREEN, "%s Nie mozesz teraz sie odrodzic", PREFIXSAY);
 		}
 		case 5: adminHelp(id);
 		case 6: teamOption(id);
@@ -3388,7 +3397,7 @@ public checkFPS(id){
 		color[2]  = random(45);
 		
 		Display_Fade(id, 4096,4096, 4096,color[0],color[1], color[2],255);
-		chatPrint(id, PREFIX_LINE, "Ustaw^3 fps_max^4 101^1 |^3 fps_modem^4 101^1 aby nie byc blokowanym");
+		ColorChat(id, GREEN, "---^x01 Ustaw^x03 fps_max^x04 101^x01 |^x03 fps_modem^x04 101^x01 aby nie byc blokowanym  ^x04 ---");
 		set_dhudmessage(color[0]*3, color[1]*3, color[2]*3, -1.0, -1.0, _, _, 0.9, _, _);
 		show_dhudmessage(id, "Wpisz w konsoli fps_max 101 | fps_modem 101 aby moc grac^n^n");
 		
@@ -3564,7 +3573,7 @@ public infoPlayer(id, target){
 	iLen += format(gText[iLen], sizeText, "</table>")	;
 	iLen += format(gText[iLen], sizeText, "</html>");
 	
-	if(id != target) chatPrint(target, PREFIX_NORMAL, "Gracz^3 %s^1 przeglada twoje statystyki!", userName[id]);
+	if(id != target) ColorChat(target, GREEN, "%s Gracz^x03 %s^x01 przeglada twoje statystyki!", PREFIXSAY, userName[id]);
 	
 	show_motd(id, gText, formatm("Informacje o grcazu: %s",userName[target]));
 	return PLUGIN_CONTINUE;
@@ -3572,14 +3581,14 @@ public infoPlayer(id, target){
 public checkForAward(id){
 	
 	if( !playerLogged(id)){
-		chatPrint(id, PREFIX_NORMAL, "Zaloguj sie aby odebrac nagrode!");
+		ColorChat(id, GREEN, "%s Zaloguj sie aby odebrac nagrode!", PREFIXSAY);
 		return PLUGIN_CONTINUE;
 	}
 	
 	new newAwardLeft = userLastAwardTime[id] + userAwardTime - playedTime(id);
 	
 	if( userLastAwardTime[id] + userAwardTime > userTime[id] && newAwardLeft > 0){
-		chatPrint(id, PREFIX_NORMAL, "Jeszcze nie mozna odebrac nagrody! Nagroda za^4 %d:%s%d:%s%d", ( newAwardLeft / HOUR ), ( newAwardLeft / MINUTE % MINUTE )<10?"0":"", ( newAwardLeft / MINUTE % MINUTE ), (newAwardLeft%MINUTE)<10?"0":"", ( newAwardLeft %MINUTE ));
+		ColorChat(id, GREEN, "%s Jeszcze nie mozna odebrac nagrody! Nagroda za^x04 %d:%s%d:%s%d", PREFIXSAY, ( newAwardLeft / HOUR ), ( newAwardLeft / MINUTE % MINUTE )<10?"0":"", ( newAwardLeft / MINUTE % MINUTE ), (newAwardLeft%MINUTE)<10?"0":"", ( newAwardLeft %MINUTE ));
 		return PLUGIN_CONTINUE;
 	}
 	
@@ -3594,20 +3603,20 @@ public checkForAward(id){
 					
 					new vipRandom = random_num(1000,2500);
 					addNuggetToFinal(id, vipRandom);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %d Brylek^1 z nagrody.", userName[id],vipRandom);
+					ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 otrzymal^x04 %d Brylek^x01 z nagrody.", PREFIXSAY, userName[id],vipRandom);
 					iLen += format(gText[iLen], sizeof(gText)-1-iLen,"dostal %d brylek z Nagrody!",vipRandom);
 					empty	=	false;
 				}
 				case 2:{
 					new Float:expVipRandom = random_float(300.0, 700.0);
 					addExpToFinal(id, expVipRandom);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %0.1f EXP'a^1 z nagrody.", userName[id],expVipRandom);
+					ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 otrzymal^x04 %0.1f EXP'a^x01 z nagrody.", PREFIXSAY, userName[id],expVipRandom);
 					iLen += format(gText[iLen], sizeof(gText)-1-iLen, "dostal %0.1f EXP'a z Nagrody!",expVipRandom);
 					empty	=	false;
 				}
 				case 3:{
 					new svipRandomVip = random_num(1,3);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 SVIP'a^1 na^4 %d %s^1 z nagrody!", userName[id], svipRandomVip, svipRandomVip == 1 ? "dzien" : "dni" );
+					ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 otrzymal^x04 SVIP'a^x01 na^x04 %d %s^x01 z nagrody!", PREFIXSAY, userName[id], svipRandomVip, svipRandomVip == 1 ? "dzien" : "dni" );
 					timeSVip[id]	= 	max( timeSVip[id] + (DAY*svipRandomVip), get_systime() + (DAY*svipRandomVip) );
 					empty	=	false;
 				}
@@ -3615,7 +3624,7 @@ public checkForAward(id){
 					new Float:fOrigin[3];
 					pev(id, pev_origin, fOrigin);
 					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Skrzynke^1 z nagrody.", userName[id]);
+					ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 otrzymal^x04 Skrzynke^x01 z nagrody.", PREFIXSAY, userName[id]);
 					createCases(fOrigin, .disappear = 1, .owner = id);
 					empty	=	false;
 				}
@@ -3627,7 +3636,7 @@ public checkForAward(id){
 						userScrollExp[id] += svipTimeScrool;
 					} else userScrollExp[id] += svipTimeScrool;	
 					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Doswiadczenia^1 na^4 %d %s^1 z nagrody!", userName[id], (svipTimeScrool/HOUR), (svipTimeScrool/HOUR) == 1  ? "godzine" : (svipTimeScrool/HOUR) ==  5 ? "godzin" : "godziny" );
+					ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 otrzymal^x04 Zwoj Doswiadczenia^x01 na^x04 %d %s^x01 z nagrody!", PREFIXSAY, userName[id], (svipTimeScrool/HOUR), (svipTimeScrool/HOUR) == 1  ? "godzine" : (svipTimeScrool/HOUR) ==  5 ? "godzin" : "godziny" );
 					empty	=	false;
 				}
 				case 6:{
@@ -3638,7 +3647,7 @@ public checkForAward(id){
 						userScrollNugget[id] += svipTimeScrool;	
 					} else userScrollNugget[id] += svipTimeScrool;
 					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Szczescia^1 na^4 %d %s^1 z nagrody!", userName[id], (svipTimeScrool/HOUR), (svipTimeScrool/HOUR) == 1  ? "godzine" : (svipTimeScrool/HOUR) ==  5 ? "godzin" : "godziny" );
+					ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 otrzymal^x04 Zwoj Szczescia^x01 na^x04 %d %s^x01 z nagrody!", PREFIXSAY, userName[id], (svipTimeScrool/HOUR), (svipTimeScrool/HOUR) == 1  ? "godzine" : (svipTimeScrool/HOUR) ==  5 ? "godzin" : "godziny" );
 					empty	=	false;
 				}	
 			}
@@ -3648,20 +3657,20 @@ public checkForAward(id){
 					
 					new vipRandom = random_num(750,2000);
 					addNuggetToFinal(id, vipRandom);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %d Brylek^1 z nagrody.", userName[id],vipRandom);
+					ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 otrzymal^x04 %d Brylek^x01 z nagrody.", PREFIXSAY, userName[id],vipRandom);
 					iLen += format(gText[iLen], sizeof(gText)-1-iLen,"dostal %d brylek z Nagrody!",vipRandom);
 					empty	=	false;
 				}
 				case 2:{
 					new Float:expVipRandom = random_float(200.0, 500.0);
 					addExpToFinal(id, expVipRandom);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %0.1f EXP'a^1 z nagrody.", userName[id],expVipRandom);
+					ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 otrzymal^x04 %0.1f EXP'a^x01 z nagrody.", PREFIXSAY, userName[id],expVipRandom);
 					iLen += format(gText[iLen], sizeof(gText)-1-iLen, "dostal %0.1f EXP'a z Nagrody!",expVipRandom);
 					empty	=	false;
 				}
 				case 3:{
 					new vipRandomVip = random_num(1,10);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 VIP'a^1 na^4 %d %s^1 z nagrody!", userName[id], vipRandomVip, vipRandomVip == 1 ? "dzien" : "dni" );
+					ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 otrzymal^x04 VIP'a^x01 na^x04 %d %s^x01 z nagrody!", PREFIXSAY, userName[id], vipRandomVip, vipRandomVip == 1 ? "dzien" : "dni" );
 					timeVip[id]	= 	max( timeVip[id] + (DAY*vipRandomVip), get_systime() + (DAY*vipRandomVip) );
 					empty	=	false;
 				}
@@ -3669,7 +3678,7 @@ public checkForAward(id){
 					new Float:fOrigin[3];
 					pev(id, pev_origin, fOrigin);
 					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Skrzynke^1 z nagrody.", userName[id]);
+					ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 otrzymal^x04 Skrzynke^x01 z nagrody.", PREFIXSAY, userName[id]);
 					createCases(fOrigin, .disappear = 1, .owner = id);
 					empty	=	false;
 				}
@@ -3681,7 +3690,7 @@ public checkForAward(id){
 						userScrollExp[id] += vipTimeScrool;
 					} else userScrollExp[id] += vipTimeScrool;	
 					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Doswiadczenia^1 na^4 %d %s^1 z nagrody!", userName[id], (vipTimeScrool/HOUR), (vipTimeScrool/HOUR) == 1  ? "godzine" : (vipTimeScrool/HOUR) ==  5 ? "godzin" : "godziny" );
+					ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 otrzymal^x04 Zwoj Doswiadczenia^x01 na^x04 %d %s^x01 z nagrody!", PREFIXSAY, userName[id], (vipTimeScrool/HOUR), (vipTimeScrool/HOUR) == 1  ? "godzine" : (vipTimeScrool/HOUR) ==  5 ? "godzin" : "godziny" );
 					empty	=	false;
 				}
 				case 6:{
@@ -3692,7 +3701,7 @@ public checkForAward(id){
 						userScrollNugget[id] += vipTimeScrool;	
 					} else userScrollNugget[id] += vipTimeScrool;
 					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Szczescia^1 na^4 %d %s^1 z nagrody!", userName[id], (vipTimeScrool/HOUR), (vipTimeScrool/HOUR) == 1  ? "godzine" : (vipTimeScrool/HOUR) ==  5 ? "godzin" : "godziny" );
+					ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 otrzymal^x04 Zwoj Szczescia^x01 na^x04 %d %s^x01 z nagrody!", PREFIXSAY, userName[id], (vipTimeScrool/HOUR), (vipTimeScrool/HOUR) == 1  ? "godzine" : (vipTimeScrool/HOUR) ==  5 ? "godzin" : "godziny" );
 					empty	=	false;
 				}	
 			}
@@ -3701,20 +3710,20 @@ public checkForAward(id){
 				case 1:{
 					new userRandom = random_num(500,1000);
 					addNuggetToFinal(id, userRandom);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %d Brylek^1 z nagrody.", userName[id],userRandom);
+					ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 otrzymal^x04 %d Brylek^x01 z nagrody.", PREFIXSAY, userName[id],userRandom);
 					iLen += format(gText[iLen], sizeof(gText)-1-iLen, "dostal %d brylek z Nagrody!",userRandom);
 					empty	=	false;
 				}
 				case 2:{
 					new Float:expRandom = random_float(100.0, 300.0);
 					addExpToFinal(id, expRandom);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %0.1f EXP'a^1 z nagrody.", userName[id],expRandom);
+					ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 otrzymal^x04 %0.1f EXP'a^x01 z nagrody.", PREFIXSAY, userName[id],expRandom);
 					iLen += format(gText[iLen], sizeof(gText)-1-iLen, "dostal %0.1f EXP'a z Nagrody!",expRandom);
 					empty	=	false;
 				} 
 				case 3:{
 					new userRandomVip = random_num(1,5);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 VIP'a^1 na^4 %d %s^1 z nagrody!", userName[id], userRandomVip, userRandomVip == 1 ? "dzien" : "dni" );
+					ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 otrzymal^x04 VIP'a^x01 na^x04 %d %s^x01 z nagrody!", PREFIXSAY, userName[id], userRandomVip, userRandomVip == 1 ? "dzien" : "dni" );
 					timeVip[id]	= 	max( timeVip[id] + (DAY*userRandomVip), get_systime() + (DAY*userRandomVip) );
 					empty	=	false;
 				}
@@ -3722,7 +3731,7 @@ public checkForAward(id){
 					new Float:fOrigin[3];
 					pev(id, pev_origin, fOrigin);
 					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Skrzynke^1 z nagrody.", userName[id]);
+					ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 otrzymal^x04 Skrzynke^x01 z nagrody.", PREFIXSAY, userName[id]);
 					createCases(fOrigin, .disappear = 1, .owner = id);
 					empty	=	false;
 				}
@@ -3734,7 +3743,7 @@ public checkForAward(id){
 						userScrollExp[id] += userTimeScrool;	
 					} else userScrollExp[id] += userTimeScrool;
 					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Doswiadczenia^1 na^4 %d %s^1 z nagrody!", userName[id], (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
+					ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 otrzymal^x04 Zwoj Doswiadczenia^x01 na^x04 %d %s^x01 z nagrody!", PREFIXSAY, userName[id], (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
 					empty	=	false;
 				}
 				case 6:{
@@ -3746,13 +3755,13 @@ public checkForAward(id){
 						userScrollNugget[id] += userTimeScrool;
 					} else userScrollNugget[id] += userTimeScrool;
 					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Szczescia^1 na^4 %d %s^1 z nagrody!", userName[id], (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
+					ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 otrzymal^x04 Zwoj Szczescia^x01 na^x04 %d %s^x01 z nagrody!", PREFIXSAY, userName[id], (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
 					empty	=	false;
 				}
 			}
 		}
 		if( empty ){
-			chatPrint(id, PREFIX_NORMAL, "Ojejku :( Nic nie dostales.");
+			ColorChat(id, GREEN, "%s Ojejku :( Nic nie dostales.", PREFIXSAY);
 			iLen += format(gText[iLen], sizeof(gText)-1-iLen, "nic nie dostal z Nagrody!");
 		}
 		logBB(id, gText);
@@ -3771,17 +3780,15 @@ public playerRandomInfo(){
 	if( iNum > 0 ){
 		new target = listPlayer[random(iNum)];
 		switch(random(7)){
-			case 0: chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 zabil juz lacznie^3 %d^1 osob!", userName[target], userKills[target]);
-			case 1: chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 zginal juz lacznie^3 %d^1 razy!", userName[target], userDeaths[target]);
-			case 2: chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 przegral juz lacznie^3 %dgodz %s%dmin %s%dsek^1!", userName[target],playedTime(target)/HOUR, (playedTime(target)/MINUTE)<10?"0":"",playedTime(target)/MINUTE%MINUTE, playedTime(target)%MINUTE<10?"0":"", playedTime(target)%MINUTE);
-			case 3: chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 zadal lacznie^3 %d^1 obrazen!", userName[target], userAllDmg[target]);
-			case 4: chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 odebral juz lacznie^3 %d^1 nagrod!", userName[target], userAllAward[target]);
-			case 5: chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 posiada^3 %d^1 punktow!", userName[target], userPoints[target]);
-			case 6: chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 poraz pierwszy zalogowal sie na serwer^3 %s!", userName[target], userFirstLogin[target]);
+			case 0: ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 zabil juz lacznie^x03 %d^x01 osob!", PREFIXSAY, userName[target], userKills[target]);
+			case 1: ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 zginal juz lacznie^x03 %d^x01 razy!", PREFIXSAY, userName[target], userDeaths[target]);
+			case 2: ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 przegral juz lacznie^x03 %dgodz %s%dmin %s%dsek^x01!", PREFIXSAY, userName[target],playedTime(target)/HOUR, (playedTime(target)/MINUTE)<10?"0":"",playedTime(target)/MINUTE%MINUTE, playedTime(target)%MINUTE<10?"0":"", playedTime(target)%MINUTE);
+			case 3: ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 zadal lacznie^x03 %d^x01 obrazen!", PREFIXSAY, userName[target], userAllDmg[target]);
+			case 4: ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 odebral juz lacznie^x03 %d^x01 nagrod!", PREFIXSAY, userName[target], userAllAward[target]);
+			case 5: ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 posiada^x03 %d^x01 punktow!", PREFIXSAY, userName[target], userPoints[target]);
+			case 6: ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 poraz pierwszy zalogowal sie na serwer^x03 %s!", PREFIXSAY, userName[target], userFirstLogin[target]);
 		}
 	}	
-	
-	
 	set_task(random_float(60.0, 120.0), "playerRandomInfo");	
 }
 

@@ -6,7 +6,6 @@
 #include <fakemeta_util>
 #include <engine>
 #include <hamsandwich>
-#include <ColorChat>
 
 #define GRZYBKITHINK 19582
 #define TASK_SHROOMAFK 19258
@@ -328,12 +327,12 @@ public clearQue(){
 public startShroomGame(id){	
 	if(get_gametime()-shroomBtn[id] < 2.0 ){
 		shroomBtn[id] = get_gametime();		
-		ColorChat(id, GREEN, "---^x01 Nie spamuj !^x04 ---");
+		chatPrint(id, PREFIX_LINE, "Nie spamuj !");
 		return PLUGIN_CONTINUE;
 	}
 	shroomZone = find_ent_by_tname(-1, "shroomZone");
 	if( !pev_valid(shroomZone) ){
-		ColorChat(id, GREEN, "---^x01 Nie mozna grac w grzybki :(^x04 ---");
+		chatPrint(id, PREFIX_LINE, "Nie mozna grac w grzybki :(");
 		return PLUGIN_CONTINUE;		
 	}
 	if( shroomPlayer == id ){
@@ -354,7 +353,7 @@ public startShroomGame(id){
 			
 			startWithPlayer();
 		}else{
-			ColorChat(id, GREEN, "---^x01 Twoje miejsce w kolejce to:^x04 %d ---", placeInQue);
+			chatPrint(id, PREFIX_LINE, "Twoje miejsce w kolejce to:^4 %d ", placeInQue);
 		}
 	}
 	return PLUGIN_CONTINUE;
@@ -383,22 +382,22 @@ public endShroomGameAfk(id){
 	
 	if( task_exists(shroomTASK) ) remove_task(shroomTASK);
 		
-	ColorChat(0, GREEN,"---^x01 AFK !^x04 %s^x01 ! Na liczniku^x04 %d^x01, rekord^x04 %d ---", userName[shroomPlayer],totalPointsMooshrom, userShroomPoints[shroomPlayer]);
+	chatPrint(0, PREFIX_LINE, "AFK !^4 %s^1 ! Na liczniku^4 %d^1, rekord^4 %d ", userName[shroomPlayer],totalPointsMooshrom, userShroomPoints[shroomPlayer]);
 	endGame();
 }
 public endShroomGame(){
 	if( task_exists(shroomTASK)) remove_task(shroomTASK);
-	ColorChat(0, GREEN,"---^x01 Skucha !^x04 %s^x01 ! Na liczniku^x04 %d^x01, rekord^x04 %d ---", userName[shroomPlayer],totalPointsMooshrom, userShroomPoints[shroomPlayer]);
+	chatPrint(0, PREFIX_LINE, "Skucha !^4 %s^1 ! Na liczniku^4 %d^1, rekord^4 %d ", userName[shroomPlayer],totalPointsMooshrom, userShroomPoints[shroomPlayer]);
 	endGame();
 }
 public endShroomGameTime(){
-	ColorChat(0, GREEN,"---^x01 Koniec Czasu^x04 %s^x01 ! Na liczniku^x04 %d^x01, rekord^x04 %d ---", userName[shroomPlayer],totalPointsMooshrom, userShroomPoints[shroomPlayer]);
+	chatPrint(0, PREFIX_LINE, "Koniec Czasu^4 %s^1 ! Na liczniku^4 %d^1, rekord^4 %d ", userName[shroomPlayer],totalPointsMooshrom, userShroomPoints[shroomPlayer]);
 	endGame();
 }
 public endShroomGameLeft(){
 	if( task_exists(shroomPlayer+TASK_SHROOMAFK)) remove_task(shroomPlayer+TASK_SHROOMAFK);
 		
-	ColorChat(0, GREEN,"---^x01 Gracz^x04 %s^x01 ! Wyszedl ---", userName[shroomPlayer]);
+	chatPrint(0, PREFIX_LINE, "Gracz^4 %s^1 ! Wyszedl ", userName[shroomPlayer]);
 	endGame();
 }
 public endGame(){
@@ -415,28 +414,28 @@ public endGame(){
 		switch(random(100)){
 			case 0: 	{
 				createNuggetOrigin(fOrigin, award,award, BLACK_NUGGET, 	.owner=shroomPlayer);
-				ColorChat(0, GREEN,"---^x01 %s otrzymal^x04 %d^x01 Czarnych brylek ! Za ustrzelenie^x04 %d^x01 grzybkow^x04 ---", userName[shroomPlayer],award,totalPointsMooshrom);
+				chatPrint(0, PREFIX_LINE, "%s otrzymal^4 %d^1 Czarnych brylek ! Za ustrzelenie^4 %d^1 grzybkow", userName[shroomPlayer],award,totalPointsMooshrom);
 			}
 			case 1..5:{
 				createNuggetOrigin(fOrigin, award,award, PINK_NUGGET, 	.owner=shroomPlayer);	
-				ColorChat(0, GREEN,"---^x01 %s otrzymal^x04 %d^x01 Rozowych brylek ! Za ustrzelenie^x04 %d^x01 grzybkow^x04 ---", userName[shroomPlayer],award,totalPointsMooshrom);
+				chatPrint(0, PREFIX_LINE, "%s otrzymal^4 %d^1 Rozowych brylek ! Za ustrzelenie^4 %d^1 grzybkow", userName[shroomPlayer],award,totalPointsMooshrom);
 				
 			}
 			case 6..16: {
 				createNuggetOrigin(fOrigin, award,award, BLUE_NUGGET, 	.owner=shroomPlayer);
-				ColorChat(0, GREEN,"---^x01 %s otrzymal^x04 %d^x01 Niebieskich brylek ! Za ustrzelenie^x04 %d^x01 grzybkow^x04 ---", userName[shroomPlayer],award,totalPointsMooshrom);
+				chatPrint(0, PREFIX_LINE, "%s otrzymal^4 %d^1 Niebieskich brylek ! Za ustrzelenie^4 %d^1 grzybkow", userName[shroomPlayer],award,totalPointsMooshrom);
 			}
 			case 17..32:{
 				createNuggetOrigin(fOrigin, award,award, YELLOW_NUGGET, 	.owner=shroomPlayer);
-				ColorChat(0, GREEN,"---^x01 %s otrzymal^x04 %d^x01 Zoltych brylek ! Za ustrzelenie^x04 %d^x01 grzybkow^x04 ---", userName[shroomPlayer],award,totalPointsMooshrom);
+				chatPrint(0, PREFIX_LINE, "%s otrzymal^4 %d^1 Zoltych brylek ! Za ustrzelenie^4 %d^1 grzybkow", userName[shroomPlayer],award,totalPointsMooshrom);
 			}
 			case 33..53:{
 				createNuggetOrigin(fOrigin, award,award, GREEN_NUGGET, 	.owner=shroomPlayer);
-				ColorChat(0, GREEN,"---^x01 %s otrzymal^x04 %d^x01 Zielonych brylek ! Za ustrzelenie^x04 %d^x01 grzybkow^x04 ---", userName[shroomPlayer],award,totalPointsMooshrom);
+				chatPrint(0, PREFIX_LINE, "%s otrzymal^4 %d^1 Zielonych brylek ! Za ustrzelenie^4 %d^1 grzybkow", userName[shroomPlayer],award,totalPointsMooshrom);
 			}
 			default:{
 				createNuggetOrigin(fOrigin, award,award, RED_NUGGET, 	.owner=shroomPlayer);
-				ColorChat(0, GREEN,"---^x01 %s otrzymal^x04 %d^x01 Czerwonych brylek ! Za ustrzelenie^x04 %d^x01 grzybkow^x04 ---", userName[shroomPlayer],award,totalPointsMooshrom);
+				chatPrint(0, PREFIX_LINE, "%s otrzymal^4 %d^1 Czerwonych brylek ! Za ustrzelenie^4 %d^1 grzybkow", userName[shroomPlayer],award,totalPointsMooshrom);
 			}
 		}		
 	}

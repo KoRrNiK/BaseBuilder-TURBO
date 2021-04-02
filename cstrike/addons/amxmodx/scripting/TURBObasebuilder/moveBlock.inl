@@ -116,7 +116,7 @@ public hookEnt(id){
 	}
 	
 	if (id != userMoveAs[id] && userMoveAs[id] && userAllowBuild[id]){
-		ColorChat(id, GREEN, "%s Przenosisz klocki jako^x03 %s", PREFIXSAY, userName[userMoveAs[id]]);
+		chatPrint(id, PREFIX_NORMAL, "Przenosisz klocki jako^3 %s", userName[userMoveAs[id]]);
 	}
 	
 	
@@ -125,7 +125,7 @@ public hookEnt(id){
 			if( getOwner(ent) == 0 || userClone[id] ){
 				if( userBlocksUsed[id] >= (isSVip(id) ? bbCvar[cvarMoveMaxBlockSVip] : isVip(id) ? bbCvar[cvarMoveMaxBlockVip] : bbCvar[cvarMoveMaxBlock]) ){
 					set_dhudmessage(255, 0, 0, -1.0, 0.40, 0, 6.0, 3.0);
-					show_dhudmessage(id, "--- Uzyto maxymalna ilosc blokow ---");				
+					show_dhudmessage(id, " Uzyto maxymalna ilosc blokow ");				
 					return PLUGIN_CONTINUE;
 				}
 				if(!isSuperAdmin(id) && buildTime)
@@ -174,7 +174,7 @@ public selectAimingMoveAs(id){
 		}
 		if (userMoveAs[id] != ent){
 			userMoveAs[id] = ent;
-			ColorChat(id, GREEN, "%s Przenosisz klocki jako^x03 %s", PREFIXSAY, userName[userMoveAs[id]]);
+			chatPrint(id, PREFIX_NORMAL, "Przenosisz klocki jako^3 %s", userName[userMoveAs[id]]);
 		}
 		return PLUGIN_CONTINUE;
 	}
@@ -304,7 +304,7 @@ public buildingBuild(id){
 			if( userClone[id] && !isPlayer(userGrab[id])){
 				if( userBlocksUsed[id] >= (isSVip(id) ? bbCvar[cvarMoveMaxBlockSVip] : isVip(id) ? bbCvar[cvarMoveMaxBlockVip] : bbCvar[cvarMoveMaxBlock])){
 					set_dhudmessage(255, 0, 0, -1.0, 0.40, 0, 6.0, 3.0);
-					show_dhudmessage(id, "--- Uzyto maxymalna ilosc blokow ---");	
+					show_dhudmessage(id, " Uzyto maxymalna ilosc blokow ");	
 				}else {
 					
 					new cloneEnt = createClone(userGrab[id]);
@@ -403,8 +403,8 @@ public impulsePush(id){
 	userPushBlock[id] += 2.0;
 	if(userPushBlock[id] > 6.0){
 		userPushBlock[id]  = 0.0;
-		ColorChat(id, GREEN, "---^x01 Przesuwasz klocki normalnie ^x04 ---");
-	} else ColorChat(id, GREEN, "---^x01 Przesuwasz klocki wolniej o^x03 %d razy^x04 ---", floatround(userPushBlock[id]));
+		chatPrint(id, PREFIX_LINE, "Przesuwasz klocki normalnie ");
+	} else chatPrint(id, PREFIX_LINE, "Przesuwasz klocki wolniej o^3 %d razy", floatround(userPushBlock[id]));
 	
 	return PLUGIN_HANDLED;
 }
@@ -414,7 +414,7 @@ public impulseClone(id){
 	if(isPlayer(userGrab[id])) return PLUGIN_CONTINUE;
 	
 	if (!isAdmin(id) && userCloned[id] >= (isSVip(id) ? bbCvar[cvarMoveMaxBlockSVip] : isVip(id) ? bbCvar[cvarMoveMaxBlockVip] : bbCvar[cvarMoveMaxBlock])){
-		ColorChat(id, GREEN, "%s Osiagnales juz limit blokow!", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Osiagnales juz limit blokow!");
 		return PLUGIN_HANDLED;
 	}
 	userClone[id] = !userClone[id];

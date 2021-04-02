@@ -5,7 +5,6 @@
 #include <	fakemeta	>
 #include <	fakemeta_util	>
 #include <	engine		>
-#include <	colorchat	>
 
 new bool:userBuyClassAccept[33];
 new userVarClass[33][33];
@@ -64,7 +63,7 @@ public randomClassAll(id){
 		all ++;
 	}
 	if(all == sizeof(classesHuman)){
-		ColorChat(id, GREEN, "---^x01 Masz juz kupione wszystkie klasy!^x04 ---");
+		chatPrint(id, PREFIX_LINE, "Masz juz kupione wszystkie klasy!");
 		return PLUGIN_CONTINUE;
 	}
 	
@@ -78,7 +77,7 @@ public randomClassAll(id){
 	new cost = defaultCostClass + (allClassHumman(id));
 		
 	if(userNugget[id] < cost){
-		ColorChat(id, GREEN, "---^x01 Nie posiadasz Brylek aby kupic ta klase!^x04 ---");
+		chatPrint(id, PREFIX_LINE, "Nie posiadasz Brylek aby kupic ta klase!");
 		return PLUGIN_CONTINUE;
 	}
 	if(!userBuyClassAccept[id]){
@@ -94,7 +93,7 @@ public randomClassAll(id){
 	}
 					
 	addClassHuman(id, class);
-	ColorChat(id, GREEN, "---^x01 Zakupiles klase^x03 %s!^x04 ---", classesHuman[class][0]);
+	chatPrint(id, PREFIX_LINE, "Zakupiles klase^3 %s!", classesHuman[class][0]);
 	userNugget[id] -= cost;
 	userHumanLevel[id][class] ++;
 	userBuyClassAccept[id] = false;
@@ -267,18 +266,18 @@ public upgradeClass_2(id, item){
 			if( userClassHuman[id] != class ){
 				if( buildTime || prepTime ){
 					
-					ColorChat(id, GREEN,"---^x01 Twoja nowa klasa:^x03 %s^x04 ---", classesHuman[class][0] );
+					chatPrint(id, PREFIX_LINE, "Twoja nowa klasa:^3 %s", classesHuman[class][0] );
 							
 					userClassHuman[id] = class;
 					userNewClassHuman[id] = class;
 					setHumanClass(id);
 				}else{
 					userNewClassHuman[id] = class;
-					ColorChat(id, GREEN,"---^x01 Twoja klasa zmieni sie po odrodzeniu na:^x03 %s^x04 ---", classesHuman[class][0] );
+					chatPrint(id, PREFIX_LINE, "Twoja klasa zmieni sie po odrodzeniu na:^3 %s", classesHuman[class][0] );
 				}
 					
 			} else { 
-				ColorChat(id, GREEN,"---^x01 Aktualnie grasz ta klasa^x04 ---"); 
+				chatPrint(id, PREFIX_LINE, "Aktualnie grasz ta klasa"); 
 				classHuman(id);
 			}
 		}
@@ -394,7 +393,7 @@ public allClassHumman(id){
 public atributeMenu(id){
 	
 	if(get_user_team(id) != 2){
-		ColorChat(id, GREEN, "%s Moce sa przeznaczone tylko dla klas Budowniczych!", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Moce sa przeznaczone tylko dla klas Budowniczych!");
 		return PLUGIN_CONTINUE;
 	}
 	
@@ -437,13 +436,13 @@ public atributeMenu_2(id, menu, item){
 	new bonus = str_to_num(classesHuman[userClassHuman[id]][4]);
 	
 	if(get_user_team(id) != 2){
-		ColorChat(id, GREEN, "%s Moce sa przeznaczone tylko dla klas Budowniczych!", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Moce sa przeznaczone tylko dla klas Budowniczych!");
 		return PLUGIN_CONTINUE;
 	}
 	
 	
 	if(bonus == -1){
-		ColorChat(id, GREEN, "%s Ta klasa nie posiada dodatkowych mocy!", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Ta klasa nie posiada dodatkowych mocy!");
 		return PLUGIN_CONTINUE;
 	}
 	usePower(id, bonus);
@@ -467,18 +466,18 @@ public bool:usePower(id, bonus){
 	if (0 >  bonus) return false;
 	
 	if (!gameTime){
-		ColorChat(id, GREEN, "%s Poczekaj az rozpocznie sie runda", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Poczekaj az rozpocznie sie runda");
 		return false;
 	}
 	
 	if(get_user_team(id) != 2){
-		ColorChat(id, GREEN, "%s Moce sa przeznaczone tylko dla klas Budowniczych!", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Moce sa przeznaczone tylko dla klas Budowniczych!");
 		return false;
 	}
 	
 	
 	if (userClassUsed[id][bonus] > get_gametime()){
-		ColorChat(id, GREEN, "%s Moc^x03 %s^x01 odnowi sie za:^x03 %0.1f sek", PREFIXSAY, bonusClass[bonus][0], floatsub(userClassUsed[id][bonus], get_gametime()));
+		chatPrint(id, PREFIX_NORMAL, "Moc^3 %s^1 odnowi sie za:^3 %0.1f sek", bonusClass[bonus][0], floatsub(userClassUsed[id][bonus], get_gametime()));
 		return false;
 	}
 
@@ -495,11 +494,11 @@ public bool:usePower(id, bonus){
 public Float:useBonus(id, idBonus, bool:staticTime){
 	
 	if(get_user_team(id) != 2){
-		ColorChat(id, GREEN, "%s Moce sa przeznaczone tylko dla klas Budowniczych!", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Moce sa przeznaczone tylko dla klas Budowniczych!");
 		return -1.0;
 	}
 	if(!is_user_alive(id)){
-		ColorChat(id, GREEN, "%s Musisz byc zywy aby uzyc Mocy!", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Musisz byc zywy aby uzyc Mocy!");
 		return -1.0;
 	}
 	
@@ -581,7 +580,7 @@ public Float:useBonus(id, idBonus, bool:staticTime){
 	#endif
 
 	addMission(id, mission_MAGIC, 1);
-	ColorChat(id, GREEN, "%s Uzyto:^x03 %s", PREFIXSAY, bonusClass[idBonus][0]);
+	chatPrint(id, PREFIX_NORMAL, "Uzyto:^3 %s", bonusClass[idBonus][0]);
 	return 0.0;
 }
 

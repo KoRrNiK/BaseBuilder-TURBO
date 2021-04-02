@@ -77,7 +77,7 @@ public addFinalExp(id){
 	id -= TASK_ADDEXP;
 	
 	if (userExpShow[id] >= 500.0)
-		ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 mial^x04 %0.2f EXP'a^x01 na liczniku!^x04 ---", userName[id], userExpShow[id]);
+		chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 mial^4 %0.2f EXP'a^1 na liczniku!", userName[id], userExpShow[id]);
 	
 	addExp(id, userExpShow[id]);
 	userExpShow[id] = 0.0;
@@ -173,7 +173,7 @@ public addFinalNugget(id){
 	id -= TASK_ADDNUGGET;
 	
 	if (userNuggetShow[id] >= 750)
-		ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 mial^x04 %d Brylek^x01 na liczniku!^x04 ---", userName[id], userNuggetShow[id]);
+		chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 mial^4 %d Brylek^1 na liczniku!", userName[id], userNuggetShow[id]);
 	
 	
 	addNugget(id, userNuggetShow[id]);
@@ -212,7 +212,7 @@ public addFinalBone(id){
 	id -= TASK_ADDBONE;
 
 	if (userBoneShow[id] >= 50)
-		ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 mial^x04 %d Kosci^x01 na liczniku!^x04 ---", userName[id], userBoneShow[id]);
+		chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 mial^4 %d Kosci^1 na liczniku!", userName[id], userBoneShow[id]);
 	
 	
 	addBone(id, userBoneShow[id]);
@@ -231,10 +231,10 @@ public addLevel(id, Float:Exp){
 		userExp[id] -= needXp(id, userLevel[id]);
 		if( userLevel[id] < MAXLVL ){
 			userLevel[id] ++;
-			ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 wbil^x03 %d^x01 lv.^x03 [^x04 Postac^x03 ]^x04 ---", userName[id] , userLevel[id]);
+			chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 wbil^3 %d^1 lv.^3 [^4 Postac^3 ]", userName[id] , userLevel[id]);
 
 		} else {
-			ColorChat(id, GREEN, "---^x01 Posiadasz^x04 maksymalny Lv.^x01 otrzymales w nagrode^x03 + 1 secret Point^x04 ---");
+			chatPrint(id, PREFIX_LINE, "Posiadasz^4 maksymalny Lv.^1 otrzymales w nagrode^3 + 1 secret Point");
 			userSecretPoint[id] ++;	
 		}
 	}
@@ -252,9 +252,9 @@ public addLevelClass(id, Float:Exp){
 		
 		if( userHumanLevel[id][class] < MAXLVLCLASS ){
 			userHumanLevel[id][class] ++;
-			ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 wbil^x03 %d^x01 lv.^x03 [^x04 %s^x03 ]^x04 ---", userName[id] , userHumanLevel[id][class], classesHuman[class][0]);
+			chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 wbil^3 %d^1 lv.^3 [^4 %s^3 ]", userName[id] , userHumanLevel[id][class], classesHuman[class][0]);
 		}else {
-			ColorChat(id, GREEN, "---^x01 Posiadasz^x04 maksymalny Lv.^x01 na klasie^x03 %s^x01 otrzymales w nagrode^x03 + 1 secret Point^x04 ^x04 ---", classesHuman[class][0]);
+			chatPrint(id, PREFIX_LINE, "Posiadasz^4 maksymalny Lv.^1 na klasie^3 %s^1 otrzymales w nagrode^3 + 1 secret Point^4 ", classesHuman[class][0]);
 			userSecretPoint[id] ++;
 			
 		}

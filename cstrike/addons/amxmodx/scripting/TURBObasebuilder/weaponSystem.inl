@@ -102,26 +102,26 @@ public selectWeapon_2(id, item){
 		
 		case 0:{
 			if (str_to_num(allGuns[gun][3]) > playedTime(id) ||  str_to_num(allGuns[gun][2]) > userLevel[id]){	
-				ColorChat(id, GREEN, "%s Najpierw ja oblokuj", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Najpierw ja oblokuj");
 				return PLUGIN_CONTINUE;
 			}
 			if(buildTime  || roundEnd){
-				ColorChat(id, GREEN, "%s Za wczesnie na to!", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Za wczesnie na to!");
 				return PLUGIN_CONTINUE;
 			}
 			
 			if(userSelectWeapon[id] >= 3 ){
-				ColorChat(id, GREEN, "%s Wykozystales swoj limit na ta runde zmian Broni!", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Wykozystales swoj limit na ta runde zmian Broni!");
 				return PLUGIN_CONTINUE;
 			}
 			if(get_user_team(id) != 2){
 				menuWeapon(id);
-				ColorChat(id, GREEN, "%s Musisz byc budowniczym!", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Musisz byc budowniczym!");
 				return PLUGIN_CONTINUE;
 			}
 			if(userWeaponDamage[id][gun])
-				ColorChat(id, GREEN, "%s Wybrales^x04 %s^x03 (^x01 DMG:^x04 +%0.2f%s^x03 |^x01 LV:^x04 %d^x03 )", PREFIXSAY, allGuns[gun][1], userWeaponDamage[id][gun], "%%", userWeaponLevel[id][gun]);
-			else ColorChat(id, GREEN, "%s Wybrales^x04 %s^x03 (^x01 ...^x03 )", PREFIXSAY, allGuns[gun][1]);
+				chatPrint(id, PREFIX_NORMAL, "Wybrales^4 %s^3 (^1 DMG:^4 +%0.2f%s^3 |^1 LV:^4 %d^3 )", allGuns[gun][1], userWeaponDamage[id][gun], "%%", userWeaponLevel[id][gun]);
+			else chatPrint(id, PREFIX_NORMAL, "Wybrales^4 %s^3 (^1 ...^3 )", allGuns[gun][1]);
 			
 			saveInsert(id, 2, userWeaponSelect[id]);
 			
@@ -132,7 +132,7 @@ public selectWeapon_2(id, item){
 		case 1:{
 			if (str_to_num(allGuns[gun][3]) > playedTime(id) ||  str_to_num(allGuns[gun][2]) > userLevel[id]){	
 				selectWeapon(id, gun);
-				ColorChat(id, GREEN, "%s Najpierw ja oblokuj", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Najpierw ja oblokuj");
 			} else {
 				upgradeWeapon(id);
 			}
@@ -181,14 +181,14 @@ public upgradeWeapon_2(id, item){
 		case 0:{
 			
 			if(calcCostWeapon(id, gun) > userNugget[id]){
-				ColorChat(id, GREEN, "---^x01 Nie posiadasz odpowiedniej ilosci^x03 Brylek^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Nie posiadasz odpowiedniej ilosci^3 Brylek");
 				upgradeWeapon(id);
 				return;
 			}
 			new Float:DAMAGE = random_float(calcDamageWeapon(id, gun, damage_MIN), random(5) == 0 ? calcDamageWeapon(id, gun, damage_MAX) : calcDamageWeapon(id, gun, damage_MAX) * 0.75);
 			userNugget[id] -= calcCostWeapon(id, gun);
 			userWeaponDamage[id][gun] = DAMAGE;
-			ColorChat(id, GREEN, "---^x01 Zmiksowales:^x03 %0.2f%s^x01 obrazen na broni:^x03 %s^x04 ---", DAMAGE, "%%",allGuns[gun][1]);
+			chatPrint(id, PREFIX_LINE, "Zmiksowales:^3 %0.2f%s^1 obrazen na broni:^3 %s", DAMAGE, "%%",allGuns[gun][1]);
 			saveInsert(id, 2, gun);
 			upgradeWeapon(id);
 			
@@ -212,12 +212,12 @@ public calcCostWeapon(id, weapon){
 }
 public giveWeapons(id, item){
 	if (!gameTime){
-		ColorChat(id, GREEN, "%s Otrzymasz bron przy wyjsciu zombie!", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Otrzymasz bron przy wyjsciu zombie!");
 		userWeaponBool[id] = true;
 		return PLUGIN_CONTINUE;
 	}
 	if (get_user_team(id) != 2){
-		ColorChat(id, GREEN, "%s To jest tylko dla^x04 Budowniczych", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "To jest tylko dla^4 Budowniczych");
 		return PLUGIN_CONTINUE;
 	}
 	
@@ -243,7 +243,7 @@ public giveWeapons(id, item){
 
 public giveGranade(id){
 	if (get_user_team(id) != 2){
-		ColorChat(id, GREEN, "%s To jest tylko dla^x04 Budowniczych", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "To jest tylko dla^4 Budowniczych");
 		return PLUGIN_CONTINUE;
 	}
 	
@@ -341,15 +341,15 @@ public resetMenu_2(id, item){
 		case 0:{
 			new price = priceReset(id);
 			if(userNugget[id] <  price){
-				ColorChat(id, GREEN, "---^x01 Brakuje ci Brylek!^x03 [^x04%d - brylek^x03]^x04 ---", price - userNugget[id]);
+				chatPrint(id, PREFIX_LINE, "Brakuje ci Brylek!^3 [^4%d - brylek^3]", price - userNugget[id]);
 				return PLUGIN_CONTINUE;
 			}
 			if(userLevel[id] < MAXLVL){
-				ColorChat(id, GREEN, "---^x01 Brakuje ci poziomu!^x03 [^x04%d - poziomow^x03]^x04 ---", MAXLVL - userLevel[id]);
+				chatPrint(id, PREFIX_LINE, "Brakuje ci poziomu!^3 [^4%d - poziomow^3]", MAXLVL - userLevel[id]);
 				return PLUGIN_CONTINUE;
 			}
 			
-			ColorChat(id, GREEN, "---^x01 Zresetowales swoj Poziom!^x03 Otrzymales + 1 reset^x04 ---");
+			chatPrint(id, PREFIX_LINE, "Zresetowales swoj Poziom!^3 Otrzymales + 1 reset");
 			userNugget[id] -= price;
 			userLevel[id] = 1;
 			userExp[id] = 0.0;
@@ -380,7 +380,7 @@ public addLevelKills(id, weapon, headShot){
 		while(userWeaponKill[id][weapon] >= needKills(id, weapon, userWeaponLevel[id][weapon])){			
 			if( userWeaponLevel[id][weapon] <  str_to_num(allGuns[userWeaponSelect[id]][4])){
 				userWeaponLevel[id][weapon] ++;
-				ColorChat(id, GREEN, "---^x01 Wbiles^x03 %d Lv.^x01 na broni:^x03 %s^x04 ---" , userWeaponLevel[id][weapon] ,allGuns[userWeaponSelect[id]][1]);
+				chatPrint(id, PREFIX_LINE, "Wbiles^3 %d Lv.^1 na broni:^3 %s" , userWeaponLevel[id][weapon] ,allGuns[userWeaponSelect[id]][1]);
 				
 				if(get_user_weapon(id) == CSW_GLOCK && (userWeaponLevel[id][weapon] ==  str_to_num(allGuns[weapon][4]))){
 					addSecretMission(id, mission_secret_MASTER, 1);

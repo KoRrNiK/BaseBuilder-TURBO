@@ -7,14 +7,11 @@
 #include <	engine		>
 #include <	csx		>
 #include <	fvault		>
-#include <	StripWeapons	>	
 #include <	http2		>
 #include <	xs		>
 #include <	sockets		>
-#include <	tutor		>
 #include <	sqlx		>
 #include <	regex		>
-#include <	colorchat	>
 
 public costumePrecache(){
 	for(new i = 0; i < 4; i ++) precache_model(modelsCostumes[i][0]);
@@ -93,7 +90,7 @@ public menuCostumes(id){
 	
 	if((userSelectNewHat[id] != userSelectHat[id])) 
 		iLen 	+=	format(gText[iLen], sizeof(gText)-iLen-1, "\y%s^t^t\dNowy Kostium:\r %s^n", symbolsCustom[SYMBOL_DR_ARROW], costumesNames[userSelectNewHat[id]][0]);
-	iLen 	+=	format(gText[iLen], sizeof(gText)-iLen-1, "^n\d---\y Twoja lista kostiumow\w ");
+	iLen 	+=	format(gText[iLen], sizeof(gText)-iLen-1, "^n\d\y Twoja lista kostiumow\w ");
 		
 	new menu = menu_create(gText, "menuCostumes_2");
 	
@@ -112,7 +109,7 @@ public menuCostumes(id){
 		
 		selectHat[id][x++] = i;
 	}
-	if(!x) ColorChat(id, GREEN, "---^x01 Nie posiadasz kostiumow!^x04 ---");
+	if(!x) chatPrint(id, PREFIX_LINE, "Nie posiadasz kostiumow!");
 	else menu_display(id, menu, menuPage[id][0]/7);
 	
 }
@@ -161,14 +158,14 @@ public infoCostumes_2(id, item){
 		case 0:{
 			if( userSelectHat[id] != hat ){
 				if( buildTime || prepTime ){
-					ColorChat(id, GREEN,"---^x01 Twoj nowy kostium:^x03 %s^x04 ---", costumesNames[hat][0] );
+					chatPrint(id, PREFIX_LINE, "Twoj nowy kostium:^3 %s", costumesNames[hat][0] );
 								
 					userSelectHat[id] = hat;
 					userSelectNewHat[id] = hat;
 					chechHat(id, hat);
 				}else{
 					userSelectNewHat[id] = hat;
-					ColorChat(id, GREEN,"---^x01 Twoj kostium zmieni sie po odrodzeniu na:^x03 %s^x04 ---",  costumesNames[hat][0]  );
+					chatPrint(id, PREFIX_LINE, "Twoj kostium zmieni sie po odrodzeniu na:^3 %s",  costumesNames[hat][0]  );
 				}
 							
 			} else {
@@ -176,11 +173,11 @@ public infoCostumes_2(id, item){
 					userSelectHat[id] = -1;
 					userSelectNewHat[id] = -1;
 					removeHat(id);
-					ColorChat(id, GREEN,"---^x01 Zdjales kostium^x04 ---"); 
+					chatPrint(id, PREFIX_LINE, "Zdjales kostium"); 
 				} else {
 					if(userSelectHat[id] == hat){
-						ColorChat(id, GREEN,"---^x01 Aktualnie masz to ubrane!^x04 ---"); 
-						ColorChat(id, GREEN,"---^x01 Zdejmowac kostiumy mozesz tylko podczas^x03 budowania^x01 i^x03 przygotowania!^x04 ---"); 
+						chatPrint(id, PREFIX_LINE, "Aktualnie masz to ubrane!"); 
+						chatPrint(id, PREFIX_LINE, "Zdejmowac kostiumy mozesz tylko podczas^3 budowania^1 i^3 przygotowania!"); 
 					}
 				}
 			}
@@ -212,9 +209,9 @@ public menuCostumesAll_2(id, menu, item){
 	
 	if(hasCostumes(id, item)){
 		removeCostumes(id, item);
-		ColorChat(id, GREEN, "Usunales sobie kostuim: %s", costumesNames[item][0]);
+		chatPrint(id, PREFIX_NORMAL, "Usunales sobie kostuim: %s", costumesNames[item][0]);
 	} else {
-		ColorChat(id, GREEN, "Dodales sobie kostuim: %s", costumesNames[item][0]);
+		chatPrint(id, PREFIX_NORMAL, "Dodales sobie kostuim: %s", costumesNames[item][0]);
 		addCostumes(id, item);
 	}
 	menuCostumesAll(id);

@@ -6,9 +6,7 @@
 #include <	fakemeta_util	>
 #include <	engine		>
 #include <	csx		>
-#include <	colorchat	>
 #include <	fvault		>
-#include <	StripWeapons	>
 #include <	http2		>
 #include <	xs		>
 
@@ -18,10 +16,10 @@ public data(id){
 	
 	if(userLastDay[id] != day){
 		userNugget[id] += 10;
-		ColorChat(id, GREEN, "Otrzymales darmowe 10 Brylek");
+		chatPrint(id, PREFIX_NONE, "Otrzymales darmowe 10 Brylek");
 		userLastDay[id] = day;
 	} else {
-		ColorChat(id, GREEN, "Odebrales juz swoje darmowe brylki!");	
+		chatPrint(id, PREFIX_NONE, "Odebrales juz swoje darmowe brylki!");	
 	}
 	return PLUGIN_CONTINUE;
 }

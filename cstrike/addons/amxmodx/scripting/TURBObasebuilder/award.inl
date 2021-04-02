@@ -52,11 +52,11 @@ public menuFreeAward_2(id, menu, item){
 	new awardPlay = playedTime(id) - userLastAwardGot[id];
 	new awardWithin = get_systime() - userLastAwardFree[id];
 	if( awardWithin < DAY ){
-		ColorChat(id, GREEN, "%s Nagroda dostepna za^x03 %d Minut", PREFIXSAY, (DAY-awardWithin)/MINUTE);
+		chatPrint(id, PREFIX_NORMAL, "Nagroda dostepna za^3 %d Minut", (DAY-awardWithin)/MINUTE);
 		return PLUGIN_CONTINUE;
 	}
 	if( playedTime(id) - userLastAwardGot[id] < HOUR ){
-		ColorChat(id, GREEN, "%s Musisz przegrac^x03 %d Minut^x01 aby moc odebrac^x04 nagrode", PREFIXSAY, (HOUR-awardPlay)/MINUTE);
+		chatPrint(id, PREFIX_NORMAL, "Musisz przegrac^3 %d Minut^1 aby moc odebrac^4 nagrode", (HOUR-awardPlay)/MINUTE);
 		return PLUGIN_CONTINUE;
 	}
 	switch(item){
@@ -103,8 +103,8 @@ public menuFreeAward_2(id, menu, item){
 	userLastAwardFree[id]	=	get_systime();
 	userLastAwardRow[id] ++;
 	
-	ColorChat(id, GREEN, "%s Nagroda odebrana^x04 %d^x01 raz z rzedu", PREFIXSAY, userLastAwardRow[id]);
-	ColorChat(id, GREEN, "%s Nastepna za:^x03 %d Minut", PREFIXSAY, (HOUR-awardPlay)/MINUTE);
+	chatPrint(id, PREFIX_NORMAL, "Nagroda odebrana^4 %d^1 raz z rzedu", userLastAwardRow[id]);
+	chatPrint(id, PREFIX_NORMAL, "Nastepna za:^3 %d Minut", (HOUR-awardPlay)/MINUTE);
 	return PLUGIN_CONTINUE;
 }
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE

@@ -7,14 +7,11 @@
 #include <	engine		>
 #include <	csx		>
 #include <	fvault		>
-#include <	StripWeapons	>	
 #include <	http2		>
 #include <	xs		>
 #include <	sockets		>
-#include <	tutor		>
 #include <	sqlx		>
 #include <	regex		>
-#include <	colorchat	>
 
 enum { CHRISTMAS_V, CHRISTMAS_W, CHRISTMAS_ALL }; 	
 new const modelGranade[CHRISTMAS_ALL][] = {
@@ -111,7 +108,7 @@ public menuCreateChristmas_2(id, menu, item){
 				return PLUGIN_CONTINUE;
 				
 			}
-			ColorChat(id, GREEN, "---^x01 Stworzyles Choinke^x04 ---");	
+			chatPrint(id, PREFIX_LINE, "Stworzyles Choinke");	
 			new Float:fOrigin[3];
 		
 			entity_get_vector(id,	EV_VEC_origin, 	fOrigin );
@@ -129,7 +126,7 @@ public menuCreateChristmas_2(id, menu, item){
 		
 				if (ent > 0){
 					remove_entity(ent);
-					ColorChat(id, GREEN, "---^x01 Usunales Choinke!^x04 ---");
+					chatPrint(id, PREFIX_LINE, "Usunales Choinke!");
 				}
 			}
 			while ((ent = find_ent_by_class(ent, szChristmasTreeSprite)) > 0) {
@@ -143,7 +140,7 @@ public menuCreateChristmas_2(id, menu, item){
 		
 		case 2:{
 			saveChristmas();
-			ColorChat(id, GREEN, "---^x01 Zapisales^x04 ---");
+			chatPrint(id, PREFIX_LINE, "Zapisales");
 			menuCreateChristmas(id);
 		}
 	}
@@ -203,7 +200,7 @@ public menuChristmas(id){
 		userChristmasStart[id] = 0;
 		userChristmasType[id] = mission;
 		
-		ColorChat(id, GREEN, "---^x01 Ustawiono nowe wyzwanie!^x04 ---");
+		chatPrint(id, PREFIX_LINE, "Ustawiono nowe wyzwanie!");
 	}
 	if(dayCount() >= 0) iLen += format(gText[iLen], sizeof(gText) - iLen - 1, "\r[\y AKTUALNIE MAMY:\w %d Dzien!\r ]^n^n", dayCount()+1);
 	
@@ -257,7 +254,7 @@ public menuChristmas_2(id, menu, item){
 	entity_get_vector(ent,	EV_VEC_origin, 	fOriginEnt);
 	
 	if( get_distance_f( fOrigin, fOriginEnt ) >= distanceOpen+10.0){		
-		ColorChat(id, GREEN, "---^x01 Wroc do choinki!^x04 ---");
+		chatPrint(id, PREFIX_LINE, "Wroc do choinki!");
 		userMenuChristmas[id] = false;
 		return;
 	}
@@ -265,25 +262,25 @@ public menuChristmas_2(id, menu, item){
 		
 		case 0:{
 			if(dayCount() < 0 || dayCount() >= CHRISTMAS_TOTAL_MISSION){
-				ColorChat(id, GREEN, "---^x01 Na dzisiaj nic nie jest przewidziane^x03 |^x01 Przepraszam!^x04 ---" );
+				chatPrint(id, PREFIX_LINE, "Na dzisiaj nic nie jest przewidziane^3 |^1 Przepraszam!" );
 				userMenuChristmas[id] = false;
 				return;
 				
 			} else  if(!userChristmasStart[id]){
 				userChristmasStart[id] = 1;
-				ColorChat(id, GREEN, "---^x01 Dziekuje, ze podjoles sie^x03 wyzwania!^x04 ---" );
+				chatPrint(id, PREFIX_LINE, "Dziekuje, ze podjoles sie^3 wyzwania!" );
 				userMenuChristmas[id] = false;
 				return;
 				
 			} else if( userChristmasMission[id] == -1){
-				ColorChat(id, GREEN, "---^x01 Dzisiaj juz^x04 losowales!^x03 Poczekaj do jutra^x04 ---" );
+				chatPrint(id, PREFIX_LINE, "Dzisiaj juz^4 losowales!^3 Poczekaj do jutra" );
 				userMenuChristmas[id] = false;
 				return;
 					
 			}else if( userChristmasMission[id] < str_to_num(christmasMission[userChristmasType[id]][1]) ){
 				
-				ColorChat(id, GREEN, "---^x01 Wykonaj najpierw twoje wyzwanie jakie masz zrobic!^x04 ---");
-				ColorChat(id, GREEN, "---^x01 I jak zrobisz^x03 wroc do mnie^x01 zalosowac!^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Wykonaj najpierw twoje wyzwanie jakie masz zrobic!");
+				chatPrint(id, PREFIX_LINE, "I jak zrobisz^3 wroc do mnie^1 zalosowac!");
 				userMenuChristmas[id] = false;
 				return;
 					
@@ -294,23 +291,23 @@ public menuChristmas_2(id, menu, item){
 			
 					value = 1000;
 					userNugget[id] 	+=  	value;
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Brylek^x04 ---", value);	
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d^1 Brylek", value);	
 				}
 				case 1:{
 				
 					value = 500;
 					addExpToFinal(id, float(value)) ;
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Expa^x04 ---", value);
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d^1 Expa", value);
 				}
 				case 2:{
 					value = random_num(1,10);
 					userLuzCoin[id] 	+=  	value;
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Luzaczkow^x04 ---", value);
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d^1 Luzaczkow", value);
 				}
 				case 3:{
 					value = random_num(24,48);
 					timeVip[id]	= 	max( timeVip[id] + (HOUR*value), get_systime() + (HOUR*value) );
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 VIPA^x04 ---");
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d Godzin^1 VIPA");
 				}
 				case 4:{
 					new userTimeScrool = (HOUR*random_num(1,4));
@@ -320,7 +317,7 @@ public menuChristmas_2(id, menu, item){
 						userScrollExp[id] += userTimeScrool;	
 					} else userScrollExp[id] += userTimeScrool;	
 					
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Doswiadczenia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d Godzin^1 Zwoju Doswiadczenia", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
 				}
 				case 5:{
 					
@@ -331,46 +328,46 @@ public menuChristmas_2(id, menu, item){
 						userScrollNugget[id] += userTimeScrool;
 					} else userScrollNugget[id] += userTimeScrool;
 					
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Szczescia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d Godzin^1 Zwoju Szczescia", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
 					
 					if(random(100) < 20){
 						addCostumes(id, HAT_AUREOLA);
-						ColorChat(id, GREEN, "---^x01 Gratulacje! Udalo Ci sie zdobyc kostium!^x04 |^x03 Aureola^x04 ---");
+						chatPrint(id, PREFIX_LINE, "Gratulacje! Udalo Ci sie zdobyc kostium!^4 |^3 Aureola");
 					}
 				
 				}
 				case 6:{
 					value = 1500;
 					userNugget[id] 	+=  	value;
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Brylek^x04 ---", value);
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d^1 Brylek", value);
 				}
 				case 7:{
 					
 					value = random_num(24,48);
 					timeVip[id]	= 	max( timeVip[id] + (HOUR*value), get_systime() + (HOUR*value) );
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 VIPA^x04 ---", value);
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d Godzin^1 VIPA", value);
 				}
 				case 8:{
 					value = random_num(1,10);
 					userLuzCoin[id] 	+=  	value;
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Luzaczkow^x04 ---", value);
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d^1 Luzaczkow", value);
 				}
 				case 9:{
 					value = random_num(1,10);
 					userLuzCoin[id] 	+=  	value;
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Luzaczkow^x04 ---", value);
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d^1 Luzaczkow", value);
 				}
 				case 10:{
 					value = 900;
 					addExpToFinal(id, float(value)); 
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Expa^x04 ---", value);
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d^1 Expa", value);
 					
 					
 				}
 				case 11:{
 					value = 2000;
 					userNugget[id] 	+=  	value;
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Brylek^x04 ---", value);
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d^1 Brylek", value);
 				}
 				case 12:{
 					new userTimeScrool = (HOUR*random_num(1,4));
@@ -380,45 +377,45 @@ public menuChristmas_2(id, menu, item){
 						userScrollNugget[id] += userTimeScrool;	
 					} else userScrollNugget[id] += userTimeScrool;
 					
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Szczescia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d Godzin^1 Zwoju Szczescia", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
 					
 				}
 				case 13:{
 					value = 1700;
 					userNugget[id] 	+=  	value;
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Brylek^x04 ---", value);
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d^1 Brylek", value);
 				}
 				case 14:{
 					value = random_num(24,48);
 					timeVip[id]	= 	max( timeVip[id] + (HOUR*value), get_systime() + (HOUR*value) );
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 VIPA^x04 ---", value);
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d Godzin^1 VIPA", value);
 					
 					if(random(100) < 15){
 						addCostumes(id, HAT_NIEDZWIEDZ);
-						ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 zdobyl kostium!!^x04 ---", userName[id]);
-						ColorChat(id, GREEN, "---^x01 Gratulacje! Udalo Ci sie zdobyc kostium!^x04 |^x03 Czapka Niedzwiedzia^x04 ---");
+						chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 zdobyl kostium!!", userName[id]);
+						chatPrint(id, PREFIX_LINE, "Gratulacje! Udalo Ci sie zdobyc kostium!^4 |^3 Czapka Niedzwiedzia");
 					}
 					
 				}
 				case 15:{
 					value = random_num(1,10);
 					userLuzCoin[id] 	+=  	value;
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Luzaczkow^x04 ---", value);
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d^1 Luzaczkow", value);
 				}
 				case 16:{
 					value = 950;
 					addExpToFinal(id, float(value)); 
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Expa^x04 ---", value);
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d^1 Expa", value);
 				}
 				case 17:{
 					value = 750;
 					addExpToFinal(id, float(value)) ;
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Expa^x04 ---", value);
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d^1 Expa", value);
 				}
 				case 18:{
 					value = 1900;
 					userNugget[id] 	+=  	value;
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Brylek^x04 ---", value);
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d^1 Brylek", value);
 				}
 				case 19:{
 					new userTimeScrool = (HOUR*random_num(1,4));
@@ -428,7 +425,7 @@ public menuChristmas_2(id, menu, item){
 						userScrollNugget[id] += userTimeScrool;
 					} else userScrollNugget[id] += userTimeScrool;
 					
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Szczescia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d Godzin^1 Zwoju Szczescia", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
 					
 				}
 				case 20:{
@@ -439,43 +436,43 @@ public menuChristmas_2(id, menu, item){
 						userScrollExp[id] += userTimeScrool;	
 					} else userScrollExp[id] += userTimeScrool;	
 					
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Doswiadczenia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d Godzin^1 Zwoju Doswiadczenia", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
 				
 					if(random(100) < 20){
 						addCostumes(id, HAT_SWIATECZNASKARPETA);
-						ColorChat(id, GREEN, "---^x01 Gratulacje! Udalo Ci sie zdobyc kostium!^x04 |^x03 Swiateczna Skarpeta^x04 ---");
+						chatPrint(id, PREFIX_LINE, "Gratulacje! Udalo Ci sie zdobyc kostium!^4 |^3 Swiateczna Skarpeta");
 					}
 				}
 				case 21:{
 					value = random_num(24,48);
 					timeVip[id]	= 	max( timeVip[id] + (HOUR*value), get_systime() + (HOUR*value) );
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 VIPA^x04 ---", value);
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d Godzin^1 VIPA", value);
 				}
 				case 22:{
 					value = random_num(1,10);
 					userLuzCoin[id] 	+=  	value;
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Luzaczkow^x04 ---", value);
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d^1 Luzaczkow", value);
 				}
 				case 23:{
 					value = random_num(24,48);
 					timeVip[id]	= 	max( timeVip[id] + (HOUR*value), get_systime() + (HOUR*value) );
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 VIPA^x04 ---", value);
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d Godzin^1 VIPA", value);
 				}
 				case 24:{
 					value = 2000;
 					userNugget[id] 	+=  	value;
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Brylek^x04 ---", value);
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d^1 Brylek", value);
 					
 					if(random(100) < 20){
 						addCostumes(id, HAT_BALWAN);
-						ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 zdobyl kostium!!^x04 ---", userName[id]);
-						ColorChat(id, GREEN, "---^x01 Gratulacje! Udalo Ci sie zdobyc kostium!^x04 |^x03 Glowa Balwana^x04 ---");
+						chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 zdobyl kostium!!", userName[id]);
+						chatPrint(id, PREFIX_LINE, "Gratulacje! Udalo Ci sie zdobyc kostium!^4 |^3 Glowa Balwana");
 					}
 				}
 				case 25:{
 					value = random_num(1,10);
 					userLuzCoin[id] 	+=  	value;
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Luzaczkow^x04 ---", value);
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d^1 Luzaczkow", value);
 				}
 				case 26:{
 					new userTimeScrool = (HOUR*random_num(1,4));
@@ -485,7 +482,7 @@ public menuChristmas_2(id, menu, item){
 						userScrollNugget[id] += userTimeScrool;
 					} else userScrollNugget[id] += userTimeScrool;
 					
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Szczescia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d Godzin^1 Zwoju Szczescia", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
 				}
 				case 27:{
 					new userTimeScrool = (HOUR*random_num(1,4));
@@ -495,17 +492,17 @@ public menuChristmas_2(id, menu, item){
 						userScrollNugget[id] += userTimeScrool;	
 					} else userScrollNugget[id] += userTimeScrool;
 					
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Szczescia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d Godzin^1 Zwoju Szczescia", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
 				}
 				case 28:{
 					value = random_num(1,10);
 					userLuzCoin[id] 	+=  	value;
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d^x01 Luzaczkow^x04 ---", value);
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d^1 Luzaczkow", value);
 				}
 				case 29:{
 					value = random_num(24,48);
 					timeVip[id]	= 	max( timeVip[id] + (HOUR*value), get_systime() + (HOUR*value) );
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 VIPA^x04 ---", value);
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d Godzin^1 VIPA", value);
 				}
 				case 30:{
 					new userTimeScrool = (HOUR*random_num(1,4));
@@ -515,12 +512,12 @@ public menuChristmas_2(id, menu, item){
 						userScrollExp[id] += userTimeScrool;	
 					} else userScrollExp[id] += userTimeScrool;	
 					
-					ColorChat(id, GREEN, "---^x01 Otrzymale^x03 %d Godzin^x01 Zwoju Doswiadczenia^x04 ---", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
+					chatPrint(id, PREFIX_LINE, "Otrzymale^3 %d Godzin^1 Zwoju Doswiadczenia", (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
 				
 					if(random(100) < 20){
 						addCostumes(id, HAT_PINGWINNAPLECACH);
-						ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 zdobyl kostium!!^x04 ---", userName[id]);
-						ColorChat(id, GREEN, "---^x01 Gratulacje! Udalo Ci sie zdobyc kostium!^x04 |^x03 Pingwin na Plecach^x04 ---");
+						chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 zdobyl kostium!!", userName[id]);
+						chatPrint(id, PREFIX_LINE, "Gratulacje! Udalo Ci sie zdobyc kostium!^4 |^3 Pingwin na Plecach");
 					}
 				}
 			}

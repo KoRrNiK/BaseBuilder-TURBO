@@ -1,5 +1,7 @@
 #include <amxmodx>
 #include <amxmisc>
+#include <fakemeta>
+#include <hamsandwich>	
 
 stock cmd_execute(id, const text[], any:...){
 	
@@ -399,6 +401,81 @@ stock formatm(const format[], any:...){
 	vformat(gText, sizeof(gText) -1 , format, 2);
 	return gText;
 }
+
+stock bool:isOX(){
+	new szMap[20];
+	get_mapname(szMap, sizeof(szMap) );
+	if(containi(szMap, "ox") != -1) return true;
+	return false;
+}
+
+
+enum _:chatPREFIX{ PREFIX_NONE, PREFIX_NORMAL, PREFIX_LINE }
+	
+stock chatPrint(id, prefix,  const text[], any:...){
+	new message[192];
+
+	if (numargs() == 3) copy(message, sizeof(message) - 1, text);
+	else vformat(message, sizeof(message) - 1, text, 4);
+
+	if(prefix == PREFIX_NORMAL) client_print_color(id, id, "^4%s^1 %s", PREFIXSAY_NORMAL, message);
+	else if(prefix == PREFIX_LINE) client_print_color(id, id, "^4%s^1 %s^4 %s", PREFIXSAY_LINE, message, PREFIXSAY_LINE);
+	else client_print_color(id, id, "%s", message);
+}
+
+enum /* Weapon types */
+{
+	Primary = 1
+	, Secondary
+	, Knife
+	, Grenades
+	, C4
+};
+
+stock StripWeapons(id, type, bool:switchIfActive = true){
+	if (is_user_alive(id)) {
+		new ent, weapon;
+		while ((weapon = get_weapon_from_slot(id, type, ent)) > 0) ham_strip_user_weapon(id, weapon, type, switchIfActive);
+	}
+}
+stock get_weapon_from_slot(id, slot, &ent){
+	
+	if (!(1 <= slot <= 5)) return 0;
+
+	ent = get_pdata_cbase(id, 367 + slot , 5);
+
+	return (ent > 0) ? get_pdata_int(ent, 43 , 4) : 0;
+}
+stock ham_strip_user_weapon(id, weaponId, slot = 0, bool:switchIfActive = true){
+	static const weaponsSlots[] = { -1, 2, -1, 1, 4, 1, 5, 1, 1, 4, 2, 2, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 4, 2, 1, 1, 3, 1 };
+
+	new weapon;
+
+	if (!slot) slot = weaponsSlots[weaponId];
+
+	weapon = get_pdata_cbase(id, 367 + slot, 5);
+
+	while (weapon > 0) {
+		if (get_pdata_int(weapon, 43, 4) == weaponId) break;
+
+		weapon = get_pdata_cbase(weapon, 42, 4);
+	}
+
+	if (weapon > 0) {
+		if (switchIfActive && get_pdata_cbase(id, 373, 5) == weapon) ExecuteHamB(Ham_Weapon_RetireWeapon, weapon);
+
+		if (ExecuteHamB(Ham_RemovePlayerItem, id, weapon)) {
+			user_has_weapon(id, weaponId, 0);
+
+			ExecuteHamB(Ham_Item_Kill, weapon);
+
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
 */

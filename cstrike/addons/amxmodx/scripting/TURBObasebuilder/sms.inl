@@ -5,7 +5,7 @@
 public smsMainMenu(id){
 	
 	if( !playerLogged(id) ){
-		ColorChat(id, GREEN, "%s Zaloguj sie aby moc korzystac z tego menu!", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Zaloguj sie aby moc korzystac z tego menu!");
 		return PLUGIN_HANDLED;
 	}
 	
@@ -235,7 +235,7 @@ public addValue(id){
 			case MENU_GIVING_VIP:{
 				
 				if(has_flag(target, flagVip)){
-					ColorChat(id, GREEN, "---^x01 Gracz:^x03 %s^x01 posiada flage^x03 't'^x01 i posiada^x01 VIP'a^x01 bez limitu^x04 ---", userName[target]);
+					chatPrint(id, PREFIX_LINE, "Gracz:^3 %s^1 posiada flage^3 't'^1 i posiada^1 VIP'a^1 bez limitu", userName[target]);
 					choosePlayer(id, 0);
 					return PLUGIN_CONTINUE;
 				}
@@ -243,13 +243,13 @@ public addValue(id){
 				new daysLeft = (timeVip[target] - get_systime());
 				userVip[target] = !!(daysLeft>0);
 				
-				ColorChat(id, GREEN, "---^x01 Dodales^x04 [^x03%d min VIP'a^x04][^x03Graczowi %s^x04] ---", value, userName[target]);
-				ColorChat(target, GREEN, "---^x01 Otrzymales^x04 [^x03%d min VIP'a^x04][^x03Od Admina %s^x04] ---", value, userName[id]);
+				chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d min VIP'a^4][^3Graczowi %s^4] ", value, userName[target]);
+				chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d min VIP'a^4][^3Od Admina %s^4] ", value, userName[id]);
 				format(gText, sizeof(gText), "dodal Vipa [%s] na [%d min]", userName[target], (daysLeft /60) );	
 			} 
 			case MENU_GIVING_SVIP:{
 				if(has_flag(target, flagSVip)){
-					ColorChat(id, GREEN, "---^x01 Gracz:^x03 %s^x01 posiada flage^x03 's'^x01 i posiada^x01 SVIP'a^x01 bez limitu^x04 ---", userName[target]);
+					chatPrint(id, PREFIX_LINE, "Gracz:^3 %s^1 posiada flage^3 's'^1 i posiada^1 SVIP'a^1 bez limitu", userName[target]);
 					choosePlayer(id, 0);
 					return PLUGIN_CONTINUE;
 				}
@@ -257,54 +257,54 @@ public addValue(id){
 				new daysLeft = (timeSVip[target] - get_systime());
 				userSVip[target] = !!(daysLeft>0);
 				
-				ColorChat(id, GREEN, "---^x01 Dodales^x04 [^x03%d min VIP'a^x04][^x03Graczowi %s^x04] ---", value, userName[target]);
-				ColorChat(target, GREEN, "---^x01 Otrzymales^x04 [^x03%d min VIP'a^x04][^x03Od Admina %s^x04] ---", value, userName[id]);
+				chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d min VIP'a^4][^3Graczowi %s^4] ", value, userName[target]);
+				chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d min VIP'a^4][^3Od Admina %s^4] ", value, userName[id]);
 				format(gText, sizeof(gText), "dodal Vipa [%s] na [%d min]", userName[target], (daysLeft /60) );	
 			}
 			case MENU_GIVING_LUZCOIN:{
 				userLuzCoin[target] += value;
-				ColorChat(id, GREEN, "---^x01 Dodales^x04 [^x03%d Luzaczkow^x04][^x03Graczowi %s^x04] ---", value, userName[target]);
-				ColorChat(target, GREEN, "---^x01 Otrzymales^x04 [^x03%d Luzaczkow^x04][^x03Od Admina %s^x04] ---", value, userName[id]);
+				chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d Luzaczkow^4][^3Graczowi %s^4] ", value, userName[target]);
+				chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d Luzaczkow^4][^3Od Admina %s^4] ", value, userName[id]);
 				format(gText, sizeof(gText), "dodal Luzaczki [%s] ilosc [%d]", userName[target], value);
 		
 			}
 			case MENU_GIVING_NUGGET:{
 				addNuggetToFinal(target, value);
 				//userNugget[target] += value
-				ColorChat(id, GREEN, "---^x01 Dodales^x04 [^x03%d Brylek^x04][^x03Graczowi %s^x04] ---", value, userName[target]);
-				ColorChat(target, GREEN, "---^x01 Otrzymales^x04 [^x03%d Brylek^x04][^x03Od Admina %s^x04] ---", value, userName[id]);
+				chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d Brylek^4][^3Graczowi %s^4] ", value, userName[target]);
+				chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d Brylek^4][^3Od Admina %s^4] ", value, userName[id]);
 				format(gText, sizeof(gText), "dodal Brylki [%s] ilosc [%d]", userName[target], value);	
 			}
 			case MENU_GIVING_LVL:{
 				userLevel[target] += value;
 				userLevel[target] = clamp(userLevel[target], 0, MAXLVL);
-				ColorChat(id, GREEN, "---^x01 Dodales^x04 [^x03%d Lv.^x04][^x03Graczowi %s^x04] ---",value, userName[target]);
-				ColorChat(target, GREEN, "---^x01 Otrzymales^x04 [^x03%d Lv.^x04][^x03Od Admina %s^x04] ---", value, userName[id]);
+				chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d Lv.^4][^3Graczowi %s^4] ",value, userName[target]);
+				chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d Lv.^4][^3Od Admina %s^4] ", value, userName[id]);
 				format(gText, sizeof(gText), "dodal Lv. [%s] ilosc [%d ]", userName[target], value);	
 			}
 			case MENU_GIVING_TIME:{
 				userTime[target] += value *60;
-				ColorChat(id, GREEN, "---^x01 Dodales^x04 [^x03%d min Czasu Gry^x04][^x03Graczowi %s^x04] ---", value, userName[target]);			
-				ColorChat(target, GREEN, "---^x01 Otrzymales^x04 [^x03%d min Czasu Gry^x04][^x03Od Admina %s^x04] ---", value, userName[id]);
+				chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d min Czasu Gry^4][^3Graczowi %s^4] ", value, userName[target]);			
+				chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d min Czasu Gry^4][^3Od Admina %s^4] ", value, userName[id]);
 				format(gText, sizeof(gText), "dodal Czas Gry [%s] na [%d min]", userName[target], value);
 			}
 			case MENU_GIVING_RESET:{
 				userReset[target] += value;
-				ColorChat(id, GREEN, "---^x01 Dodales^x04 [^x03%d Reset^x04][^x03Graczowi %s^x04] ---", value, userName[target]);
-				ColorChat(target, GREEN, "---^x01 Otrzymales^x04 [^x03%d Reset^x04][^x03Od Admina %s^x04] ---", value, userName[id]);	
+				chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d Reset^4][^3Graczowi %s^4] ", value, userName[target]);
+				chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d Reset^4][^3Od Admina %s^4] ", value, userName[id]);	
 				format(gText, sizeof(gText), "dodal Reset [%s] ilosc [%d]", userName[target], value);
 			}
 			case MENU_GIVING_EXP:{
 				addExpToFinal(target, float(value));
 				//userExp[target] += float(value);
-				ColorChat(id, GREEN, "---^x01 Dodales^x04 [^x03%d Xp.^x04][^x03Graczowi %s^x04] ---",value, userName[target]);
-				ColorChat(target, GREEN, "---^x01 Otrzymales^x04 [^x03%d Xp.^x04][^x03Od Admina %s^x04] ---", value, userName[id]);
+				chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d Xp.^4][^3Graczowi %s^4] ",value, userName[target]);
+				chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d Xp.^4][^3Od Admina %s^4] ", value, userName[id]);
 				format(gText, sizeof(gText), "dodal Xp. [%s] ilosc [%d]", userName[target], value);
 			}
 			case MENU_GIVING_BONES:{
 				userBone[target] += value;
-				ColorChat(id, GREEN, "---^x01 Dodales^x04 [^x03%d Kosci^x04][^x03Graczowi %s^x04] ---", value, userName[target]);
-				ColorChat(target, GREEN, "---^x01 Otrzymales^x04 [^x03%d Kosci^x04][^x03Od Admina %s^x04] ---", value, userName[id]);
+				chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d Kosci^4][^3Graczowi %s^4] ", value, userName[target]);
+				chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d Kosci^4][^3Od Admina %s^4] ", value, userName[id]);
 				format(gText, sizeof(gText), "dodal Kosci [%s] ilosc [%d]", userName[target], value);	
 			}
 			case MENU_GIVING_EXP_ALL, MENU_GIVING_BONES_ALL, MENU_GIVING_NUGGET_ALL, MENU_GIVING_VIP_ALL, MENU_GIVING_SVIP_ALL:{
@@ -333,23 +333,23 @@ public addValue(id){
 						
 				}
 				if(userMenuPlayer[id] == MENU_GIVING_EXP_ALL){
-					ColorChat(0, GREEN, "---^x01 Wszyscy otrzymali^x04 [^x03%d Xp.^x04][^x03Od Admina %s^x04] ---", value, userName[id]);
+					chatPrint(0, PREFIX_LINE, "Wszyscy otrzymali^4 [^3%d Xp.^4][^3Od Admina %s^4] ", value, userName[id]);
 					format(gText, sizeof(gText), "dodal Xp. [%s] ilosc [%d]", "Wszystkim", value);
 				}
 				else if(userMenuPlayer[id] == MENU_GIVING_BONES_ALL){
-					ColorChat(0, GREEN, "---^x01 Wszyscy otrzymali^x04 [^x03%d Kosci^x04][^x03Od Admina %s^x04] ---", value, userName[id]);
+					chatPrint(0, PREFIX_LINE, "Wszyscy otrzymali^4 [^3%d Kosci^4][^3Od Admina %s^4] ", value, userName[id]);
 					format(gText, sizeof(gText), "dodal Kosci [%s] ilosc [%d]", "Wszystkim", value);
 				}
 				else if(userMenuPlayer[id] == MENU_GIVING_NUGGET_ALL){
-					ColorChat(0, GREEN, "---^x01 Wszyscy otrzymali^x04 [^x03%d Brylki^x04][^x03Od Admina %s^x04] ---", value, userName[id]);
+					chatPrint(0, PREFIX_LINE, "Wszyscy otrzymali^4 [^3%d Brylki^4][^3Od Admina %s^4] ", value, userName[id]);
 					format(gText, sizeof(gText), "dodal Brylek [%s] ilosc [%d]", "Wszystkim", value);
 				}
 				else if(userMenuPlayer[id] == MENU_GIVING_VIP_ALL){
-					ColorChat(0, GREEN, "---^x01 Wszyscy otrzymali^x04 [^x03%dmin VIP'a^x04][^x03Od Admina %s^x04] ---", value, userName[id]);
+					chatPrint(0, PREFIX_LINE, "Wszyscy otrzymali^4 [^3%dmin VIP'a^4][^3Od Admina %s^4] ", value, userName[id]);
 					format(gText, sizeof(gText), "dodal VIP'a [%s] ilosc [%d min]", "Wszystkim", value);
 				}
 				else if(userMenuPlayer[id] == MENU_GIVING_SVIP_ALL){
-					ColorChat(0, GREEN, "---^x01 Wszyscy otrzymali^x04 [^x03%dmin SVIP'a^x04][^x03Od Admina %s^x04] ---", value, userName[id]);
+					chatPrint(0, PREFIX_LINE, "Wszyscy otrzymali^4 [^3%dmin SVIP'a^4][^3Od Admina %s^4] ", value, userName[id]);
 					format(gText, sizeof(gText), "dodal SVIP'a [%s] ilosc [%d min]", "Wszystkim", value);
 				}
 				
@@ -371,7 +371,7 @@ public addValueTransfer(id){
 	new value = str_to_num(szArg);
 	
 	if(!is_user_connected(target)){
-		ColorChat(id ,GREEN, "---^x01 Nie ma gracza na serwerze ktoremu chciales dac Brylki^x04 ---");
+		chatPrint(id, PREFIX_LINE, "Nie ma gracza na serwerze ktoremu chciales dac Brylki");
 		return PLUGIN_CONTINUE;
 	}
 	switch(userMenuPlayer[id]){	
@@ -379,11 +379,11 @@ public addValueTransfer(id){
 				
 			value = abs(str_to_num(szArg));
 			if( value == 0){
-				ColorChat(id, GREEN, "%s Nie mozesz dac 0 Brylek!", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Nie mozesz dac 0 Brylek!");
 				return PLUGIN_CONTINUE;
 			}
 			if( value > userNugget[id] ){
-				ColorChat(id, GREEN, "%s Nie masz tyle Brylek!", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Nie masz tyle Brylek!");
 				return PLUGIN_CONTINUE;
 			}
 			new gText[128];
@@ -394,8 +394,8 @@ public addValueTransfer(id){
 			
 			userNugget[id]		-=	value;
 			userNugget[target]	+=	value;
-			ColorChat(id, 		GREEN, 	"%s Wyslales^x03 %s^x01 Brylek do gracza^x04 %s!", PREFIXSAY, formatNumber(value), userName[target] ) ;
-			ColorChat(target, 	GREEN, 	"%s Otrzymales^x03 %s^x01 Brylek od gracza^x04 %s!", PREFIXSAY, formatNumber(value), userName[id] ) ;
+			chatPrint(id, PREFIX_NORMAL, "Wyslales^3 %s^1 Brylek do gracza^4 %s!", formatNumber(value), userName[target] ) ;
+			chatPrint(target, PREFIX_NORMAL, "%s Otrzymales^3 %s^1 Brylek od gracza^4 %s!", formatNumber(value), userName[id] ) ;
 		}
 	}
 	choosePlayer(id, 0);
@@ -404,7 +404,7 @@ public addValueTransfer(id){
 
 public codeCheck(id){
 	if( get_gametime() - fCodeCheckTime < 5.0 ){		
-		ColorChat(id, GREEN, "[SKLEP]^x01 Luzaczki wlasnie sprawdzaja juz kod, poczekaj chwile!");
+		chatPrint(id, PREFIX_NONE, "[SKLEP]^1 Luzaczki wlasnie sprawdzaja juz kod, poczekaj chwile!");
 		return PLUGIN_HANDLED;
 	}
 	fCodeCheckTime=get_gametime();
@@ -416,7 +416,7 @@ public codeCheck(id){
 	new API[33];
 	get_cvar_string("bb_api_cssetti", API, sizeof(API));
 	
-	ColorChat(id, GREEN, "[SKLEP]^x01 Luzaczki sprawdzaja kod, prosze czekac...");
+	chatPrint(id, PREFIX_NONE, "[SKLEP]^1 Luzaczki sprawdzaja kod, prosze czekac...");
 	new szLink[512];	
 	format(szLink, sizeof(szLink), "http://cssetti.pl/Api/SmsApiV2CheckCode.php?UserId=%s&Code=%s", API, szSmsCode);
 
@@ -446,29 +446,29 @@ public checkCodeSmsSeti(idHandler, error){
 	
 	if( equal(szData, "-3", 2)){
 		cmd_execute(lastBuyer, "messagemode KodZwrotny");
-		ColorChat(lastBuyer, GREEN, "[SKLEP]^x01 Kod SMS pusty! Sprobuj ponownie.");			
+		chatPrint(lastBuyer, PREFIX_NONE, "[SKLEP]^1 Kod SMS pusty! Sprobuj ponownie.");			
 		return PLUGIN_HANDLED;
 	}
 	else if( equal(szData, "-2", 2) ){
 		cmd_execute(lastBuyer, "messagemode KodZwrotny");
-		ColorChat(lastBuyer, GREEN, "[SKLEP]^x01 Kod SMS posiada nieprawidlowe znaki! Sprobuj ponownie.");			
+		chatPrint(lastBuyer, PREFIX_NONE, "[SKLEP]^1 Kod SMS posiada nieprawidlowe znaki! Sprobuj ponownie.");			
 		return PLUGIN_HANDLED;
 	}
 	else if( equal(szData, "-1", 2) ){
-		ColorChat(lastBuyer, GREEN, "[SKLEP]^x01 Luzaczkowy Sklep napotkal problemy, sprobuj ponownie pozniej.");
+		chatPrint(lastBuyer, PREFIX_NONE, "[SKLEP]^1 Luzaczkowy Sklep napotkal problemy, sprobuj ponownie pozniej.");
 		log_amx("Sklep niepoprawny user ID");			
 		return PLUGIN_HANDLED;
 	}
 	else if( equal(szData, "0", 1) ){
 		cmd_execute(lastBuyer, "messagemode KodZwrotny");
-		ColorChat(lastBuyer, GREEN, "[SKLEP]^x01 Kod SMS jest nieprawidlowy! Sprobuj ponownie.");
+		chatPrint(lastBuyer, PREFIX_NONE, "[SKLEP]^1 Kod SMS jest nieprawidlowy! Sprobuj ponownie.");
 		return PLUGIN_HANDLED;
 	}
 	else {
 		for( new i = sizeof(pricesMenu)-1 ; i >= 0 ; i -- ){
 			if( str_to_float(pricesMenu[i][3]) == str_to_float(szData) ){
-				ColorChat(lastBuyer, GREEN, "(:^x01 Doladowales^x04 %s^x01 Luzaczkow^x04 :)", pricesMenu[i][4]);
-				ColorChat(0, GREEN, "(:^x01 Dziekujemy!^x03 %s^x01 kupil^x03 Luzaczki^x04 :)", userName[lastBuyer]);
+				chatPrint(lastBuyer, PREFIX_NONE, "(:^1 Doladowales^4 %s^1 Luzaczkow^4 :)", pricesMenu[i][4]);
+				chatPrint(0, PREFIX_NORMAL, "(:^1 Dziekujemy!^3 %s^1 kupil^3 Luzaczki^4 :)", userName[lastBuyer]);
 				userLuzCoin[lastBuyer] += str_to_num(pricesMenu[i][4]);
 				format(gText, sizeof(gText), "doladowanie [%s PLN][%s Cena][Kod: %s][Ilosc: %s]", pricesMenu[i][3], pricesMenu[i][2], szSmsCode, pricesMenu[i][4] );
 				
@@ -485,7 +485,7 @@ public checkCodeSmsSeti(idHandler, error){
 }
 public luzaczkiShop(id){
 	if( !playerLogged(id) ){
-		ColorChat(id, GREEN, "%s Zaloguj sie aby moc korzystac z tego menu!", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Zaloguj sie aby moc korzystac z tego menu!");
 		return PLUGIN_HANDLED;
 	}
 	
@@ -526,7 +526,7 @@ public luzaczkiShop_2(id, menu, item){
 		return PLUGIN_HANDLED;
 	}
 	if( userLuzCoin[id] < str_to_num(itemsShop[item][1]) ){
-		ColorChat(id, GREEN, "---^x01 Niestety nie masz na to^x03 Luzaczkow^x04 ---");
+		chatPrint(id, PREFIX_LINE, "Niestety nie masz na to^3 Luzaczkow");
 		luzaczkiShop(id);
 		return PLUGIN_HANDLED;
 	}
@@ -557,7 +557,7 @@ public luzaczkiFinal_2(id, item){
 		return PLUGIN_CONTINUE;
 	}
 	if( !playerLogged(id) ){	
-		ColorChat(id, GREEN, "[SKLEP]^x01 Zaloguj sie aby kupowac!");
+		chatPrint(id, PREFIX_NONE, "[SKLEP]^1 Zaloguj sie aby kupowac!");
 		return PLUGIN_CONTINUE;
 	}
 	
@@ -596,7 +596,7 @@ public luzaczkiFinal_2(id, item){
 		}
 	}
 	userLuzCoin[id] -= str_to_num(itemsShop[item][1]);
-	ColorChat(id, GREEN, "---^x01 Kupiles^x03 %s^x01 za^x03 %s Luzaczkow^x04 ---", itemsShop[item][0], itemsShop[item][1] );
+	chatPrint(id, PREFIX_LINE, "Kupiles^3 %s^1 za^3 %s Luzaczkow", itemsShop[item][0], itemsShop[item][1] );
 	Display_Fade(id, 4096,4096, 4096, 64, 255, 64, 80);
 	set_dhudmessage(30, 160, 30, -1.0, 0.20, 0, 0.5, 2.0, 0.5, 0.5);
 	show_dhudmessage(id, "Kupiles %s za %s Luzaczkow", itemsShop[item][0], itemsShop[item][1]);

@@ -6,7 +6,6 @@
 #include <fun>
 #include <cstrike>
 #include <hamsandwich>
-#include <ColorChat>
 #include <fvault>
 
 new cloneBlockOffset;
@@ -64,13 +63,13 @@ public adminLockBlock_2(id, menu, item){
 			get_user_aiming(id, ent, body);
 			
 			if( !pev_valid(ent) ){
-				ColorChat(id, GREEN, "---^x04 Najedz na cos^x01 ---");
+				chatPrint(id, PREFIX_LINE, "Najedz na cos");
 				adminLockBlock(id);			
 				return PLUGIN_HANDLED;
 			}
 			if( !canBeMoved(id, ent) ){		
 				
-				ColorChat(id, GREEN, "---^x04 Tego nie wolno^x01 ---");	
+				chatPrint(id, PREFIX_LINE, "Tego nie wolno");	
 				adminLockBlock(id);			
 				return PLUGIN_HANDLED;
 			}
@@ -80,7 +79,7 @@ public adminLockBlock_2(id, menu, item){
 					set_pev(ent,pev_rendercolor, Float:{163.0, 1.0, 37.0} );
 					set_pev(ent,pev_renderamt, 240.0 );	
 					setLock(ent, 1);
-					ColorChat(id, GREEN, "---^x01 Zablokowano [^x04%d^x01]^x04 ---", ent);
+					chatPrint(id, PREFIX_LINE, "Zablokowano [^4%d^1]", ent);
 					set_task(0.5, "removeColor", ent);
 				}
 				case 1:{					
@@ -88,7 +87,7 @@ public adminLockBlock_2(id, menu, item){
 					set_pev(ent,pev_rendercolor, Float:{37.0, 167.0, 1.0} );
 					set_pev(ent,pev_renderamt, 240.0 );
 					delLock(ent);
-					ColorChat(id, GREEN, "---^x01 Odblokowano [^x04%d^x01]^x04 ---", ent);
+					chatPrint(id, PREFIX_LINE, "Odblokowano [^4%d^1]", ent);
 					set_task(0.5, "removeColor", ent);
 				}
 			}		
@@ -100,12 +99,12 @@ public adminLockBlock_2(id, menu, item){
 			if( ent == 0 ) return PLUGIN_HANDLED;
 				
 			if( !pev_valid(ent) ){
-				ColorChat(id, GREEN, "---^x01 Najedz na cos^x04 ---");	
+				chatPrint(id, PREFIX_LINE, "Najedz na cos");	
 				adminLockBlock(id);
 				return PLUGIN_HANDLED;
 			}
 			if( !canBeMoved(id, ent) ){	
-				ColorChat(id, GREEN, "---^x01 Tego nie wolno^x04 ---");	
+				chatPrint(id, PREFIX_LINE, "Tego nie wolno");	
 				adminLockBlock(id);	
 				return PLUGIN_HANDLED;
 			}
@@ -113,11 +112,11 @@ public adminLockBlock_2(id, menu, item){
 		}
 		case 2:{
 			saveCloneBlock();
-			ColorChat(id, GREEN, "---^x04 Zapisano Bloki^x01 ---");
+			chatPrint(id, PREFIX_LINE, "Zapisano Bloki");
 		}
 		case 3:{
 			loadCloneBlock();
-			ColorChat(id, GREEN, "---^x04 Wczytano Bloki^x01 ---");	
+			chatPrint(id, PREFIX_LINE, "Wczytano Bloki");	
 		}
 		case 4:{
 			new file = fopen(szFile, "wt");	
@@ -131,7 +130,7 @@ public adminLockBlock_2(id, menu, item){
 			new ent, body;
 			get_user_aiming(id, ent, body);
 			if( !ent ){
-				ColorChat(id, GREEN, "---^x01 Najedz na cos^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Najedz na cos");
 				adminLockBlock(id);
 				return PLUGIN_CONTINUE;
 			}
@@ -166,7 +165,7 @@ public adminLockBlock_2(id, menu, item){
 					
 					BeamLight(userBlockConnectOrigin[0], userBlockConnectOrigin[1], spriteBeam, 0, 0, 20, 10, 0, 255, 128, 75, 255, 255);
 	
-					ColorChat(id, GREEN, "---^x01 Bloki zostaly polaczone^x04 ---");
+					chatPrint(id, PREFIX_LINE, "Bloki zostaly polaczone");
 					adminLockBlock(id);
 				
 					userBlockConnect[id] = 0;
@@ -177,7 +176,7 @@ public adminLockBlock_2(id, menu, item){
 		}
 		case 7:{
 			if( userBlockConnect[id] == 0){				
-				ColorChat(id, GREEN, "---^x01 Schowek jest pusty^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Schowek jest pusty");
 				adminLockBlock(id);
 				return PLUGIN_CONTINUE;
 			}
@@ -196,7 +195,7 @@ public adminLockBlock_2(id, menu, item){
 		}
 		case 8:{
 			if( userBlockConnect[id] == 0){				
-				ColorChat(id, GREEN, "---^x01 Schowek jest pusty^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Schowek jest pusty");
 				adminLockBlock(id);
 				return PLUGIN_CONTINUE;
 			}
@@ -233,7 +232,7 @@ public rotateBlock(id){
 		new entNew 	= entity_get_int(ent, EV_INT_team);
 		if( entNew == 0 ){
 			set_dhudmessage(255, 42, 85, -1.0, 0.65, 0, 6.0, 12.0);
-			show_dhudmessage(id, "--- Nie mozna tego obrocic ---");
+			show_dhudmessage(id, " Nie mozna tego obrocic ");
 			return;
 		}	
 		new entNext 	= entity_get_int(entNew, EV_INT_team);

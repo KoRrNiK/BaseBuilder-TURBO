@@ -62,7 +62,7 @@ public menuCreateCase_2(id, menu, item){
 		}
 		case 3:{
 			if(caseCreate[id][CREATE_CASE_TYPE] && !caseCreate[id][CREATE_CASE_PLAYER]){
-				ColorChat(id, GREEN, "---^x01 Nie mozliwe^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Nie mozliwe");
 				menuCreateCase(id);
 				return;
 			}
@@ -224,7 +224,7 @@ public caseInfo(id, ent, Float:cordx, Float:cordy){
 					if(pev(entClose, pev_owner) == id || pev(entClose, pev_owner) == 0 ||  get_gametime() - pev(entClose, pev_fuser1) > pev(entClose, pev_fuser2)){
 						openChest(id, entClose);
 					}
-				} else ColorChat(id, GREEN,"---^x01 Podejdz blizej zeby otworzyc^x04 ---");
+				} else chatPrint(id, PREFIX_LINE, "Podejdz blizej zeby otworzyc");
 			}
 			userPressOpen[id] = true;
 		}else userPressOpen[id] = false;
@@ -239,8 +239,8 @@ public openChest(id,ent){
 	pev(ent, pev_origin, fOrigin);
 	
 	if(pev(ent, pev_owner) == 0)
-		ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 otworzyl^x04 skrzynie", PREFIXSAY, userName[id]);
-	else ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 otworzyl^x04 skrzynie^x03 |^x01 Wlasnosc:^x04 %s", PREFIXSAY, userName[id], userName[pev(ent, pev_owner)]);
+		chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otworzyl^4 skrzynie", userName[id]);
+	else chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otworzyl^4 skrzynie^3 |^1 Wlasnosc:^4 %s", userName[id], userName[pev(ent, pev_owner)]);
 	
 	if(userClassHuman[id] == human_SEARCH) addPro(id, pro_CASE, 1);
 	
@@ -254,7 +254,7 @@ public openChest(id,ent){
 	
 	fOrigin[2] += 5.0;
 	
-	iLen += format(gText[iLen], sizeof(gText) - 1 - iLen, "--------------------^n");
+	iLen += format(gText[iLen], sizeof(gText) - 1 - iLen, "--^n");
 	
 	for(new i = random_num(2, 10); i  > 0; i --){
 	
@@ -303,10 +303,10 @@ public openChest(id,ent){
 	addNuggetToFinal(id,  randomType[3] );
 	
 	iLen += format(gText[iLen], sizeof(gText) - 1 - iLen, "Calosc: %d", randomType[3]);
-	iLen += format(gText[iLen], sizeof(gText) - 1 - iLen, "^n--------------------");
+	iLen += format(gText[iLen], sizeof(gText) - 1 - iLen, "^n--");
 	tutorMake(id, TUTOR_YELLOW, 2.0, "%s", gText);
 	
-	ColorChat(id,GREEN, "%s Ekstra nagroda:^x03 %d Brylek", PREFIXSAY, randomType[3] );
+	chatPrint(id, PREFIX_NORMAL, "Ekstra nagroda:^3 %d Brylek", randomType[3] );
 	
 	removeChestEnt(ent);
 	

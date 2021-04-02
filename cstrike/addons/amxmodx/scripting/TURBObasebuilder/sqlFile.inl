@@ -6,13 +6,10 @@
 #include <	fakemeta_util	>
 #include <	engine		>
 #include <	csx		>
-#include <	colorchat	>
 #include <	fvault		>
-#include <	StripWeapons	>
 #include <	http2		>
 #include <	xs		>
 #include <	sockets		>
-#include <	tutor		>
 #include <	sqlx		>
 
 public plugin_init_sql(){
@@ -46,7 +43,7 @@ public plugin_init_sql(){
 		set_task(5.0, "plugin_init_sql");
 		return;
 	}
-	ColorChat(0, GREEN, "[SQL]^x01 Stworzono tabele");
+	chatPrint(0, PREFIX_NORMAL, "[SQL]^1 Stworzono tabele");
 	log_amx("[SQL-LOG] Stworzono tabele");
 	
 	new queryData[512];
@@ -350,7 +347,7 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 					
 					if( equal(szSavedIP, szIp ) && equal(szSavedSID, szSid ) ){	
 						userLogged[id]=true;
-						ColorChat(id, TEAM_COLOR, "%s Zostales zalogowany automatycznie!", PREFIXSAY);
+						chatPrint(id, PREFIX_NORMAL, "Zostales zalogowany automatycznie!");
 					}else{
 						userLogged[id]=false;								
 					}
@@ -454,7 +451,7 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 			rank = SQL_ReadResult(query, SQL_FieldNameToNum(query, "rank")) + 1;
 			count = SQL_ReadResult(query, SQL_FieldNameToNum(query, "count")); 
     
-			ColorChat(id, GREEN, "---^x01 Twoj ranking:^x03 %d/%d^x04 |^x01 Twoje punkty:^x03 %d^x04 |^x01 Kile:^x03 %d^x04 /^x01 Dedy:^x03 %d^x04 ---",rank,count,  userPoints[id] ,userKills[id], userDeaths[id] );
+			chatPrint(id, PREFIX_LINE, "Twoj ranking:^3 %d/%d^4 |^1 Twoje punkty:^3 %d^4 |^1 Kile:^3 %d^4 /^1 Dedy:^3 %d",rank,count,  userPoints[id] ,userKills[id], userDeaths[id] );
 		}
 		case 3:{
 			static szTime, szName[33];		
@@ -656,7 +653,7 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 		
 			if (!count) {
 				menu_destroy(menu);
-				ColorChat(id, GREEN,"%s Nie ma zadnego klanu!", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL,"Nie ma zadnego klanu!");
 			} else menu_display(id, menu, 0);
 		}
 		case 8:{
@@ -730,7 +727,7 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 			if(!count) {
 				menu_destroy(menu);
 				warningInfo(id);
-				ColorChat(id, GREEN, "---^x01 Gracz nie posiada rzadnych ostrzezen!^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Gracz nie posiada rzadnych ostrzezen!");
 			} else menu_display(id, menu, 0 );
 			
 			

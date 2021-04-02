@@ -86,7 +86,7 @@ public mainMenuAdmin_2(id, item){
 		}
 		case 3:{
 			if(buildTime || prepTime){
-				ColorChat(id, GREEN, "---^x01 Funkcja^x03 dostepna^x01 tylko podczas rundy!^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Funkcja^3 dostepna^1 tylko podczas rundy!");
 				mainMenuAdmin(id);
 				return PLUGIN_CONTINUE;
 			}
@@ -100,7 +100,7 @@ public mainMenuAdmin_2(id, item){
 		}
 		case 4:{
 			if( menuAdminHelp(id) == 0 ){				
-				ColorChat(id, GREEN, "---^x01 Nikt nie potrzebuje pomocy^x04 ---");	
+				chatPrint(id, PREFIX_LINE, "Nikt nie potrzebuje pomocy");	
 				mainMenuAdmin(id);
 			}
 		}
@@ -114,7 +114,7 @@ public mainMenuAdmin_2(id, item){
 			if (id != userMoveAs[id] && userMoveAs[id]){
 				menuPerrmissions(id);
 			}else{
-				ColorChat(id, GREEN, "---^x01 Pierw najedz na^x03 gracza^x01 lub na^x03 blok^x01 gracza!^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Pierw najedz na^3 gracza^1 lub na^3 blok^1 gracza!");
 				mainMenuAdmin(id);
 			}
 		}
@@ -196,18 +196,18 @@ public settingAdmin_2(id, menu, item){
 		case 0:{
 			adminResetBlock(1, 0, 0);
 			mainMenuAdmin(id);
-			ColorChat(0, GREEN, "---^x01 Admin^x03 %s^x01 przywrocil^x04 klocki^x01 na mapie^x04 ---", userName[id]);
+			chatPrint(0, PREFIX_LINE, "Admin^3 %s^1 przywrocil^4 klocki^1 na mapie", userName[id]);
 			settingAdmin(id);
 		}
 		case 1:{
 			adminResetBlock(0, 0, 0);
 			mainMenuAdmin(id);
-			ColorChat(0, GREEN, "---^x01 Admin^x03 %s^x01 usunal^x04 klocki^x01 z mapy^x04 ---",  userName[id]);
+			chatPrint(0, PREFIX_LINE, "Admin^3 %s^1 usunal^4 klocki^1 z mapy",  userName[id]);
 			settingAdmin(id);
 		}
 		case 2:{
 			clockStop =! clockStop;
-			ColorChat(0, GREEN, "---^x01 Admin^x03 %s^x01 %s odliczanie^x04 ---",  userName[id], clockStop ? "zatrzymal" : "wznowil");
+			chatPrint(0, PREFIX_LINE, "Admin^3 %s^1 %s odliczanie",  userName[id], clockStop ? "zatrzymal" : "wznowil");
 			settingAdmin(id);
 		}
 		case 3:{
@@ -220,12 +220,12 @@ public settingAdmin_2(id, menu, item){
 			get_user_aiming(id, ent);
 		
 			if(getOwner(ent) == 0){
-				ColorChat(id, GREEN, "%s Nie mozesz tego zaznaczyc!", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Nie mozesz tego zaznaczyc!");
 				settingAdmin(id);
 				return PLUGIN_CONTINUE;	
 			}
 			if(!canBeMoved(id, ent)){
-				ColorChat(id, GREEN, "%s Nie mozesz tego zaznaczyc!", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Nie mozesz tego zaznaczyc!");
 				settingAdmin(id);
 				return PLUGIN_CONTINUE;
 			}
@@ -302,7 +302,7 @@ public menuPerrmissions_2(id, menu, item){
 	if(!is_user_connected(target)){
 		stopHelp(id);
 		mainMenuAdmin(id);
-		ColorChat(id, GREEN, "---^x01 Gracz ktoremu pomagales wyszedl z serwera!^x04 ---");
+		chatPrint(id, PREFIX_LINE, "Gracz ktoremu pomagales wyszedl z serwera!");
 		menu_destroy(menu);
 		return PLUGIN_CONTINUE;
 	}
@@ -318,20 +318,20 @@ public menuPerrmissions_2(id, menu, item){
 			userNoClip[target] =! userNoClip[target];
 			set_user_noclip(target, userNoClip[target]);
 					
-			ColorChat(target, GREEN, "---^x01 Twoj^x04 Noclip^x01 zostal %s przez Admina^x03 %s^x04 ---", userNoClip[target] ? "wlaczony" : "wylaczony" , userName[id]);
+			chatPrint(target, PREFIX_LINE, "Twoj^4 Noclip^1 zostal %s przez Admina^3 %s", userNoClip[target] ? "wlaczony" : "wylaczony" , userName[id]);
 			menuPerrmissions(id);
 		}
 		case 1:{
 			userGodMod[target] =! userGodMod[target];
 			set_user_godmode(target, userGodMod[target]);
 			
-			ColorChat(target, GREEN, "---^x01 Twoj^x04 GodMod^x01 zostal %s przez Admina^x03 %s^x04 ---", userGodMod[target] ? "wlaczony" : "wylaczony" , userName[id]);
+			chatPrint(target, PREFIX_LINE, "Twoj^4 GodMod^1 zostal %s przez Admina^3 %s", userGodMod[target] ? "wlaczony" : "wylaczony" , userName[id]);
 			menuPerrmissions(id);
 		}
 		case 2:{
 			userAllowBuild[target] =! userAllowBuild[target];
 			
-			ColorChat(target, GREEN, "---^x01 Twoje^x04 Budowanie^x01 zostalo %s przez Admina^x03 %s^x04 ---", userAllowBuild[target] ? "wlaczone" : "wylaczone" , userName[id]);
+			chatPrint(target, PREFIX_LINE, "Twoje^4 Budowanie^1 zostalo %s przez Admina^3 %s", userAllowBuild[target] ? "wlaczone" : "wylaczone" , userName[id]);
 			
 			stopEnt(target);
 			menuPerrmissions(id);
@@ -354,7 +354,7 @@ public menuPerrmissions_2(id, menu, item){
 		}
 		case 6:{
 			if(buildTime || prepTime){
-				ColorChat(id, GREEN, "---^x01 Funkcja^x03 dostepna^x01 tylko podczas rundy!^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Funkcja^3 dostepna^1 tylko podczas rundy!");
 				menuPerrmissions(id);
 				return PLUGIN_CONTINUE;
 			}
@@ -371,14 +371,14 @@ public menuPerrmissions_2(id, menu, item){
 		case 7:{
 			adminResetBlock(1, 0, 0);
 			menuPerrmissions(id);
-			ColorChat(0, GREEN, "---^x01 Admin^x03 %s^x01 przywrocil^x04 klocki^x01 na mapie^x04 ---", userName[id]);
+			chatPrint(0, PREFIX_LINE, "Admin^3 %s^1 przywrocil^4 klocki^1 na mapie", userName[id]);
 			
 			menuPerrmissions(id);
 		}
 		case 8:{
 			adminResetBlock(0, 0, 0);
 			menuPerrmissions(id);
-			ColorChat(0, GREEN, "---^x01 Admin^x03 %s^x01 usunal^x04 klocki^x01 z mapy^x04 ---",  userName[id]);
+			chatPrint(0, PREFIX_LINE, "Admin^3 %s^1 usunal^4 klocki^1 z mapy",  userName[id]);
 			
 			menuPerrmissions(id);
 		}
@@ -386,7 +386,7 @@ public menuPerrmissions_2(id, menu, item){
 			
 			if(get_gametime() < userTimeAdmin[target]){
 				new Float:got = floatsub(userTimeAdmin[target], get_gametime());
-				ColorChat(id, GREEN, "---^x01 Gracz^x03 %s^x01 juz ma to wlaczone^x04 |^x01 Czas:^x03 %0.1f^x04 ---", userName[target], got);
+				chatPrint(id, PREFIX_LINE, "Gracz^3 %s^1 juz ma to wlaczone^4 |^1 Czas:^3 %0.1f", userName[target], got);
 				return PLUGIN_CONTINUE;
 				
 			}
@@ -400,8 +400,8 @@ public menuPerrmissions_2(id, menu, item){
 				remove_task(target+TASK_PUSH);
 			else set_task(0.1, "adminHelpPush", target+TASK_PUSH);
 			
-			ColorChat(id, GREEN, "---^x01 Wlaczyles^x03 GodMod + Opdychanie^x01 na^x03 %dsek^x01 graczowi^x03 %s^x04 ---", timeHelpGod, userName[target]);
-			ColorChat(target, GREEN, "---^x01 Admin^x03 %s^x01 wlaczyl Ci GodMod + Odpychanie^x01 na^x03 %d sek!^x04 ---", userName[id], timeHelpGod);
+			chatPrint(id, PREFIX_LINE, "Wlaczyles^3 GodMod + Opdychanie^1 na^3 %dsek^1 graczowi^3 %s", timeHelpGod, userName[target]);
+			chatPrint(target, PREFIX_LINE, "Admin^3 %s^1 wlaczyl Ci GodMod + Odpychanie^1 na^3 %d sek!", userName[id], timeHelpGod);
 			
 			userTimeAdmin[target] = get_gametime() + float(timeHelpGod);
 			
@@ -427,8 +427,8 @@ public menuPerrmissions_2(id, menu, item){
 			
 				mainMenuAdmin(id);
 				
-				ColorChat(target, GREEN, "---^x01 Admin^x03 %s^x01 konczy tobie pomagac^x04 ---", userName[id]);
-				ColorChat(id, GREEN, "---^x01 Konczysz pomagac graczowi^x03 %s^x04 ---", userName[target]);
+				chatPrint(target, PREFIX_LINE, "Admin^3 %s^1 konczy tobie pomagac", userName[id]);
+				chatPrint(id, PREFIX_LINE, "Konczysz pomagac graczowi^3 %s", userName[target]);
 			}
 		} 
 		default:{}
@@ -458,7 +458,7 @@ public offHelp(id){
 	
 	set_user_godmode(id, userGodMod[id]);
 	
-	ColorChat(id, GREEN, "---^x01 Twoj^x03 GodMod + Odpychanie^x01 zostalo wylaczone!^x04 ---");
+	chatPrint(id, PREFIX_LINE, "Twoj^3 GodMod + Odpychanie^1 zostalo wylaczone!");
 	
 	set_rendering(id, kRenderFxGlowShell, 0, 0, 0, kRenderNormal, 0);
 }
@@ -565,7 +565,7 @@ public choosePlayer(id, item){
 	}
 	if (!players) {
 		menu_destroy(menu);
-		ColorChat(id, GREEN, "---^x01 Na serwerze nie ma gracza!^x04 ---");
+		chatPrint(id, PREFIX_LINE, "Na serwerze nie ma gracza!");
 	} else menu_display(id, menu, item/7);
 }
 public choosePlayer_2(id, menu, item){
@@ -579,7 +579,7 @@ public choosePlayer_2(id, menu, item){
 	switch(userMenuPlayer[id]){
 		case MENU_VIEW_BLOCK:{
 			userMoveAs[id] = target;
-			ColorChat(0, GREEN, "---^x01 Admin^x03 %s^x01 przenosi klocki jako^x03 %s!^x04 ---", userName[id], userName[target]);
+			chatPrint(0, PREFIX_LINE, "Admin^3 %s^1 przenosi klocki jako^3 %s!", userName[id], userName[target]);
 			return PLUGIN_CONTINUE;
 		}
 		case MENU_CHANGE_TEAM:{
@@ -587,14 +587,14 @@ public choosePlayer_2(id, menu, item){
 			cs_set_user_team(target, get_user_team(target) == 1 ? 2 : 1 );
 			respawnPlayerAdmin(target);
 			userRoundTeam[target] = get_user_team(target);			
-			ColorChat(0, GREEN, "---^x04 %s^x01 przeniesiony do^x04 %s^x01 przez^x04 %s ---", userName[target], teamNames[get_user_team(target)][1], userName[id]);
+			chatPrint(0, PREFIX_NORMAL, "^4 %s^1 przeniesiony do^4 %s^1 przez^4 %s ", userName[target], teamNames[get_user_team(target)][1], userName[id]);
 			choosePlayer(id, item);
 		
 		}
 		case MENU_PASSWORD:{
-			ColorChat(target, GREEN, "---^x01 Admin^x03 %s^x01 podaje Ci haslo^x04 ---", userName[id]);
-			ColorChat(target, GREEN, "---^x01 Twoje Haslo:^x03 %s^x04 ---", userPassword[target]);
-			ColorChat(id, GREEN, "---^x01 Podales haslo:^x03 %s^x01 graczowi:^x03 %s^x04 ---", userPassword[target], userName[target]);
+			chatPrint(target, PREFIX_LINE, "Admin^3 %s^1 podaje Ci haslo", userName[id]);
+			chatPrint(target, PREFIX_LINE, "Twoje Haslo:^3 %s", userPassword[target]);
+			chatPrint(id, PREFIX_LINE, "Podales haslo:^3 %s^1 graczowi:^3 %s", userPassword[target], userName[target]);
 		}
 		case MENU_GIVING_VIP:{
 			cmd_execute(id, "messagemode Ilosc");
@@ -631,8 +631,8 @@ public choosePlayer_2(id, menu, item){
 			logType[id] = LOG_ADD;
 			if(logType[id] == LOG_ADD){
 				userLastAwardTime[target]		=	playedTime(target);
-				ColorChat(id, 		GREEN, 	"%s Zresetowales nagrode gracza^x04 %s!", PREFIXSAY, userName[target] ) ;
-				ColorChat(target, 	GREEN, 	"%s Twoja nagroda zostala zresetowana przez Admina^x04 %s!", PREFIXSAY, userName[id] ) ;
+				chatPrint(id, PREFIX_NORMAL, "Zresetowales nagrode gracza^4 %s!", userName[target] ) ;
+				chatPrint(target, PREFIX_NORMAL, "Twoja nagroda zostala zresetowana przez Admina^4 %s!", userName[id] ) ;
 				format(gText, sizeof(gText), "zresetowal nagrode [%s]", userName[target]);
 				logBB(id, gText);
 			}
@@ -646,8 +646,8 @@ public choosePlayer_2(id, menu, item){
 			logType[id] = LOG_ADD;
 			if(logType[id] == LOG_ADD){
 				userLastStaminaTime[target] 	= playedTime(target);
-				ColorChat(id, 		GREEN, 	"%s Zresetowales wyczerpanie gracza^x04 %s!", PREFIXSAY, userName[target] ) ;
-				ColorChat(target, 	GREEN, 	"%s Twoje wyczerpanie zostala zresetowana przez Admina^x04 %s!", PREFIXSAY, userName[id] ) ;
+				chatPrint(id, PREFIX_NORMAL, "Zresetowales wyczerpanie gracza^4 %s!", userName[target] ) ;
+				chatPrint(target, PREFIX_NORMAL, "Twoje wyczerpanie zostala zresetowana przez Admina^4 %s!", userName[id] ) ;
 				format(gText, sizeof(gText), "zresetowal wyczerpanie [%s]", userName[target]);
 				logBB(id, gText);
 			}
@@ -655,13 +655,13 @@ public choosePlayer_2(id, menu, item){
 		case MENU_PLAYER_MUTE:{
 			
 			if(isSuperAdmin(target)){
-				ColorChat(id, GREEN, "%s Nie mozesz wyciszyc opiekuna!", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Nie mozesz wyciszyc opiekuna!");
 				choosePlayer(id, 0);
 				return PLUGIN_CONTINUE;
 			}
 			
 			userMutePlayer[id][target] =! userMutePlayer[id][target];
-			ColorChat(id, GREEN, "%s %s sobie gracza:^x03 %s", PREFIXSAY, userMutePlayer[id][target] ? "Wyciszyles" : "Odciszyles", userName[target]);
+			chatPrint(id, PREFIX_NORMAL, "%s sobie gracza:^3 %s", userMutePlayer[id][target] ? "Wyciszyles" : "Odciszyles", userName[target]);
 			
 		}
 		case MENU_PLAYER_WARNING:{
@@ -674,7 +674,7 @@ public choosePlayer_2(id, menu, item){
 		case MENU_PLAYER_CAMP:{
 			adminResetBlock(4, id, target);
 			userCheckCamp[target] = false;
-			ColorChat(0, GREEN, "---^x01 Admin^x03 %s^x01 przywrocil sobie kampe gracza:^x03 %s^x04 ---", userName[id], userName[target]);
+			chatPrint(0, PREFIX_LINE, "Admin^3 %s^1 przywrocil sobie kampe gracza:^3 %s", userName[id], userName[target]);
 		}
 		case MENU_SELECT_PLAYER:{
 			viewBlock[id] = target;
@@ -776,15 +776,15 @@ public adminCommands(id, szMessage[]){
 			new gValue = str_to_num(szValue);
 				
 			if(!target){
-				ColorChat(id, GREEN, "%s Nie znaleziono takiego gracza!", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Nie znaleziono takiego gracza!");
 				return PLUGIN_HANDLED;
 			}
 			if(!gValue){
-				ColorChat(id, GREEN, "%s Wpisz ile chcesz dodac!", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Wpisz ile chcesz dodac!");
 				return PLUGIN_HANDLED;
 			}
 			set_user_health(target, get_user_health(target) + gValue);			
-			ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 dostal^x04 %dHP^x01 od^x03 %s^x04 ---", userName[target], gValue, userName[id]);
+			chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 dostal^4 %dHP^1 od^3 %s", userName[target], gValue, userName[id]);
 			return PLUGIN_HANDLED;
 		}
 		if( 0 <= contain(szMessage, "/tp")){
@@ -795,7 +795,7 @@ public adminCommands(id, szMessage[]){
 			);
 			new target = cmd_target(id, szName, 0);
 			if(!target){
-				ColorChat(id, GREEN, "%s Nie znaleziono takiego gracza!", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Nie znaleziono takiego gracza!");
 				userVarMenu[id] = 1 ;
 				menuSpecifyUser(id, szName);
 				return PLUGIN_HANDLED;
@@ -852,7 +852,7 @@ public adminCommands(id, szMessage[]){
 			} 
 			new target = cmd_target(id, szName, 0);
 			if(!target){
-				ColorChat(id, GREEN, "%s Nie znaleziono takiego gracza!", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Nie znaleziono takiego gracza!");
 				userVarMenu[id] = 2;
 				menuSpecifyUser(id, szName);
 				return PLUGIN_HANDLED;
@@ -883,8 +883,8 @@ public adminCommands(id, szMessage[]){
 	if(equal(szMessage, "/release")){	
 		if( buildTime || prepTime ){
 			Release_Zombies();	
-			ColorChat(0, GREEN, "---^x01 Admin^x03 %s^x01 rozpoczal runde przed czasem^x04  ---", userName[id]);
-		}else ColorChat(id, GREEN, "---^x01 Runda juz zostala rozpoczeta^x04  ---");
+			chatPrint(0, PREFIX_LINE, "Admin^3 %s^1 rozpoczal runde przed czasem^4  ", userName[id]);
+		}else chatPrint(id, PREFIX_LINE, "Runda juz zostala rozpoczeta^4  ");
 		return PLUGIN_HANDLED;
 	}
 	if(equal(szMessage, "/revive", 7)){	
@@ -901,7 +901,7 @@ public adminCommands(id, szMessage[]){
 		}
 		
 		respawnPlayerAdmin(target);
-		ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 zostal ozywiony przez^x03 %s^x04 ---", userName[target], userName[id]);
+		chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 zostal ozywiony przez^3 %s", userName[target], userName[id]);
 		return PLUGIN_HANDLED;
 	}
 	if(equal(szMessage, "/swap", 5)){	
@@ -920,7 +920,7 @@ public adminCommands(id, szMessage[]){
 		cs_set_user_team(target, get_user_team(target) == 1 ? 2 : 1 );
 		respawnPlayerAdmin(target);
 		userRoundTeam[target] = get_user_team(target);				
-		ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 zostal przeniesiony do^x04 %s^x01 przez^x03 %s^x04 ---", userName[target], teamNames[get_user_team(target)][1], userName[id]);
+		chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 zostal przeniesiony do^4 %s^1 przez^3 %s", userName[target], teamNames[get_user_team(target)][1], userName[id]);
 		return PLUGIN_HANDLED;
 	}
 	if(equal(szMessage, "/mute", 5)){	
@@ -934,7 +934,7 @@ public adminCommands(id, szMessage[]){
 		new gValue = str_to_num(szValue);
 			
 		if(!target){
-			ColorChat(id, GREEN, "%s Nie znaleziono takiego gracza!", PREFIXSAY);
+			chatPrint(id, PREFIX_NORMAL, "Nie znaleziono takiego gracza!");
 			return PLUGIN_CONTINUE;
 		}
 		if(gValue){
@@ -949,8 +949,8 @@ public adminCommands(id, szMessage[]){
 			
 			userMute[target]	= 	max( userMute[target] + (MINUTE*gValue), get_systime() + (MINUTE*gValue) );
 			
-			ColorChat(target, GREEN, "%s Zostales^x04 wyciszony^x01 na^x04 %d^x01 minut! [Admin:^x04 %s^x01]", PREFIXSAY, gValue, userName[id]);
-			ColorChat(id, GREEN, "%s Gracz^x04 %s^x01 zostal^x04 wyciszony^x01 na^x04 %d^x01 minut", PREFIXSAY, userName[target], gValue);
+			chatPrint(target, PREFIX_NORMAL, "Zostales^4 wyciszony^1 na^4 %d^1 minut! [Admin:^4 %s^1]", gValue, userName[id]);
+			chatPrint(id, PREFIX_NORMAL, "Gracz^4 %s^1 zostal^4 wyciszony^1 na^4 %d^1 minut", userName[target], gValue);
 		} else {
 			
 			new gText[128];
@@ -960,8 +960,8 @@ public adminCommands(id, szMessage[]){
 				logBB(id, gText);
 			}
 				
-			ColorChat(target, GREEN, "%s Zostales^x04 odciszony^x01! [Admin:^x04 %s^x01]", PREFIXSAY, userName[id]);
-			ColorChat(id, GREEN, "%s Gracz^x04 %s^x01 zostal^x04 odciszony", PREFIXSAY, userName[target]);
+			chatPrint(target, PREFIX_NORMAL, "Zostales^4 odciszony^1! [Admin:^4 %s^1]", userName[id]);
+			chatPrint(id, PREFIX_NORMAL, "Gracz^4 %s^1 zostal^4 odciszony", userName[target]);
 			userMute[target] = 0;
 		}
 		return PLUGIN_HANDLED;
@@ -1017,7 +1017,7 @@ public menuSpecifyUser_2(id, menu, item){
 	switch(userVarMenu[id]){
 		case 0:{
 			respawnPlayerAdmin(target);
-			ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 zostal ozywiony przez^x03 %s^x04 ---", userName[target], userName[id]);
+			chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 zostal ozywiony przez^3 %s", userName[target], userName[id]);
 		}
 		case 1:{
 			userNoClip[id] = true;
@@ -1041,42 +1041,42 @@ public menuSpecifyUser_2(id, menu, item){
 public adminHelp(id){
 	
 	if(!bbCvar[cvarHelpEnable]){
-		ColorChat(id, GREEN, "%s Pomoc jest wylaczona! Aby to wlaczyc zglos sie do Wlasciciela serwera.", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Pomoc jest wylaczona! Aby to wlaczyc zglos sie do Wlasciciela serwera.");
 		return 1;
 	}
 	
 	if (!prepTime){
-		ColorChat(id, GREEN, "%s Poczekaj na czas przygotowania", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Poczekaj na czas przygotowania");
 		return 1;
 	}
 	if (gameTime){
-		ColorChat(id, GREEN, "%s Juz minal czas na pomoc!", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Juz minal czas na pomoc!");
 		return 1;
 	}
 	if (get_user_team(id) != 2){
-		ColorChat(id, GREEN, "%s Musisz byc w budowniczych", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Musisz byc w budowniczych");
 		return 1;
 	}
 	
 	if(userMaxHelp[id] <= 0){
-		ColorChat(id, GREEN, "%s Juz nie mozesz wiecej razy wezwac POMOC", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Juz nie mozesz wiecej razy wezwac POMOC");
 		return 1;
 	}
 	if(userHelp[id]){
-		ColorChat(id, GREEN, "%s Prosiles juz o pomoc!", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Prosiles juz o pomoc!");
 		return 1;
 	}
 	new space = firstFree();
 	
 	if(space == -1){
-		ColorChat(id, GREEN, "%s Za duzo osob prosilo o pomoc", PREFIXSAY);
+		chatPrint(id, PREFIX_NORMAL, "Za duzo osob prosilo o pomoc");
 		return 1;
 		
 	}
 	userHelp[id] 		= 	true;
 	needHelp[space] 		= 	id ;
-	ColorChat(id, GREEN, "%s Jeszcze tylko^x04 %d^x01 razy mozesz prosic dzis o pomoc", PREFIXSAY, userMaxHelp[id]);
-	ColorChat(0, GREEN, "%s Gracz^x03 %s^x01 prosi o pomoc!", PREFIXSAY, userName[id]);
+	chatPrint(id, PREFIX_NORMAL, "Jeszcze tylko^4 %d^1 razy mozesz prosic dzis o pomoc", userMaxHelp[id]);
+	chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 prosi o pomoc!", userName[id]);
 	return 0;
 }
 public bool:isInHelp(id){
@@ -1145,7 +1145,7 @@ public menuAdminHelp_2(id,menu,item){
 	set_user_noclip(id, userNoClip[id]);
 	set_user_godmode(id, userGodMod[id]);
 		
-	ColorChat(0, GREEN, "---^x01 Admin^x03 %s^x01 pomaga graczowi^x03 %s^x04 ---", userName[id], userName[target]);
+	chatPrint(0, PREFIX_LINE, "Admin^3 %s^1 pomaga graczowi^3 %s", userName[id], userName[target]);
 	menuPerrmissions(id);
 	
 	return;
@@ -1231,7 +1231,7 @@ public selectAllBlockMenu_2(id, menu, item){
 			get_user_aiming(id, ent);
 		
 			if(getOwner(ent) == 0 || !canBeMoved(id, ent)){
-				ColorChat(id, GREEN, "%s Nie mozesz tego zaznaczyc!", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Nie mozesz tego zaznaczyc!");
 				selectAllBlockMenu(id);
 				return;	
 			}
@@ -1244,7 +1244,7 @@ public selectAllBlockMenu_2(id, menu, item){
 			if(selectBlock[id]){
 				selectBlock[id] = false;
 				adminResetBlock(2, viewBlock[id], viewBlock[id]);
-			} else ColorChat(id, GREEN, "%s Zaznacz najpierw a potem usuwaj!", PREFIXSAY);
+			} else chatPrint(id, PREFIX_NORMAL, "Zaznacz najpierw a potem usuwaj!");
 		}
 		case 3:{
 			typeMoveBlock[id] =! typeMoveBlock[id];

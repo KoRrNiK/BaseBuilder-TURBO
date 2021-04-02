@@ -6,7 +6,6 @@
 #include <fakemeta_util>
 #include <engine>
 #include <hamsandwich>
-#include <ColorChat>
 #include <sqlx>
 
 new userWarningAccept[33];
@@ -49,12 +48,12 @@ public warningInfo_2(id, item){
 		}
 		case 1:{
 			if(target == id && !isSuperAdmin(id)){
-				ColorChat(id, GREEN, "---^x01 Nie mozesz sobie nadac ostrzezenia!^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Nie mozesz sobie nadac ostrzezenia!");
 				warningInfo(id);
 				return;
 			}
 			if(userWarningAmount[target] >= MAXWAR){
-				ColorChat(id, GREEN, "---^x01 Gracz Posiada juz^x03 %d ostrzezen^x01! Musisz jakies usunac aby dodac nowe!^x04 ---", MAXWAR);
+				chatPrint(id, PREFIX_LINE, "Gracz Posiada juz^3 %d ostrzezen^1! Musisz jakies usunac aby dodac nowe!", MAXWAR);
 				warningInfo(id);
 				return;
 			}
@@ -74,12 +73,12 @@ public writeWarning(id){
 	trim(szArg);
 	
 	if(userWarningAmount[target] >= MAXWAR){
-		ColorChat(id, GREEN, "---^x01 Gracz Posiada juz^x03 %d ostrzezen^x01! Musisz jakies usunac aby dodac nowe!^x04 ---", MAXWAR);
+		chatPrint(id, PREFIX_LINE, "Gracz Posiada juz^3 %d ostrzezen^1! Musisz jakies usunac aby dodac nowe!", MAXWAR);
 		warningInfo(id);
 		return;
 	}
 	if (equal(szArg, "") || strlen(szArg) <  1 ) {
-		ColorChat(id, GREEN, "---^x01 Nic nie wpisales!^x04 ---");
+		chatPrint(id, PREFIX_LINE, "Nic nie wpisales!");
 		warningInfo(id);
 		return;
 	}
@@ -129,9 +128,9 @@ public warningAddMenu_2(id, item){
 				return;
 			}
 			
-			ColorChat(target, GREEN, "---^x01 Dostales ostrzezenie od^x03 %s^x01!^x04 ---", userName[id]); 
-			ColorChat(target, GREEN, "---^x01 Opis:^x03 %s^x04 ---", userWarningName[target]); 
-			ColorChat(id, GREEN, "---^x01 Dales ostrzezenie graczowi:^x03 %s^x04 ---", userName[target]); 
+			chatPrint(target, PREFIX_LINE, "Dostales ostrzezenie od^3 %s^1!", userName[id]); 
+			chatPrint(target, PREFIX_LINE, "Opis:^3 %s", userWarningName[target]); 
+			chatPrint(id, PREFIX_LINE, "Dales ostrzezenie graczowi:^3 %s", userName[target]); 
 				
 			userWarningAmount[target] ++;
 			
@@ -229,7 +228,7 @@ public warningDesc_2(id, item){
 		case 0:{
 			
 			if(!isSuperAdmin(id)) {
-				ColorChat(id, GREEN, "---^x01 Brak dostepu!^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Brak dostepu!");
 				loadDescWarning(id);
 				return;
 			}
@@ -242,7 +241,7 @@ public warningDesc_2(id, item){
 		}
 		case 1:{
 			if(!isSuperAdmin(id)) {
-				ColorChat(id, GREEN, "---^x01 Brak dostepu!^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Brak dostepu!");
 				loadDescWarning(id);
 				return;
 			}
@@ -270,16 +269,16 @@ public  updateWarning(id){
 	trim(szArg);
 	
 	if (equal(szArg, "") || strlen(szArg) <  1 ) {
-		ColorChat(id, GREEN, "---^x01 Nic nie wpisales!^x04 ---");
+		chatPrint(id, PREFIX_LINE, "Nic nie wpisales!");
 		return ;
 	}
 
 
 	if(is_user_connected(tempId[1])){
-		ColorChat(tempId[1], GREEN,"---^x01 Admin^x03 %s^x01 zmienil opis twojego ostrzezenia!^x04 ---", userName[id]);
-		ColorChat(id, GREEN,"---^x01 Zmieniles opis ostrzezenia graczowi^x03 %s^x01 ---", userName[tempId[1]]);
+		chatPrint(tempId[1], PREFIX_LINE, "Admin^3 %s^1 zmienil opis twojego ostrzezenia!", userName[id]);
+		chatPrint(id, PREFIX_LINE, "Zmieniles opis ostrzezenia graczowi^3 %s", userName[tempId[1]]);
 	} else{
-		ColorChat(tempId[1], GREEN,"---^x01 Nie ma na serwerze gracza ktoremu chciales zmienic opis ostrzezenia^x04 ---");
+		chatPrint(tempId[1], PREFIX_LINE, "Nie ma na serwerze gracza ktoremu chciales zmienic opis ostrzezenia");
 		return;
 	}
 	
@@ -307,10 +306,10 @@ public  removeWarning(id){
 	tempId[2] = userWarningItem[id];
 	
 	if(is_user_connected(tempId[1])){
-		ColorChat(tempId[1], GREEN,"---^x01 Admin^x03 %s^x01 usunal tobie ostrzezenie!^x04 ---", userName[id]);
-		ColorChat(id, GREEN,"---^x01 Usunales ostrzezenie graczowi^x03 %s^x01 ---", userName[tempId[1]]);
+		chatPrint(tempId[1], PREFIX_LINE, "Admin^3 %s^1 usunal tobie ostrzezenie!", userName[id]);
+		chatPrint(id, PREFIX_LINE, "Usunales ostrzezenie graczowi^3 %s^1 ", userName[tempId[1]]);
 	} else{
-		ColorChat(tempId[1], GREEN,"---^x01 Nie ma na serwerze gracza ktoremu chciales usunac ostrzezenie^x04 ---");
+		chatPrint(tempId[1], PREFIX_LINE, "Nie ma na serwerze gracza ktoremu chciales usunac ostrzezenie");
 		return;
 	}
 	

@@ -17,7 +17,7 @@ public addMission(id, mission, value){
 		new missionUser = userMission[id][mission];    
 		userMission[id][mission] = min(userMission[id][mission]+value, str_to_num(missionDesc[mission][2]));
 		if( str_to_num(missionDesc[mission][2]) == userMission[id][mission] && missionUser != userMission[id][mission] ) {      
-			ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 wykonal misje^x03 %s^x01 ---", userName[id], missionDesc[mission][0] );
+			chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 wykonal misje^3 %s^1 ", userName[id], missionDesc[mission][0] );
 			
 			completeMission(id);
 		}
@@ -28,7 +28,7 @@ public addSecretMission(id, mission, value){
 		new missionSecretUser = userMissionSecret[id][mission];    
 		userMissionSecret[id][mission] = min(userMissionSecret[id][mission]+value, str_to_num(missionDescSecret[mission][2]));       
 		if( str_to_num(missionDescSecret[mission][2]) == userMissionSecret[id][mission] && missionSecretUser != userMissionSecret[id][mission] ) {      
-			ColorChat(0, GREEN, "---^x01 Gracz^x03 %s^x01 wykonal sekretna misje^x03 %c^x01 ---", userName[id], missionDescSecret[mission][0] );
+			chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 wykonal sekretna misje^3 %c^1 ", userName[id], missionDescSecret[mission][0] );
 			
 			#if defined CHRISTMAS_ADDON
 		
@@ -220,33 +220,33 @@ public missionMenuDesc_2(id, item){
 		case 0:{
 			if(missionMenu[id] == MISSION_MENU_BASIC){
 				if( ( userMission[id][target] == -1 )){
-					ColorChat(id, GREEN, "%s Juz odebrales misje:^x03 %s", PREFIXSAY,   missionDesc[target][0] );	
+					chatPrint(id, PREFIX_NORMAL, "Juz odebrales misje:^3 %s",   missionDesc[target][0] );	
 				} else if( userMission[id][target] == str_to_num(missionDesc[target][2])){
 					missionGiveAward(id);
 				} else {
-					ColorChat(id, GREEN, "%s Nie mozesz jeszcze odebrac misji:^x03 %d/%s", PREFIXSAY,userMission[id][target],missionDesc[target][2]);
+					chatPrint(id, PREFIX_NORMAL, "Nie mozesz jeszcze odebrac misji:^3 %d/%s",userMission[id][target],missionDesc[target][2]);
 				}
 			
 			} else if(missionMenu[id] == MISSION_MENU_SECRET){
 				
 				if( ( userMissionSecret[id][target] == -1 )){
-					ColorChat(id, GREEN, "%s Juz odebrales misje:^x03 %s", PREFIXSAY,  missionDescSecret[target][0]);	
+					chatPrint(id, PREFIX_NORMAL, "Juz odebrales misje:^3 %s",  missionDescSecret[target][0]);	
 				} else if( userMissionSecret[id][target] == str_to_num(missionDescSecret[target][2])){
 					missionGiveAward(id);
 				} else {
-					ColorChat(id, GREEN, "%s Nie mozesz jeszcze odebrac misji:^x03 %d/%s", PREFIXSAY,userMissionSecret[id][target], missionDescSecret[target][2]);
+					chatPrint(id, PREFIX_NORMAL, "Nie mozesz jeszcze odebrac misji:^3 %d/%s",userMissionSecret[id][target], missionDescSecret[target][2]);
 				}	
 			} else if(missionMenu[id] == MISSION_MENU_PRO){
 				
 				if( userPro[id][target] == -1){
-					ColorChat(id, GREEN, "%s Nagroda juz zostala odebrana", PREFIXSAY );
+					chatPrint(id, PREFIX_NORMAL, "Nagroda juz zostala odebrana" );
 					return PLUGIN_CONTINUE;
 					
 				}else if( userPro[id][target] < str_to_num( proDesc[target][4] ) ){
 					if( userProSelected[id] == target )					
-						ColorChat(id, GREEN, "%s Juz wykonujesz te misje", PREFIXSAY);
+						chatPrint(id, PREFIX_NORMAL, "Juz wykonujesz te misje");
 					else {
-						ColorChat(id, GREEN, "%s Misja zostala aktywowana", PREFIXSAY);
+						chatPrint(id, PREFIX_NORMAL, "Misja zostala aktywowana");
 						userProSelected[id] = target ;
 					}
 					return PLUGIN_CONTINUE;
@@ -261,7 +261,7 @@ public missionMenuDesc_2(id, item){
 				
 				userPro[id][target] = -1;
 				userProSelected[id] = -1;
-				ColorChat(id, GREEN, "%s Otrzymujesz nagrode:^x04 %s", PREFIXSAY,  proDesc[target][3]);
+				chatPrint(id, PREFIX_NORMAL, "Otrzymujesz nagrode:^4 %s",  proDesc[target][3]);
 			}
 		}
 		case 1: menuMission(id);
@@ -303,7 +303,7 @@ public missionGiveAward(id){
 
 
 	if(userKills[id] < 200 && userDeaths[id] < 200){
-		ColorChat(id, GREEN, "---^x01 Musisz posiadac^x03 200 zabojstw^x01 oraz^x03 200 zgonow^x01 aby odebrac misje^x04 ---");
+		chatPrint(id, PREFIX_LINE, "Musisz posiadac^3 200 zabojstw^1 oraz^3 200 zgonow^1 aby odebrac misje");
 		return PLUGIN_CONTINUE;
 	}
 
@@ -319,7 +319,7 @@ public missionGiveAward(id){
 			logBB(id,gText);
 		}
 						
-		ColorChat(id, GREEN, "%s Gracz:^x04 %s^x01 odebral misje -^x03 %s", PREFIXSAY, userName[id], missionDesc[item][0]);
+		chatPrint(id, PREFIX_NORMAL, "Gracz:^4 %s^1 odebral misje -^3 %s", userName[id], missionDesc[item][0]);
 		userMission[id][item] = -1;
 		
 	}  else if(missionMenu[id] == MISSION_MENU_SECRET){
@@ -330,7 +330,7 @@ public missionGiveAward(id){
 			logBB(id,gText);
 		}
 
-		ColorChat(id, GREEN, "%s Gracz:^x04 %s^x01 odebral sekretna misje -^x03 %c", PREFIXSAY, userName[id], missionDescSecret[item][0]);
+		chatPrint(id, PREFIX_NORMAL, "Gracz:^4 %s^1 odebral sekretna misje -^3 %c", userName[id], missionDescSecret[item][0]);
 		userMissionSecret[id][item] = -1;
 		
 	}

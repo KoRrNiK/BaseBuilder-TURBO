@@ -60,29 +60,29 @@ public buyCave_2(id, item){
 					logBB(id, gText);
 				}
 				
-				ColorChat(id, GREEN, "%s Odblokowales Kopalnie!", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Odblokowales Kopalnie!");
 				return PLUGIN_CONTINUE;
 			}
 			else if(newUpgradeLeft > 0 && startUpgrade[id]){
-				ColorChat(id, GREEN, "%s Teraz sie ulepsza!", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Teraz sie ulepsza!");
 				return PLUGIN_CONTINUE;
 			}
 			else if(userLevel[id] < levelMiner && userNugget[id] < costMiner){
-				ColorChat(id, GREEN, "%s Nie mozesz tego ulepszyc!^x04 |^x03 Brakuje ci %d lvl oraz %d brylek!", PREFIXSAY, levelMiner, costMiner);
+				chatPrint(id, PREFIX_NORMAL, "Nie mozesz tego ulepszyc!^4 |^3 Brakuje ci %d lvl oraz %d brylek!", levelMiner, costMiner);
 				return PLUGIN_CONTINUE;
 			}
 			else if(userLevel[id] < levelMiner){
-				ColorChat(id, GREEN, "%s Nie mozesz tego ulepszyc!^x04 |^x03 Brakuje ci %d lvl!", PREFIXSAY, levelMiner);
+				chatPrint(id, PREFIX_NORMAL, "Nie mozesz tego ulepszyc!^4 |^3 Brakuje ci %d lvl!", levelMiner);
 				return PLUGIN_CONTINUE;
 			}
 			else if(userNugget[id] < costMiner){
-				ColorChat(id, GREEN, "%s Nie mozesz tego ulepszyc!^x04 |^x03 Brakuje ci brylek!", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Nie mozesz tego ulepszyc!^4 |^3 Brakuje ci brylek!");
 				return PLUGIN_CONTINUE;
 			}
 			globalMenuCave(id);
 			userNugget[id] -= costMiner;
 			startUpgrade[id] = 1;
-			ColorChat(id, GREEN, "%s Kopalnia odblokuje sie za:^x03 %dgodz %s%dmin %s%dsek", PREFIXSAY,  ( upgradeCave / HOUR ), ( upgradeCave / MINUTE % MINUTE )<10?"0":"", ( upgradeCave / MINUTE % MINUTE ), (upgradeCave%MINUTE)<10?"0":"", ( upgradeCave %MINUTE ));
+			chatPrint(id, PREFIX_NORMAL, "Kopalnia odblokuje sie za:^3 %dgodz %s%dmin %s%dsek",  ( upgradeCave / HOUR ), ( upgradeCave / MINUTE % MINUTE )<10?"0":"", ( upgradeCave / MINUTE % MINUTE ), (upgradeCave%MINUTE)<10?"0":"", ( upgradeCave %MINUTE ));
 			userLastUpgradeTime[id] = playedTime(id);
 		}
 	}
@@ -132,14 +132,14 @@ public miningMenu_2(id, item){
 		
 		case 0:{
 			if(userMineNugget[id] == 0){
-				ColorChat(id, GREEN, "%s Nic nie wykopaly twoje Gobliny", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Nic nie wykopaly twoje Gobliny");
 				return PLUGIN_CONTINUE;
 			}
 			if(newStaminaLeft < 0){
-				ColorChat(id, GREEN, "%s Twoje Gobliny teraz odpoczywaja! Jutro mozesz sprzedac Mineraly!", PREFIXSAY);	
+				chatPrint(id, PREFIX_NORMAL, "Twoje Gobliny teraz odpoczywaja! Jutro mozesz sprzedac Mineraly!");	
 				return PLUGIN_CONTINUE;
 			}
-			ColorChat(id, GREEN, "%s Sprzedales Mineraly!^x04 |^x01 Otrzymales:^x03 %d Brylek", PREFIXSAY, userMineNugget[id]);
+			chatPrint(id, PREFIX_NORMAL, "Sprzedales Mineraly!^4 |^1 Otrzymales:^3 %d Brylek", userMineNugget[id]);
 			new value = userMineNugget[id];
 			userNugget[id] += value;
 			userNuggetAll[id] += value;
@@ -150,18 +150,18 @@ public miningMenu_2(id, item){
 		case 2:{
 			new cost = 25  * (userUpgradeMine[id][up_GOBLIN] + 1 );
 			if(userNugget[id] < cost ){
-				ColorChat(id, GREEN, "%s Nie posiadasz Brylek na oplacenie Goblinow", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Nie posiadasz Brylek na oplacenie Goblinow");
 				miningMenu(id);
 				return PLUGIN_CONTINUE;
 			}
 			if(userMinePayGoblin[id] ){
 				userNugget[id] -= cost;
 				userMinePayGoblin[id] = false;
-				ColorChat(id, GREEN, "%s Oplaciles swoje Gobliny!^x04 |^x01 Kosztowalo ciebie to:^x03 %d Brylek!", PREFIXSAY, cost);
+				chatPrint(id, PREFIX_NORMAL, "Oplaciles swoje Gobliny!^4 |^1 Kosztowalo ciebie to:^3 %d Brylek!", cost);
 				miningMenu(id);
 				return PLUGIN_CONTINUE;
 			}
-			ColorChat(id, GREEN, "%s Oplaciles juz swoje Gobliny", PREFIXSAY);
+			chatPrint(id, PREFIX_NORMAL, "Oplaciles juz swoje Gobliny");
 			miningMenu(id);
 		}
 		case 3.. 8: miningMenu(id);
@@ -216,19 +216,19 @@ public viewUpgradeMine_2(id, item){
 		case 0:{
 			
 			if(userUpgradeMine[id][target] >= str_to_num(upgradeMine[target][2])){
-				ColorChat(id, GREEN, "%s Ulepszyles juz na maksymalny poziom^x03 '%s'!", PREFIXSAY, upgradeMine[target][0]);
+				chatPrint(id, PREFIX_NORMAL, "Ulepszyles juz na maksymalny poziom^3 '%s'!", upgradeMine[target][0]);
 				viewUpgradeMine(id, target);
 				return PLUGIN_CONTINUE;
 			}
 			if(userNugget[id] < str_to_num(upgradeMine[target][3])){
-				ColorChat(id, GREEN, "%s Nie mozesz tego ulepszyc! Brakuje ci brylek!", PREFIXSAY);
+				chatPrint(id, PREFIX_NORMAL, "Nie mozesz tego ulepszyc! Brakuje ci brylek!");
 				viewUpgradeMine(id, target);
 				return PLUGIN_CONTINUE;
 			}
 			
 			userUpgradeMine[id][target] += 1;
 			userNugget[id] -= str_to_num(upgradeMine[target][3]);
-			ColorChat(id, GREEN, "%s Ulepszyles^x03 %s^x01 na poziom:^x03 %d/%s", PREFIXSAY,  upgradeMine[target][0], userUpgradeMine[id][target],  upgradeMine[target][2]);
+			chatPrint(id, PREFIX_NORMAL, "Ulepszyles^3 %s^1 na poziom:^3 %d/%s",  upgradeMine[target][0], userUpgradeMine[id][target],  upgradeMine[target][2]);
 			new gText[128];
 			logType[id] = LOG_CAVE;
 			if(logType[id] == LOG_CAVE){
@@ -274,7 +274,7 @@ public miningNugget(id){
 						if( userUpgradeMine[id][up_LUCK]){
 							if(random(100) <= userUpgradeMine[id][up_LUCK]){
 								if( hasOption(userSaveOption[id], save_CAVE) ){
-									ColorChat(id, GREEN, "%s Znalazles bardzo obfita rude Mineralow^x03 ( x4 )", PREFIXSAY);
+									chatPrint(id, PREFIX_NORMAL, "Znalazles bardzo obfita rude Mineralow^3 ( x4 )");
 								}
 								value *= 4;
 							}
@@ -283,8 +283,8 @@ public miningNugget(id){
 						userMineNugget[id] = clamp(userMineNugget[id], 0, mineralMax + ( userUpgradeMine[id][up_TRUCK] * truckMine));
 						
 						if( hasOption(userSaveOption[id], save_CAVE) ){
-							ColorChat(id, GREEN, "%s Wykopales^x03 %s^x04 |^x01 Mineralow:^x03 %d", PREFIXSAY, mineOre[userTypeMine[id]][0], value);
-							if(bonusValue) ColorChat(id, GREEN, "%s Otrzymales w bonusie Mineraly:^x03 %d", PREFIXSAY, bonusValue);
+							chatPrint(id, PREFIX_NORMAL, "Wykopales^3 %s^4 |^1 Mineralow:^3 %d", mineOre[userTypeMine[id]][0], value);
+							if(bonusValue) chatPrint(id, PREFIX_NORMAL, "Otrzymales w bonusie Mineraly:^3 %d", bonusValue);
 						}
 						userDigging[id][userTypeMine[id]] = 0;
 							
@@ -311,13 +311,13 @@ public removePointCave(id){
 		
 		if( hasOption(userSaveOption[id], save_CAVE) ){		
 			switch(randomRemove){
-				case 0: ColorChat(id, GREEN, "%s Gobliny zlamaly kilof^x04 |^x03 ( -1poziom 'Kilof' )", PREFIXSAY);
-				case 1: ColorChat(id, GREEN, "%s Goblin zlamal swoje lozko^x04 |^x03 ( -1poziom 'Wyczerpanie' )", PREFIXSAY);
-				case 2: ColorChat(id, GREEN, "%s Goblin zgubil swoja lupe^x04 |^x03 ( -1poziom 'Szczescie' )", PREFIXSAY);
-				case 3:ColorChat(id, GREEN, "%s Goblin spadl z wysokosci^x04 |^x03 ( -1poziom 'Goblin' )", PREFIXSAY);	
-				case 4:ColorChat(id, GREEN, "%s Goblin ulamal kawalek kilofa^x04 |^x03 ( -1poziom 'Koncowka Kilofa' )", PREFIXSAY);
-				case 5:ColorChat(id, GREEN, "%s Goblin zachorowal na skleroze i nie pamieta gdzie kopac^x04 |^x03 ( -1poziom 'Szukanie' )", PREFIXSAY);
-				case 6:ColorChat(id, GREEN, "%s Goblin wywrocil wozek^x04 |^x03 ( -1poziom 'Wozek' )", PREFIXSAY);	
+				case 0: chatPrint(id, PREFIX_NORMAL, "Gobliny zlamaly kilof^4 |^3 ( -1poziom 'Kilof' )");
+				case 1: chatPrint(id, PREFIX_NORMAL, "Goblin zlamal swoje lozko^4 |^3 ( -1poziom 'Wyczerpanie' )");
+				case 2: chatPrint(id, PREFIX_NORMAL, "Goblin zgubil swoja lupe^4 |^3 ( -1poziom 'Szczescie' )");
+				case 3:chatPrint(id, PREFIX_NORMAL, "Goblin spadl z wysokosci^4 |^3 ( -1poziom 'Goblin' )");	
+				case 4:chatPrint(id, PREFIX_NORMAL, "Goblin ulamal kawalek kilofa^4 |^3 ( -1poziom 'Koncowka Kilofa' )");
+				case 5:chatPrint(id, PREFIX_NORMAL, "Goblin zachorowal na skleroze i nie pamieta gdzie kopac^4 |^3 ( -1poziom 'Szukanie' )");
+				case 6:chatPrint(id, PREFIX_NORMAL, "Goblin wywrocil wozek^4 |^3 ( -1poziom 'Wozek' )");	
 			}
 		}
 		new gText[128];

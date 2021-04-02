@@ -85,41 +85,41 @@ public selectClass_2(id, item){
 	switch(item){
 		case 0:{
 			if(str_to_num(classesZombies[class][4]) > userTime[id] && str_to_num(classesZombies[class][3]) > userLevel[id]){
-				ColorChat(id, GREEN, "---^x03 Nie mozesz wybrac tego Zombie...^x01 Musisz wbic jeszcze^x03 %d poziomow!^x04 |^x01 przegrac^x03 %d:%s%d:%s%d godz!^x04 ---", str_to_num(classesZombies[class][3])-userLevel[id],gamePlayUser/HOUR, (gamePlayUser/MINUTE)<10?"0":"",gamePlayUser/MINUTE%MINUTE, gamePlayUser%MINUTE<10?"0":"", gamePlayUser%MINUTE);
+				chatPrint(id, PREFIX_LINE, "Nie mozesz wybrac tego Zombie...^1 Musisz wbic jeszcze^3 %d poziomow!^4 |^1 przegrac^3 %d:%s%d:%s%d godz!", str_to_num(classesZombies[class][3])-userLevel[id],gamePlayUser/HOUR, (gamePlayUser/MINUTE)<10?"0":"",gamePlayUser/MINUTE%MINUTE, gamePlayUser%MINUTE<10?"0":"", gamePlayUser%MINUTE);
 				classZombie(id);
 				return PLUGIN_CONTINUE;
 			} else if(str_to_num(classesZombies[class][3]) > userLevel[id]){
-				ColorChat(id, GREEN, "---^x03 Nie mozesz wybrac tego Zombie...^x01 Musisz wbic jeszcze^x03 %d poziomow!^x04 ---", str_to_num(classesZombies[class][3])-userLevel[id]);
+				chatPrint(id, PREFIX_LINE, "Nie mozesz wybrac tego Zombie...^1 Musisz wbic jeszcze^3 %d poziomow!", str_to_num(classesZombies[class][3])-userLevel[id]);
 				classZombie(id);
 				return PLUGIN_CONTINUE;
 			}else if(str_to_num(classesZombies[class][4]) > userTime[id] && str_to_num(classesZombies[class][3]) <= userLevel[id] ){
-				ColorChat(id, GREEN, "---^x03 Nie mozesz wybrac tego Zombie...^x01 Musisz jeszcze przegrac^x03 %d:%s%d:%s%d godz!^x04 ---", gamePlayUser/HOUR, (gamePlayUser/MINUTE)<10?"0":"",gamePlayUser/MINUTE%MINUTE, gamePlayUser%MINUTE<10?"0":"", gamePlayUser%MINUTE);
+				chatPrint(id, PREFIX_LINE, "Nie mozesz wybrac tego Zombie...^1 Musisz jeszcze przegrac^3 %d:%s%d:%s%d godz!", gamePlayUser/HOUR, (gamePlayUser/MINUTE)<10?"0":"",gamePlayUser/MINUTE%MINUTE, gamePlayUser%MINUTE<10?"0":"", gamePlayUser%MINUTE);
 				classZombie(id);
 				return PLUGIN_CONTINUE;
 			}
 			if( !(str_to_num(classesZombies[class][4]) > userTime[id] && str_to_num(classesZombies[class][3]) > userLevel[id]) ){
 				if( userClass[id] != class ){
 					if( buildTime || prepTime ){
-						if(userDeathNum[id]) ColorChat(id, GREEN,"---^x01 Twoj licznikch smierci z tej rundy zostal zresetowany^x03 (^x04%d^x03)^x04 ---", userDeathNum[id]);
+						if(userDeathNum[id]) chatPrint(id, PREFIX_LINE, "Twoj licznikch smierci z tej rundy zostal zresetowany^3 (^4%d^3)", userDeathNum[id]);
 						userDeathNum[id] = 0;
-						ColorChat(id, GREEN,"---^x01 Twoja nowa klasa:^x04 %s^x04 ---", classesZombies[class][0] );
+						chatPrint(id, PREFIX_LINE, "Twoja nowa klasa:^4 %s", classesZombies[class][0] );
 						
 						userClass[id] = class;
 						userNewClass[id] = class;
 						setZombieClass(id);
 					}else{
-						if(userDeathNum[id]) ColorChat(id, GREEN,"---^x01 Twoj licznikch smierci z tej rundy zostal zresetowany^x03 (^x04%d^x03)^x04 ---", userDeathNum[id]);
+						if(userDeathNum[id]) chatPrint(id, PREFIX_LINE, "Twoj licznikch smierci z tej rundy zostal zresetowany^3 (^4%d^3)", userDeathNum[id]);
 						userDeathNum[id] = 0;
 						
 						userNewClass[id] = class;
-						ColorChat(id, GREEN,"---^x01 Twoja klasa zmieni sie po odrodzeniu na:^x04 %s ---", classesZombies[class][0] );
+						chatPrint(id, PREFIX_LINE, "Twoja klasa zmieni sie po odrodzeniu na:^4 %s ", classesZombies[class][0] );
 					}	
-				}else ColorChat(id, GREEN,"---^x01 Aktualnie grasz ta klasa^x04 ---");
+				}else chatPrint(id, PREFIX_LINE, "Aktualnie grasz ta klasa");
 			}
 		}
 		case 1:{
 			if(str_to_num(classesZombies[class][4]) > userTime[id] || str_to_num(classesZombies[class][3]) > userLevel[id]){
-				ColorChat(id, GREEN, "---^x01 Nie mozesz ulepszyc tego Zombie jeszcze!^x04 ---");
+				chatPrint(id, PREFIX_LINE, "Nie mozesz ulepszyc tego Zombie jeszcze!");
 			} else {
 				upgradeZombieClass(id);
 				
@@ -159,12 +159,12 @@ public upgradeZombieClass_2(id, item){
 		case 0:{
 			new cost = calcZombieUpgradeCost(id, class, UP_ZM_HEALTH);
 			if(userZombie[id][class][UP_ZM_HEALTH] >=  str_to_num(upgradeClasses[class][3])){
-				ColorChat(id, GREEN, "---^x01 Posiadasz juz maksymalny poziom ulepszenia^x03 Zycia^x01 [^x04%s^x01]^x04 ---", classesZombies[class][0]);
+				chatPrint(id, PREFIX_LINE, "Posiadasz juz maksymalny poziom ulepszenia^3 Zycia^1 [^4%s^1]", classesZombies[class][0]);
 				upgradeZombieClass(id);
 				return;
 			}
 			if(cost > userBone[id]){
-				ColorChat(id, GREEN, "---^x01 Nie posiadasz^x03 kosci^x01 aby ulepszyc^x03 Zycie^x01 [^x04%s^x01]^x04 ---", classesZombies[class][0]);
+				chatPrint(id, PREFIX_LINE, "Nie posiadasz^3 kosci^1 aby ulepszyc^3 Zycie^1 [^4%s^1]", classesZombies[class][0]);
 				upgradeZombieClass(id);
 				return;
 			}
@@ -175,12 +175,12 @@ public upgradeZombieClass_2(id, item){
 		case 1:{
 			new cost = calcZombieUpgradeCost(id, class, UP_ZM_SPEED);
 			if(userZombie[id][class][UP_ZM_SPEED] >=  str_to_num(upgradeClasses[class][4])){
-				ColorChat(id, GREEN, "---^x01 Posiadasz juz maksymalny poziom ulepszenia^x03 Predkosci^x01 [^x04%s^x01]^x04 ---", classesZombies[class][0]);
+				chatPrint(id, PREFIX_LINE, "Posiadasz juz maksymalny poziom ulepszenia^3 Predkosci^1 [^4%s^1]", classesZombies[class][0]);
 				upgradeZombieClass(id);
 				return;
 			}
 			if(cost > userBone[id]){
-				ColorChat(id, GREEN, "---^x01 Nie posiadasz^x03 kosci^x01 aby ulepszyc^x03 Predkosc^x01 [^x04%s^x01]^x04 ---", classesZombies[class][0]);
+				chatPrint(id, PREFIX_LINE, "Nie posiadasz^3 kosci^1 aby ulepszyc^3 Predkosc^1 [^4%s^1]", classesZombies[class][0]);
 				upgradeZombieClass(id);
 				return;
 			}
@@ -190,12 +190,12 @@ public upgradeZombieClass_2(id, item){
 		case 2:{
 			new cost = calcZombieUpgradeCost(id, class, UP_ZM_REDUCTION);
 			if(userZombie[id][class][UP_ZM_REDUCTION] >=  str_to_num(upgradeClasses[class][5])){
-				ColorChat(id, GREEN, "---^x01 Posiadasz juz maksymalny poziom ulepszenia^x03 Redukcja obrazen^x01 [^x04%s^x01]^x04 ---", classesZombies[class][0]);
+				chatPrint(id, PREFIX_LINE, "Posiadasz juz maksymalny poziom ulepszenia^3 Redukcja obrazen^1 [^4%s^1]", classesZombies[class][0]);
 				upgradeZombieClass(id);
 				return;
 			}
 			if(cost > userBone[id]){
-				ColorChat(id, GREEN, "---^x01 Nie posiadasz^x03 kosci^x01 aby ulepszyc^x03 Redukcje obrazen^x01 [^x04%s^x01]^x04 ---", classesZombies[class][0]);
+				chatPrint(id, PREFIX_LINE, "Nie posiadasz^3 kosci^1 aby ulepszyc^3 Redukcje obrazen^1 [^4%s^1]", classesZombies[class][0]);
 				upgradeZombieClass(id);
 				return;
 			}

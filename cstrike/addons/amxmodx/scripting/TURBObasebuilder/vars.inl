@@ -1,8 +1,11 @@
-new const PLUGIN[] 	= 	"BaseBuilder TURBO";
-new const VERSION[] 	= 	"v1.3.3";
-new const AUTHOR[] 	= 	"KoRrNiK";
-new const PREFIXSAY[] 	=  	"^xc2^xa6 BaseBuilder ^xc2^xa6^x01";
-new const fVAULTFILE[]	=	 "TURBOBB";
+new const PLUGIN[] 		= 	"BaseBuilder TURBO";
+new const VERSION[] 		= 	"v1.3.4";
+new const AUTHOR[] 		= 	"KoRrNiK";
+new const fVAULTFILE[]		=	 "TURBOBB";
+
+new const PREFIXSAY_NORMAL[] 	=  	"[BaseBuilder]";
+new const PREFIXSAY_LINE[] 	=  	"---";
+
 
 new bool:superAdminLocalhost = false;
 
@@ -37,9 +40,9 @@ native bb_set_in_fire(id, victim, duration);
 native bb_set_in_ice(id, victim, duration);
 native bool:bb_is_in_barrier(id);
 
-	/*----------------------*\
---------| SMS			 |
-	\*----------------------*/
+	/*-*\
+--| SMS			 |
+	\*-*/
 
 
 new timeVip[33];
@@ -74,9 +77,9 @@ new const itemsShop[TOTAL_BUY_SMSSHOP][3][]={
 	,{"Boost - Kopalnia (2x Szybciej) [55 Minut]",			"7",		"Gobliny kopia 2 razy szybciej!"}
 };
 
-	/*----------------------*\
---------| TASK			 |
-	\*----------------------*/
+	/*-*\
+--| TASK			 |
+	\*-*/
 
 enum ( += 100){
 	
@@ -101,108 +104,109 @@ enum ( += 100){
 	TASK_DAMAGEDEAL,
 	TASK_EXPLODETORPED,
 	TASK_SHOW_AD,
+	TASK_TUTOR
 };
 
 
 new userPoisonKiller[33];
 new userPoison[33];
 
-	/*----------------------*\
---------| USER			 |
-	\*----------------------*/
+	/*-*\
+--| USER			 |
+	\*-*/
 	
-	#define MAXBITAUTHID 35
-	#define MAXBITIP 32
+#define MAXBITAUTHID 35
+#define MAXBITIP 32
 	
-	new userClone[33];
-	new userCloned[33];
-	new userNoClip[33];
-	new userGodMod[33];
-	new userAllowBuild[33];
-	new userAdmin[33];
-	new userVip[33];
-	new userSVip[33];
-	new userConnected[33];
-	new bool:userJetPack[33];
-	new userName[33][33];
-	new userIp[33][MAXBITIP];
-	new userSid[33][MAXBITAUTHID];
-	new userTeam[33];
-	new userMenuId;
-	new userTeamMenu[33];
-	new userTeamSend[33];
-	new Float:userTimeConnectServer[33];
-	new userPlayerConnected[33];
-	new userTime[33];
-	new userMoveAs[33];
-	new Float:userPushBlock[33] ;
-	new userPlayerList[33][33];
-	new userMenuPlayer[33];
-	new bool:userReconnected[33];
-	new userRoundTeam[33];
-	new userGotGrenades[33];
-	new userLevel[33];
-	new Float:userExp[33];
-	new Float:userExpShow[33];
-	new Float:userLastExpDealt[33];
-	new userNugget[33];
-	new userNuggetShow[33];
-	new Float:userLastNuggetDealt[33];
-	new userBone[33];
-	new userBoneShow[33];
-	new Float:userLastBoneDealt[33];
-	new userGrab[33];
-	new userHudMoving[33];
-	new Float:userAimingHud[33];
-	new userBlocksUsed[33];
-	new Float:userLength[33];
-	new userVarList[33][33];
-	new userVarMenu[33];
-	new bool:userCanGrab[33];
-	new Float:userTeamLine[33];
-	new userTeamBlock[33];
-	new userTeamExp[33];
-	new userTeamNugget[33];
-	new userHudDeal[33];
-	new userHudGet[33];
-	new userNuggetCollectedRound[33];
-	new userTeamOpen[33];
-	new userSelectWeapon[33];
-	new userFirstSpawn[33];
-	new bool:userExtraFps[33];
-	new Float:userInfoFps[33];
-	new userReset[33];
-	new userNuggetAll[33];
-	new userJetpackSpeed[33] = 500;
-	new userLastAwardTime[33];
-	enum { BLOCK_COLOR, BLOCK_RENDER, BLOCK_NORENDER };
-	new userMoverBlockColor[33];
-	new userSqlId[33];
-	new userAllDmg[33];
-	new userAllAward[33];
-	new userMaxDmg[33];
-	new userFov[33];
-	new Float:userAfkValue[33];
-	new userScrollExp[33];
-	new userScrollNugget[33];
-	new userBoostMine[33];
-	new userMute[33];
-	new bool:serverOffChat;
-	new userPush[33];
-	new userSuggestTeam[33];
-	new userMaxHelp[33];
-	new userDayHelp[33];
-	new userHelpPoint[33];
-	new Float:userSpeedAdmin[33];
-	new userFirstLogin[33][33];
-	new userSecretPoint[33];
-	new userLastAwardFree[33];
-	new userLastAwardRow[33];
-	new userLastAwardGot[33];
-	new userCheckCamp[33];
-	new userDarkScreen[33];
-	new userPageColor[33];
-	new bool:jumpBlock[33];
+new userClone[33];
+new userCloned[33];
+new userNoClip[33];
+new userGodMod[33];
+new userAllowBuild[33];
+new userAdmin[33];
+new userVip[33];
+new userSVip[33];
+new userConnected[33];
+new bool:userJetPack[33];
+new userName[33][33];
+new userIp[33][MAXBITIP];
+new userSid[33][MAXBITAUTHID];
+new userTeam[33];
+new userMenuId;
+new userTeamMenu[33];
+new userTeamSend[33];
+new Float:userTimeConnectServer[33];
+new userPlayerConnected[33];
+new userTime[33];
+new userMoveAs[33];
+new Float:userPushBlock[33] ;
+new userPlayerList[33][33];
+new userMenuPlayer[33];
+new bool:userReconnected[33];
+new userRoundTeam[33];
+new userGotGrenades[33];
+new userLevel[33];
+new Float:userExp[33];
+new Float:userExpShow[33];
+new Float:userLastExpDealt[33];
+new userNugget[33];
+new userNuggetShow[33];
+new Float:userLastNuggetDealt[33];
+new userBone[33];
+new userBoneShow[33];
+new Float:userLastBoneDealt[33];
+new userGrab[33];
+new userHudMoving[33];
+new Float:userAimingHud[33];
+new userBlocksUsed[33];
+new Float:userLength[33];
+new userVarList[33][33];
+new userVarMenu[33];
+new bool:userCanGrab[33];
+new Float:userTeamLine[33];
+new userTeamBlock[33];
+new userTeamExp[33];
+new userTeamNugget[33];
+new userHudDeal[33];
+new userHudGet[33];
+new userNuggetCollectedRound[33];
+new userTeamOpen[33];
+new userSelectWeapon[33];
+new userFirstSpawn[33];
+new bool:userExtraFps[33];
+new Float:userInfoFps[33];
+new userReset[33];
+new userNuggetAll[33];
+new userJetpackSpeed[33] = 500;
+new userLastAwardTime[33];
+enum { BLOCK_COLOR, BLOCK_RENDER, BLOCK_NORENDER };
+new userMoverBlockColor[33];
+new userSqlId[33];
+new userAllDmg[33];
+new userAllAward[33];
+new userMaxDmg[33];
+new userFov[33];
+new Float:userAfkValue[33];
+new userScrollExp[33];
+new userScrollNugget[33];
+new userBoostMine[33];
+new userMute[33];
+new bool:serverOffChat;
+new userPush[33];
+new userSuggestTeam[33];
+new userMaxHelp[33];
+new userDayHelp[33];
+new userHelpPoint[33];
+new Float:userSpeedAdmin[33];
+new userFirstLogin[33][33];
+new userSecretPoint[33];
+new userLastAwardFree[33];
+new userLastAwardRow[33];
+new userLastAwardGot[33];
+new userCheckCamp[33];
+new userDarkScreen[33];
+new userPageColor[33];
+new bool:jumpBlock[33];
 
 new userStaminaDayRefresh[33];
 new userLastStaminaTime[33];
@@ -308,9 +312,9 @@ new const userAwardTime	=	18000;
 	
 new maxEnts 		= 	1024;	
 
-	/*----------------------*\
---------| WEAPON		 |
-	\*----------------------*/
+	/*-*\
+--| WEAPON		 |
+	\*-*/
 	
 #define TOTALWEAPONS 24	
 	
@@ -392,9 +396,9 @@ new const g_MaxClipAmmo[] = {0,13,0,10,0,7,0,30,30,0,15,20,25,30,35,25,12,20,10,
 new bool:userWeaponBool[33];
 
 
-	/*----------------------*\
---------| SOUND / SPRITE	 |
-	\*----------------------*/
+	/*-*\
+--| SOUND / SPRITE	 |
+	\*-*/
 
 new const TEAMSPRITE[]		=	"sprites/basebuildervt/teams3.spr";	
 new const BLUEZSPRITE[]		=	"sprites/basebuildervt/bluez.spr";
@@ -486,9 +490,9 @@ new const zombieSound[15][] ={
 	
 };
 
-	/*----------------------*\
---------| STUCK			 |
-	\*----------------------*/
+	/*-*\
+--| STUCK			 |
+	\*-*/
 
 new const Float:size[][3] = {
 	{0.0, 0.0, 1.0}, {0.0, 0.0, -1.0}, {0.0, 1.0, 0.0}, {0.0, -1.0, 0.0}, {1.0, 0.0, 0.0}, {-1.0, 0.0, 0.0}, {-1.0, 1.0, 1.0}, {1.0, 1.0, 1.0}, {1.0, -1.0, 1.0}, {1.0, 1.0, -1.0}, {-1.0, -1.0, 1.0}, {1.0, -1.0, -1.0}, {-1.0, 1.0, -1.0}, {-1.0, -1.0, -1.0},
@@ -499,17 +503,17 @@ new const Float:size[][3] = {
 };
 new stuck[33];
 
-	/*----------------------*\
---------| ACCOUNT		 |
-	\*----------------------*/
+	/*-*\
+--| ACCOUNT		 |
+	\*-*/
 
 new bool:userLogged[33];
 new bool:userLoaded[33];
 new userPassword[33][12];
 
-	/*----------------------*\
---------| ZOMBIE | CT		 |
-	\*----------------------*/
+	/*-*\
+--| ZOMBIE | CT		 |
+	\*-*/
 
 enum{class_CLASSIC, class_SPEED, class_FAT, class_TANK, class_DRACULA, class_SNOWMAN,  class_DEVIL, class_HEALTH, class_POISON, class_DEATH, class_TERMINATOR, class_DEMON, class_TOTAL};
 new const classesZombies[class_TOTAL][8][] = {
@@ -640,9 +644,9 @@ new typeExpClass[5][2][] = {
 };
 new userGiveClassExp[33];
 
-	/*----------------------*\
---------| HAPPY HOUR TIME	 |
-	\*----------------------*/
+	/*-*\
+--| HAPPY HOUR TIME	 |
+	\*-*/
 
 new const colorsHappy[8][]={
 	{255,	0,	0},
@@ -670,31 +674,31 @@ new const happyHourDesc[happy_TOTAL][2][] = {
 	,{ "Szansa na zdobycie skrzynki jest dwa razy wieksza",				"2x DROP CASE" }
 		
 };
-	/*----------------------*\
---------| TEAM			 |
-	\*----------------------*/
+	/*-*\
+--| TEAM			 |
+	\*-*/
 
 new typeExpParty[5][2][] = {
-	  { "Nie oddawaj", "nie oddaje^x04 EXP'a" }
-	,{ "25%",	 "oddaje^x04 25%% EXP'a" }
-	,{ "50%",	 "oddaje^x04 50%% EXP'a" }
-	,{ "75%",	 "oddaje^x04 75%% EXP'a" }
-	,{ "Caly",	 "oddaje caly swoj^x04 EXP" }
+	  { "Nie oddawaj", "nie oddaje^4 EXP'a" }
+	,{ "25%",	 "oddaje^4 25%% EXP'a" }
+	,{ "50%",	 "oddaje^4 50%% EXP'a" }
+	,{ "75%",	 "oddaje^4 75%% EXP'a" }
+	,{ "Caly",	 "oddaje caly swoj^4 EXP" }
 	
 };
 new typeNuggetParty[5][2][] = {
-	  { "Nie oddawaj", "nie oddaje^x04 Brylek'a" }
-	,{ "25%",	 "oddaje^x04 25%% Brylek" }
-	,{ "50%",	 "oddaje^x04 50%% Brylek" }
-	,{ "75%",	 "oddaje^x04 75%% Brylek" }
-	,{ "Wszystko",	 "oddaje wszystkie swoje^x04 Brylki" }
+	  { "Nie oddawaj", "nie oddaje^4 Brylek'a" }
+	,{ "25%",	 "oddaje^4 25%% Brylek" }
+	,{ "50%",	 "oddaje^4 50%% Brylek" }
+	,{ "75%",	 "oddaje^4 75%% Brylek" }
+	,{ "Wszystko",	 "oddaje wszystkie swoje^4 Brylki" }
 	
 };
 new bool:userHelp[33];
 
-	/*----------------------*\
---------| SHOP			 |
-	\*----------------------*/
+	/*-*\
+--| SHOP			 |
+	\*-*/
 
 enum { shopB_HP, shopB_AMMO, shopB_DMG, shopB_RECOIL, shopB_NADE, shopB_FROST, shopB_PUSH, shopB_AUTOKAMPA,shopB_KROWA, shopB_TOTAL };
 new const shopDescBuilder[shopB_TOTAL][4][] = {
@@ -730,9 +734,9 @@ new userHPAddRound[33];
 new userDeathNum[33];
 
 
-	/*----------------------*\
---------| MISSION		 |
-	\*----------------------*/
+	/*-*\
+--| MISSION		 |
+	\*-*/
 enum{ NUGGET = 0, EXP, VIP, LUZACZKI, TOTAL_ITEMS};
 new const nameItems[TOTAL_ITEMS][1][] = {
 	   {"Brylki" }
@@ -1387,11 +1391,9 @@ enum _:allCvars {
 	cvarSchroomPlayers,
 	cvarPointToDeaths,
 	cvarPointToKills,
-	
 	cvarMoveMaxBlockSVip,
 	Float:cvarExpForWillSurviveSVip,
 	cvarNuggetForWillSurviveSVip,
-	
 	cvarLimitFPS,
 };
 new bbCvar[allCvars];
