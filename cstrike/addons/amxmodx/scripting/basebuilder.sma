@@ -198,7 +198,7 @@ public plugin_init(){
 		freeChest 	= 	find_ent_by_tname(-1, "freechest");
 		gBarrier 	= 	find_ent_by_tname(-1, "barrier" );
 		
-		register_clcmd("Haslo",		                "readPassword");
+		register_clcmd("Haslo",		             "readPassword");
 		register_clcmd("say", 	   		"cmdSay");
 		register_clcmd("say_team",		"cmdSayClan");
 		register_clcmd( "+jetpack", 		"userJetPackOn" );
@@ -207,7 +207,7 @@ public plugin_init(){
 		register_clcmd("jointeam", 		"cmdChangeTeam");
 		register_clcmd("lastinv", 		"rotateBlock");
 		register_clcmd("KodZwrotny", 		"codeCheck");
-		register_clcmd("Ilosc",		                "addValue");
+		register_clcmd("Ilosc",		              "addValue");
 		register_clcmd("Ilosc_Brylek", 		"addValueTransfer");
 		register_clcmd("WartoscKoloruHud",	"readColor");
 		register_clcmd("chat", 			"ChatOff");
@@ -401,7 +401,6 @@ public plugin_natives(){
 	register_native("bb_set_luzaczki", 	"return_setLuzaczki",1);
 	register_native("bb_get_user_id", 	"return_getUserId",1);
 	register_native("bb_get_login", 		"playerLogged",1);
-	
 	register_native("bb_get_fps", 		"return_get_fps",1);
 }
 public return_set_final_bone(id, value)
@@ -906,11 +905,9 @@ public snowOn(id){
 	client_cmd(id, "cl_weather 1");	
 	console_cmd(id, "cl_weather 1");
 }
-#if AMXX_VERSION_NUM < 183
-public client_disconnect(id){
-#else
+
 public client_disconnected(id){
-#endif	
+
 	fVaultSave(id);	
 	mysqlSave(id);
 
