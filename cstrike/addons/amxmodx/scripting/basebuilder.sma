@@ -15,10 +15,6 @@
 #include <	sqlx		>
 #include <	regex		>
 #include <	bbTurbo 	>
-	
-#if AMXX_VERSION_NUM < 183
-	#include <dhudmessage>
-#endif
 
 //#define CHRISTMAS_ADDON
 #define SCHROOM_ADDON
