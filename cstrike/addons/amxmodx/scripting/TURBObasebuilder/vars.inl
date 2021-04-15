@@ -1,5 +1,5 @@
 new const PLUGIN[] 		= 	"BaseBuilder TURBO";
-new const VERSION[] 		= 	"v1.3.4";
+new const VERSION[] 		= 	"v1.3.5";
 new const AUTHOR[] 		= 	"KoRrNiK";
 new const fVAULTFILE[]		=	 "TURBOBB";
 
