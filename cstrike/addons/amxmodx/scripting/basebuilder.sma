@@ -53,6 +53,7 @@
 #include "TURBObasebuilder/deathPrice.inl"
 #include "TURBObasebuilder/warning.inl"
 #include "TURBObasebuilder/OX.inl"
+#include "TURBObasebuilder/advertisement.inl"
 
 
 public bool:registerPlugin(){
@@ -186,6 +187,7 @@ public plugin_init(){
 		bind_pcvar_num(create_cvar("bb_point_to_kills", 			"2"), 		bbCvar[cvarPointToKills]);
 		bind_pcvar_num(create_cvar("bb_point_to_deaths", 		"3"), 		bbCvar[cvarPointToDeaths]);
 		bind_pcvar_num(create_cvar("bb_limit_fps", 			"101"), 		bbCvar[cvarLimitFPS]);
+		bind_pcvar_float(create_cvar("bb_ads_display", 			"60.0"), 	bbCvar[cvarAdsTime]);
 	
 		set_cvar_num("mp_freezetime", 0);
 	
@@ -284,6 +286,7 @@ public plugin_init(){
 		register_message(get_user_msgid("StatusIcon"), 		"messageStatusIcon");
 		register_message(get_user_msgid("HideWeapon"), 		"MSG_HideWeapon");
 		register_message(get_user_msgid("ScoreAttrib"), 		"vipStatus");
+		register_message(get_user_msgid("Health"), 		"messageHealth");
 	
 		new const wpCPost[][]=	{ "weapon_shield", "weaponbox", "armoury_entity" };
 		new const entFire[][] = 	{ "worldspawn", "player" };
@@ -334,7 +337,7 @@ public plugin_init(){
 		get_time("%H:%M:%S",globalTime,sizeof(globalTime) - 1);
 		get_mapname(map, sizeof(map) -1);
 	
-		log_amx("++");
+		log_amx("+================================+");
 		log_amx("Autor: %s", AUTHOR);
 		log_amx("Nazwa: %s", PLUGIN);
 		log_amx("Werscja: %s", VERSION);
@@ -344,7 +347,7 @@ public plugin_init(){
 		if(hourTime) log_amx("HappyTime Bonus: %s", happyHourDesc[randomHappyHour][0]);
 		log_amx("Mapa: %s", map);
 		log_amx("Entity: %d",entity_count());
-		log_amx("++");
+		log_amx("+================================+");
 		
 		#if defined SCHROOM_ADDON
 			register_clcmd("schroom", 	"menuGrzybki");
@@ -557,11 +560,16 @@ public plugin_cfg(){
 	get_localinfo("amxx_configsdir", configPath, sizeof(configPath) - 1);
 	server_cmd("exec %s/basebuilder.cfg", configPath);
 	
+	backUP_fVault();
+	
 	log_amx("=== Zaladowano: %s/basebuilder.cfg ===", configPath);
 	log_amx("=== BaseBuilder Mod by KoRrNiK (%s) === ", VERSION);
 	
 	cfgClan();
-	plugin_init_sql();
+	logCreate();
+	advertisementLoad();
+	
+	set_task(1.0, "plugin_init_sql");
 }
 public plugin_end(){ 
 	if (sql != Empty_Handle) SQL_FreeHandle(sql);
@@ -886,21 +894,27 @@ public client_putinserver(id){
 	userConnected[id] = true;
 	userFirstSpawn[id] = false;
 
-	//set_task(2.0,"snowOn", id);
+	#if defined CHRISTMAS_ADDON
+		set_task(2.0,"snowOn", id);
+	#endif
 	set_task(2.0,"radarOff", id);
 
 	return PLUGIN_CONTINUE;
 }
 public radarOff(id){
 	cmd_execute(id, "hideradar");
+	engclient_cmd(id, "hideradar");
 	client_cmd(id, "hideradar");	
 	console_cmd(id, "hideradar");
 }
-public snowOn(id){
-	cmd_execute(id, "cl_weather 1");
-	client_cmd(id, "cl_weather 1");	
-	console_cmd(id, "cl_weather 1");
-}
+
+#if defined CHRISTMAS_ADDON
+	public snowOn(id){
+		cmd_execute(id, "cl_weather 1");
+		client_cmd(id, "cl_weather 1");	
+		console_cmd(id, "cl_weather 1");
+	}
+#endif
 
 public client_disconnected(id){
 
@@ -1355,6 +1369,17 @@ public messageStatusIcon(const iMsgId, const iMsgDest, const iPlayer){
 	}
 	return PLUGIN_CONTINUE;
 } 
+public messageHealth(msgid, dest, id){
+	
+	if(!is_user_alive(id)) return PLUGIN_CONTINUE;
+
+	static hp;
+	hp = get_msg_arg_int(1);
+
+	if(hp > 0 && !(hp % 256)) set_msg_arg_int(1, ARG_BYTE, ++hp);
+	
+	return PLUGIN_CONTINUE;
+}
 public fw_addtofullpack( es, e, ent, host, host_flags, player, p_set ){
 	if(!pev_valid(ent)) return FMRES_IGNORED;
 	
@@ -2420,6 +2445,11 @@ public ham_Spawn(id){
 		remove_task(id + TASK_PUSH);
 		remove_task(id + TASK_RESPAWN);
 		remove_task(id + TASK_IDLESOUND);
+		
+		if( !task_exists(id+TASK_ADVERTISMENT) )
+			set_task(1.0, "adsInfo", id+TASK_ADVERTISMENT);
+		
+		
 	
 	}
 
@@ -3293,6 +3323,51 @@ public globalMenu_2(id, item){
 	}
 	return PLUGIN_CONTINUE;
 }
+
+
+public logCreate(){
+	new szDir[128];
+	get_basedir(szDir,sizeof(szDir));
+	
+	new firstFolder[64];
+	format(firstFolder, sizeof(firstFolder) - 1, "%s/%s", szDir, folderLogs);
+	
+	if(!dir_exists(firstFolder)){
+		log_amx("=== Stworzono glowny folder logow: %s ===", folderLogs);
+		mkdir(firstFolder);
+	}
+
+	new logFolder[90];
+	new foldersLogs[][] = {
+		  "shopSmsLog"
+		,"transferLog"
+		,"awardLog"
+		,"accountLog"
+		,"missionLog"
+		,"classLog"
+		,"muteLog"
+		,"afkLog"
+		,"caveLog"
+		,"conLog"
+		,"chatLog"
+		,"costume"
+		,"warnings"
+	};
+	
+	for(new i = 0; i < sizeof(foldersLogs); i++){
+		
+		format(logFolder, sizeof(logFolder) - 1, "%s/%s", firstFolder, foldersLogs[i]);
+		
+		if(dir_exists(logFolder)) continue;
+		
+		mkdir(logFolder);
+		
+		log_amx("=== Stworzono folder logow: %s ===", foldersLogs[i]);
+	}
+	
+	
+}
+
 public logBB(id, szText[]){
 	
 	new szMessage[256];
@@ -3308,9 +3383,7 @@ public logBB(id, szText[]){
 	get_user_name(id,szName,sizeof(szName));
 	get_user_ip(id,szIP,sizeof(szIP));
 
-	get_basedir(szDir,sizeof(szDir));
-	
-	new const folderLogs[]	=	"bbLogs";
+	get_basedir(szDir,sizeof(szDir));	
 	
 	switch(logType[id]){
 		case LOG_BUY: 		format(szDir,sizeof(szDir),"%s/%s/shopSmsLog/sklep_%s.log",szDir, folderLogs, szData);	

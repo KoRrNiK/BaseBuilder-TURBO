@@ -12,27 +12,29 @@
 #include <	sockets		>
 #include <	sqlx		>
 
+#include "TURBObasebuilder/sqlClearData.inl"
+
 public plugin_init_sql(){
+	
+	register_clcmd("clearData", "clearDataMenu");
 	
 	
 	new ipserver[64], host[64], user[64], pass[64], db[64], szIp[33], error[128], errorNum;
 	
 
-	get_cvar_string("bb_sql_host", 	host, sizeof(host));
-	get_cvar_string("bb_sql_user", 	user, sizeof(user));
-	get_cvar_string("bb_sql_pass", 	pass, sizeof(pass));
-	get_cvar_string("bb_sql_db", 	db, sizeof(db));
-	get_cvar_string("bb_ip_server", 	ipserver, sizeof(ipserver));
+	get_cvar_string("bb_sql_host", 	host, sizeof(host) - 1);
+	get_cvar_string("bb_sql_user", 	user, sizeof(user) - 1);
+	get_cvar_string("bb_sql_pass", 	pass, sizeof(pass) - 1);
+	get_cvar_string("bb_sql_db", 	db, sizeof(db) - 1);
+	get_cvar_string("bb_ip_server", ipserver, sizeof(ipserver) - 1);
 	
 	get_user_ip(0, szIp, sizeof(szIp));
 		
 	if(equal(szIp, ipserver)){
 		sql = SQL_MakeDbTuple(host, user, pass, db);
-		log_amx("Polaczono z zew. baza danych");
 		superAdminLocalhost = false;
 	} else {
 		sql = SQL_MakeDbTuple("127.0.0.1", "root", "", "bb");
-		log_amx("Polaczono z localhostem");
 		superAdminLocalhost = true;
 	}
 	connection = SQL_Connect(sql, errorNum, error, sizeof(error));
@@ -43,10 +45,11 @@ public plugin_init_sql(){
 		set_task(5.0, "plugin_init_sql");
 		return;
 	}
-	chatPrint(0, PREFIX_NORMAL, "[SQL]^1 Stworzono tabele");
-	log_amx("[SQL-LOG] Stworzono tabele");
 	
-	new queryData[512];
+	if(superAdminLocalhost) log_amx("Polaczono z zew. baza danych");
+	else log_amx("Polaczono z localhostem");
+	
+	new queryData[1536];
 	new Handle:query;
 	
 	format(queryData, sizeof(queryData),
@@ -73,7 +76,6 @@ public plugin_init_sql(){
 		`reset` INT NOT NULL DEFAULT 0, \
 		PRIMARY KEY (`idplayer`)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;"
 	);
-
 
 	query = SQL_PrepareQuery(connection, queryData);
 	SQL_Execute(query);
