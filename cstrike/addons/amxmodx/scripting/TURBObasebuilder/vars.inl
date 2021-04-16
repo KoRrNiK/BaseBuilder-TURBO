@@ -3,9 +3,12 @@ new const VERSION[] 		= 	"v1.3.5";
 new const AUTHOR[] 		= 	"KoRrNiK";
 new const fVAULTFILE[]		=	 "TURBOBB";
 
+new const fVAULTFILE_BACKUP[]	=	 "TURBOBB_BACKUP";
+
 new const PREFIXSAY_NORMAL[] 	=  	"[BaseBuilder]";
 new const PREFIXSAY_LINE[] 	=  	"---";
 
+new const folderLogs[]		=	"bbLogs";
 
 new bool:superAdminLocalhost = false;
 
@@ -104,7 +107,8 @@ enum ( += 100){
 	TASK_DAMAGEDEAL,
 	TASK_EXPLODETORPED,
 	TASK_SHOW_AD,
-	TASK_TUTOR
+	TASK_TUTOR,
+	TASK_ADVERTISMENT
 };
 
 
@@ -1395,6 +1399,7 @@ enum _:allCvars {
 	Float:cvarExpForWillSurviveSVip,
 	cvarNuggetForWillSurviveSVip,
 	cvarLimitFPS,
+	Float:cvarAdsTime,
 };
 new bbCvar[allCvars];
 enum _:allForward{
