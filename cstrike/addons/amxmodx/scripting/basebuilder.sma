@@ -109,7 +109,6 @@ public plugin_precache(){
 	costumePrecache();
 	tutorPrecache();
 	
-	
 	#if defined SCHROOM_ADDON
 		precache_model("models/basebuildervt/grzybeku.mdl");
 		precache_model("sprites/basebuildervt/digitalCounter.spr");
@@ -119,7 +118,6 @@ public plugin_precache(){
 		christmasPrecache();
 	#endif
 	
-
 	if(isOX()){	
 		
 		precache_model("sprites/basebuildervt/falseCounter.spr");
@@ -222,7 +220,6 @@ public plugin_init(){
 		register_clcmd("warning", 		"writeWarning");
 		register_clcmd("change_desc", 		"updateWarning");
 		
-		
 		if(isOX()){
 			register_clcmd("bb_ox", 		"askQuestion");	
 			register_menu("noMenu",	B1 | B0,	"noMenu_2");
@@ -251,7 +248,7 @@ public plugin_init(){
 		register_menu("smsMainMenu",		B1 | B2 | B3 | B6| B0 ,			"smsMainMenu_2");
 		register_menu("menuMissionAll",		B1 | B2 | B3 ,				"menuMissionAll_2");
 		register_menu("luzaczkiFinal",		B1 | B2 | B3,				"luzaczkiFinal_2");
-		register_menu("upgradeClass",		B1 | B2 ,					"upgradeClass_2");
+		register_menu("upgradeClass",		B1 | B2 ,				"upgradeClass_2");
 		register_menu("resetMenu",		B1 | B2,					"resetMenu_2");
 		register_menu("buyClass",		B1 | B2,					"buyClass_2");
 		register_menu("selectClass", 		B1 | B2 | B0 , 				"selectClass_2");
@@ -262,16 +259,13 @@ public plugin_init(){
 		register_menu("missionMenuDesc",	B1 | B2  , 				"missionMenuDesc_2");
 		register_menu("viewUpgradeMine", 	B1 | B2 , 				"viewUpgradeMine_2");
 		register_menu("showInfoVip", 		B1 | B0 , 				"showInfoVip_2");	
-		register_menu("buyCave", 		B1 | B2, 					"buyCave_2");
+		register_menu("buyCave", 		B1 | B2, 				"buyCave_2");
 		register_menu("yourBuyService",		B0,					"yourBuyService_2");
-	
-		register_menu("createClanMenu",		B1 | B2 | B3 | B0,				"createClanMenu_2");		
-		register_menu("avansClanMenu",		B1 | B2 | B3 | B0,				"avansClanMenu_2");		
+		register_menu("createClanMenu",		B1 | B2 | B3 | B0,			"createClanMenu_2");		
+		register_menu("avansClanMenu",		B1 | B2 | B3 | B0,			"avansClanMenu_2");		
 		register_menu("upgradeClanMenu", 	B1 | B2 | B3 | B4 | B5 | B6 | B7 | B8 | B9 | B0 , "upgradeClanMenu_2");	
 		register_menu("clanInfoDesc", 		B7 | B8 | B9 | B0 , 			"clanInfoDesc_2");
 		register_menu("clanInfoMember", 		B9 | B0 , 				"clanInfoMember_2");
-		
-		
 		register_menu("warningInfo", 		B1 | B2 | B3 | B4 | B5 | B6 | B7 | B8 | B9 | B0 , "warningInfo_2");
 		register_menu("warningAddMenu", 		B1 | B2 | B0 , 				"warningAddMenu_2");
 		register_menu("warningDesc", 		B1 | B2 | B0 , 				"warningDesc_2");
@@ -568,8 +562,8 @@ public plugin_cfg(){
 	cfgClan();
 	logCreate();
 	advertisementLoad();
+	plugin_init_sql();
 	
-	set_task(1.0, "plugin_init_sql");
 }
 public plugin_end(){ 
 	if (sql != Empty_Handle) SQL_FreeHandle(sql);
@@ -1298,8 +1292,7 @@ public globalHud(id){
 			show_dhudmessage(id, "%s", gText);	
 		}
 	} 
-	
-	// KTO PROSI O POMOC
+
 	iLen = 0;
 	if(isAdmin(id) && ( prepTime || ( gameTime && gTime > gGameTime - 10 ))){
 		for(new i = 0, count = 0; i < sizeof(needHelp); i ++){
@@ -4133,6 +4126,3 @@ public freeNgugetSlot(){
 	}
 	return -1;
 }
-/* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
-*{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
-*/
