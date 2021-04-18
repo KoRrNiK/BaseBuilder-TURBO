@@ -46,7 +46,7 @@ public plugin_init_sql(){
 		return;
 	}
 	
-	if(superAdminLocalhost) log_amx("Polaczono z zew. baza danych");
+	if(!superAdminLocalhost) log_amx("Polaczono z zew. baza danych");
 	else log_amx("Polaczono z localhostem");
 	
 	new queryData[1536];
