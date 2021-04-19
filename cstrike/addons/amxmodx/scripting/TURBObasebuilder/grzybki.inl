@@ -35,6 +35,9 @@ new shroomZone;
 new Float:shroomBtn[33];
 
 public menuGrzybki(id){
+
+	if(!is_user_connected(id)) return;
+
 	new menu=menu_create("Menu Grzybki", "menuGrzybki_2");
 	
 	menu_additem(menu,"Stworz grzybka");

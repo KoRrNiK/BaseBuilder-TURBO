@@ -40,6 +40,8 @@ new Float:OriginRound[3];
 
 public menuOX(id){
 	
+	if(!is_user_connected(id)) return;
+	
 	if(!isSuperAdmin(id)) return;
 	
 	new menu = menu_create("\r[BaseBuilder]\y OX", "menuOX_2");

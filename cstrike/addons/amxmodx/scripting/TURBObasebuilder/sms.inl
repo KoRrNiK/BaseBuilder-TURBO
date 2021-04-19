@@ -43,6 +43,9 @@ public smsMainMenu_2(id, item){
 	return PLUGIN_CONTINUE;
 }
 public addValueMenu(id){
+	
+	if(!is_user_connected(id)) return;
+	
 	new menu = menu_create("\r[BaseBuilder]\y Dodawanie Walut", "addValueMenu_2");	
 	
 	menu_additem(menu, "Dodaj VIP'a");
@@ -145,6 +148,9 @@ public addValueMenu_2(id, menu, item){
 	return PLUGIN_CONTINUE;
 }
 public addCash(id){
+
+	if(!is_user_connected(id)) return;
+
 	new gText[128];
 	format(gText, sizeof(gText), "Ile chcesz doladowac\r Luzaczkow?^n\dPosiadasz\r %d\d Luzaczkow", userLuzCoin[id]);
 	new menu = menu_create(gText, "addCash_2");
@@ -484,6 +490,9 @@ public checkCodeSmsSeti(idHandler, error){
 	return PLUGIN_HANDLED;
 }
 public luzaczkiShop(id){
+
+	if(!is_user_connected(id)) return PLUGIN_CONTINUE;
+
 	if( !playerLogged(id) ){
 		chatPrint(id, PREFIX_NORMAL, "Zaloguj sie aby moc korzystac z tego menu!");
 		return PLUGIN_HANDLED;

@@ -19,6 +19,8 @@ public resetPriceDefault(id){
 }
 public deathPriceMenu(id){
 	
+	if(!is_user_connected(id)) return;
+	
 	if(get_user_team(id) != 2){
 		chatPrint(id, PREFIX_LINE, "Musisz byc budowniczym aby placic za swoja smierc!");
 		return;

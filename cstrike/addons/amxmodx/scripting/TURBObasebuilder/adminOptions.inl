@@ -168,6 +168,9 @@ public selectAllBlock(id){
 
 
 public settingAdmin(id){
+	
+	if(!is_user_connected(id)) return;
+
 	new menu = menu_create("\r[BaseBuilder]\y Ustawienia:", "settingAdmin_2");
 	new gText[128];	
 	menu_additem(menu, "Przywroc Klocki");
@@ -256,6 +259,8 @@ public settingAdmin_2(id, menu, item){
 new timeHelpGod = 20;
 
 public menuPerrmissions(id){
+	
+	if(!is_user_connected(id)) return PLUGIN_CONTINUE;
 	
 	new gText[512];
 
@@ -464,6 +469,9 @@ public offHelp(id){
 }
 
 public choosePlayer(id, item){
+	
+	if(!is_user_connected(id)) return;
+	
 	new gText[128];
 	new menu=menu_create("\r[BaseBuilder]\y Wybierz gracza:", "choosePlayer_2");
 	
@@ -969,6 +977,9 @@ public adminCommands(id, szMessage[]){
 	return PLUGIN_CONTINUE;
 }
 public menuSpecifyUser(id, szName[]){
+	
+	if(!is_user_connected(id)) return;
+	
 	new gText[128], szNameEdit[48];
 	new menu = menu_create("\r[BaseBuilder]\y O kogo Ci chodzi?", "menuSpecifyUser_2");
 	strToLower(szName);
@@ -1103,6 +1114,9 @@ public findHelp(index){
 	return 1;	
 }
 public menuAdminHelp(id){
+	
+	if(!is_user_connected(id)) return 0;
+	
 	new menu = menu_create("Kto prosil:", "menuAdminHelp_2");
 	new target =  0;
 	for( new i = 0, x = 0; i < sizeof( needHelp ); i++ ){
@@ -1151,6 +1165,9 @@ public menuAdminHelp_2(id,menu,item){
 	return;
 }
 public light(id){
+	
+	if(!is_user_connected(id)) return;
+	
 	new gText[256], bar[256];
 	if(!lightType[0] ) format(gText, sizeof(gText),"\dSwiatlo:\r Zwyczajne");
 	else format(gText, sizeof(gText),"\dSwiatlo:\r %d%%\w [\d %d/%d\w -\d %c\w ]",  ( lightType[0] * 100 / strlen(lightCharacter)), lightType[0], strlen(lightCharacter), lightCharacter[lightType[0]-1]);
@@ -1195,6 +1212,8 @@ stock barMenu(gText[], iLen, type, amount, const symbolOne[], const symbolTwo[])
 	for(new i = 0; i < amount-type; i++)  line += format(gText[line], iLen - line - 1, "%s", symbolTwo);        
 } 
 public  selectAllBlockMenu(id){
+	
+	if(!is_user_connected(id)) return;
 	
 	new menu = menu_create(formatm("\r[BaseBuilder]\y Boki Gracza:\w %s", userName[viewBlock[id]]), "selectAllBlockMenu_2");
 	

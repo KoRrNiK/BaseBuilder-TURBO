@@ -23,6 +23,8 @@ public cloneOffset(id){
 	adminLockBlock(id);	
 }
 public adminLockBlock(id){
+	
+	if(!is_user_connected(id)) return 0;
 	if( !has_flag(id, "a" ) ) return 0;
 		
 	new gText[128], iLen;

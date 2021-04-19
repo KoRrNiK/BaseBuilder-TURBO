@@ -18,6 +18,9 @@ public shopGlobalMenu(id){
 	}
 }
 public shopBuilder(id){
+	
+	if(!is_user_connected(id)) return PLUGIN_CONTINUE;
+	
 	new gText[128];
 	format(gText, sizeof(gText), "\r[BaseBuilder]\y Sklep Budowniczych:^n^n\y%s^t^t\dPosiadasz:\r %d Brylek", symbolsCustom[SYMBOL_DR_ARROW], userNugget[id]);
 	new menu = menu_create(gText, "shopBuilder_2");
@@ -251,6 +254,8 @@ public removeWeapon(id){
 	}
 }
 public shopZombie(id){
+	
+	if(!is_user_connected(id)) return PLUGIN_CONTINUE;
 	
 	new gText[128];
 	format(gText, sizeof(gText), "\r[BaseBuilder]\y Sklep Zobmie:^n^n\y%s^t^t\dPosiadasz:\r %d Brylek",symbolsCustom[SYMBOL_DR_ARROW], userNugget[id]);

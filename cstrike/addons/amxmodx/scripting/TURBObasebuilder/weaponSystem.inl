@@ -12,6 +12,8 @@ new const costResetMulti = 5000;
 
 public menuWeapon(id){	
 	
+	if(!is_user_connected(id)) return PLUGIN_CONTINUE;
+	
 	if(!playerLogged(id)) return PLUGIN_CONTINUE;
 	
 	

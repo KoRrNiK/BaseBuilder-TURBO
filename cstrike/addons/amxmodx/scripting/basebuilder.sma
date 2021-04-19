@@ -577,6 +577,8 @@ public restartRound(){
 public WeapPickup(id) return PLUGIN_HANDLED;
 public menuColor(id, item){
 	
+	if(!is_user_connected(id)) return;
+	
 	if(!isVip(id) || !isSVip(id)){
 		chatPrint(id, PREFIX_NORMAL, "Kolorowanie dostepne tylko dla^3 VIP'a / SVIP'a");
 		return;
@@ -2944,6 +2946,9 @@ public adminsPointHelp(id){
 }
 
 public regulamin(id){
+	
+	if(!is_user_connected(id)) return;
+
 	new menu = menu_create("\r[BaseBuilder]\y Regulamin!", "regulamin_2");	
 	
 	menu_additem(menu, "Regulamin\d Ogolny");
@@ -3470,6 +3475,9 @@ public maxFPS(id, const cvar[], const val[]){
 }
 
 public menuGlobalVip(id){
+
+	if(!is_user_connected(id)) return;
+
 	new menu = menu_create("\r[BaseBuilder]\y VIP/SVIP", "menuGlobalVip_2");
 	
 	menu_additem(menu, "Opis\r VIP'a");
@@ -3493,6 +3501,8 @@ public menuGlobalVip_2(id, menu, item){
 	}	
 }
 public showVipsOnline(id, type) {
+
+	if(!is_user_connected(id)) return PLUGIN_CONTINUE;
 
 	new gText[1536];
 

@@ -12,6 +12,9 @@ new userRocketItem[33];
 new userRocketCamera[33];
 
 public classHuman(id){
+	
+	if(!is_user_connected(id)) return;
+
 	new gText[170];
 	format(gText, sizeof(gText), "\dKliknij na Czlowieka aby sprawdzic co posiada! ");
 				
@@ -391,6 +394,8 @@ public allClassHumman(id){
 }
 
 public atributeMenu(id){
+	
+	if(!is_user_connected(id)) return PLUGIN_CONTINUE;
 	
 	if(get_user_team(id) != 2){
 		chatPrint(id, PREFIX_NORMAL, "Moce sa przeznaczone tylko dla klas Budowniczych!");

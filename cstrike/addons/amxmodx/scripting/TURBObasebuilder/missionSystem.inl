@@ -86,6 +86,9 @@ public menuMissionAll_2(id, item){
 }
 
 public menuMission(id){
+
+	if(!is_user_connected(id)) return;
+
 	new gText[128], menu;
 
 	if(missionMenu[id] == MISSION_MENU_BASIC){

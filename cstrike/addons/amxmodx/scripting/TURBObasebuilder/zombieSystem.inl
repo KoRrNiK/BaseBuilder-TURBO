@@ -16,6 +16,9 @@ public zombiePrecache(){
 	}
 }
 public classZombie(id){
+
+	if(!is_user_connected(id)) return;
+
 	new gText[170];
 	format(gText, sizeof(gText), "\r[BaseBuilder]\y Klasy Zombie!^n^n\y%s^t^t\dLicznik Smierci:\r %d\w |\y", symbolsCustom[SYMBOL_DR_ARROW], userDeathNum[id]);
 						

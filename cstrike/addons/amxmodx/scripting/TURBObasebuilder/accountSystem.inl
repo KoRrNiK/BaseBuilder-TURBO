@@ -4,6 +4,9 @@
 #include <fakemeta>
 
 public mainMenuAccount(id){
+	
+	if(!is_user_connected(id)) return;
+	
 	new gText[256];
 	
 	new hidePass[12]; copy(hidePass, sizeof(userPassword[])-1, userPassword[id]);
@@ -157,6 +160,9 @@ public readPassword(id){
 }
 new bool:userViewCamera[33];
 public settingAccount(id){
+	
+	if(!is_user_connected(id)) return;
+	
 	new gText[64];
 	
 	format(gText, sizeof(gText), "\r[BaseBuilder]\y Ustawienia Kont:");

@@ -170,6 +170,9 @@ public miningMenu_2(id, item){
 	return PLUGIN_CONTINUE;
 }
 public miningUpgrade(id){
+
+	if(!is_user_connected(id)) return;
+
 	new menu = menu_create("\r[BaseBuilder]\y Ulepszenia Kopalnia:", "miningUpgrade_2");
 	new gText[128];
 	for(new i = 0;i < sizeof(upgradeMine); i++){

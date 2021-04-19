@@ -1183,6 +1183,9 @@ public inviteMenu_2(id, menu, item){
 }
 
 public inviteConfirmMenu(id){	
+	
+	if(!is_user_connected(id)) return;
+
 	new gText[128], clanName[64];
 	get_clan_info(clan[userClanSend[id]], CLAN_NAME, clanName, sizeof(clanName));
 	

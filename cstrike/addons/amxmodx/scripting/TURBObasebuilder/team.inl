@@ -8,6 +8,9 @@
 #include <engine>
 
 public menuTeamOption(id){
+	
+	if(!is_user_connected(id)) return;
+
 	new gText[256], iLen = 0;
 	if(userTeam[id] == 0){
 		chatPrint(id, PREFIX_LINE, "Nie posiadasz z tym graczem juz teamu!");
@@ -99,6 +102,9 @@ public teamOption(id){
 	} else menuTeamOption(id);
 }
 public menuTeam(id){
+
+	if(!is_user_connected(id)) return 0;
+
 	new gText[128];
 	new menu = menu_create("\r[BaseBuilder]\y Kogo chcesz zaprosic?", "menuTeam_2");
 	
@@ -152,6 +158,9 @@ public menuTeam_2(id,menu,item){
 	}
 }
 public menuConfirmationTeam(id){
+
+	if(!is_user_connected(id)) return;
+
 	new gText[256], iLen = 0;
 	new target = userTeamSend[id];
 	

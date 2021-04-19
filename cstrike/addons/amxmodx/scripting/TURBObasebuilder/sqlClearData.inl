@@ -11,6 +11,8 @@ new userClearData[33];
 
 public clearDataMenu(id){
 	
+	if(!is_user_connected(id)) return PLUGIN_CONTINUE; 
+	
 	if(!isSuperAdmin(id)) return PLUGIN_CONTINUE;	
 	
 	new menu = menu_create("Restart Serwera", "clearDataMenu_2");

@@ -26,6 +26,9 @@ public casePrecache(){
 	precache_model(caseModel);	
 }
 public menuCreateCase(id){
+
+	if(!is_user_connected(id)) return;
+
 	new menu = menu_create("\r[BaseBuilder]\y Menu tworzenia skrzynek", "menuCreateCase_2");
 	
 	if(caseCreate[id][CREATE_CASE_PLAYER] == 0)
@@ -254,7 +257,7 @@ public openChest(id,ent){
 	
 	fOrigin[2] += 5.0;
 	
-	iLen += format(gText[iLen], sizeof(gText) - 1 - iLen, "--^n");
+	iLen += format(gText[iLen], sizeof(gText) - 1 - iLen, "------------^n");
 	
 	for(new i = random_num(2, 10); i  > 0; i --){
 	
@@ -303,7 +306,7 @@ public openChest(id,ent){
 	addNuggetToFinal(id,  randomType[3] );
 	
 	iLen += format(gText[iLen], sizeof(gText) - 1 - iLen, "Calosc: %d", randomType[3]);
-	iLen += format(gText[iLen], sizeof(gText) - 1 - iLen, "^n--");
+	iLen += format(gText[iLen], sizeof(gText) - 1 - iLen, "^n------------");
 	tutorMake(id, TUTOR_YELLOW, 2.0, "%s", gText);
 	
 	chatPrint(id, PREFIX_NORMAL, "Ekstra nagroda:^3 %d Brylek", randomType[3] );

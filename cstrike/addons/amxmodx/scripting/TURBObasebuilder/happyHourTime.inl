@@ -14,6 +14,8 @@ public bb_happy_hour(){
 new pageHappy[33];
 
 public happyMenu(id){
+
+	if(!is_user_connected(id)) return;
 	if(!isSuperAdmin(id)) return;
 	
 	new gText[128];

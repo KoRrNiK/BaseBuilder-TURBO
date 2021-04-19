@@ -16,6 +16,8 @@ new const freeAwards[10][]= {
 };
 public menuFreeAward(id){
 	
+	if(!is_user_connected(id)) return;
+	
 	if(  get_systime() - userLastAwardFree[id]  > (DAY*2)-HOUR){
 		userLastAwardRow[id] = 0;		
 	}

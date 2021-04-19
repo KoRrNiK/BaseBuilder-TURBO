@@ -57,6 +57,8 @@ public allunlockHat(id){
 }
 public globalMenuCostumes(id){
 	
+	if(!is_user_connected(id)) return;
+	
 	if(!isSuperAdmin(id)){
 		menuCostumes(id);
 		return;
@@ -80,6 +82,8 @@ public globalMenuCostumes_2(id, menu, item){
 	}
 }	
 public menuCostumes(id){
+	
+	if(!is_user_connected(id)) return;
 	
 	new gText[512], iLen = 0;
 	iLen 	+=	format(gText[iLen], sizeof(gText) - iLen - 1, "\r[BaseBuilder]\y Twoje Kostiumy!\d [ %d/%d ]^n^n",allunlockHat(id), MAXHAT);
@@ -188,6 +192,8 @@ public infoCostumes_2(id, item){
 }
 
 public menuCostumesAll(id){
+	
+	if(!is_user_connected(id)) return;
 	
 	new gText[128], menu = menu_create("\r[BaseBuilder]\y Kostiumy!", "menuCostumesAll_2");
 	

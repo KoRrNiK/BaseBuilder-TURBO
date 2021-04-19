@@ -78,6 +78,9 @@ public numTree(){
 	return iNum;
 }
 public menuCreateChristmas(id){
+
+	if(!is_user_connected(id)) return;
+
 	if(!isSuperAdmin(id)) return;
 
 	new gText[128];
@@ -190,6 +193,9 @@ public dayCount(){
 	return (((get_systime() -  firstDayDecember ) / DAY));
 }
 public menuChristmas(id){	
+	
+	if(!is_user_connected(id)) return;
+	
 	new gText[712], iLen = 0;
 
 	new mission = dayCount();
