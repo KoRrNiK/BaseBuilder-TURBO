@@ -442,27 +442,25 @@ stock get_weapon_from_slot(id, slot, &ent){
 	
 	if (!(1 <= slot <= 5)) return 0;
 
-	ent = get_pdata_cbase(id, 367 + slot , 5);
+	ent = get_pdata_cbase(id, OFFSET_ITEM_SLOT + slot , OFFSET_LINUX_PLAYER);
 
-	return (ent > 0) ? get_pdata_int(ent, 43 , 4) : 0;
+	return (ent > 0) ? get_pdata_int(ent, OFFSET_ID , OFFSET_LINUX_WEAPONS) : 0;
 }
 stock ham_strip_user_weapon(id, weaponId, slot = 0, bool:switchIfActive = true){
 	static const weaponsSlots[] = { -1, 2, -1, 1, 4, 1, 5, 1, 1, 4, 2, 2, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 4, 2, 1, 1, 3, 1 };
 
-	new weapon;
-
 	if (!slot) slot = weaponsSlots[weaponId];
 
-	weapon = get_pdata_cbase(id, 367 + slot, 5);
+	new weapon = get_pdata_cbase(id, OFFSET_ITEM_SLOT + slot, OFFSET_LINUX_PLAYER);
 
 	while (weapon > 0) {
-		if (get_pdata_int(weapon, 43, 4) == weaponId) break;
+		if (get_pdata_int(weapon, OFFSET_ID, OFFSET_LINUX_WEAPONS) == weaponId) break;
 
-		weapon = get_pdata_cbase(weapon, 42, 4);
+		weapon = get_pdata_cbase(weapon, OFFSET_NEXT, OFFSET_LINUX_WEAPONS);
 	}
 
 	if (weapon > 0) {
-		if (switchIfActive && get_pdata_cbase(id, 373, 5) == weapon) ExecuteHamB(Ham_Weapon_RetireWeapon, weapon);
+		if (switchIfActive && get_pdata_cbase(id, OFFSET_ACTIVE_ITEM, OFFSET_LINUX_PLAYER) == weapon) ExecuteHamB(Ham_Weapon_RetireWeapon, weapon);
 
 		if (ExecuteHamB(Ham_RemovePlayerItem, id, weapon)) {
 			user_has_weapon(id, weaponId, 0);
@@ -475,7 +473,6 @@ stock ham_strip_user_weapon(id, weaponId, slot = 0, bool:switchIfActive = true){
 
 	return 0;
 }
-
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
 */

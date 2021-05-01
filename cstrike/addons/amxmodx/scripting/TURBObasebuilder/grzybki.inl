@@ -274,7 +274,7 @@ public grzybekDMG(id, ent, Float:damage){
 		fm_set_rendering(ent, kRenderFxGlowShell, 255, 255 , 255, kRenderNormal, 10);
 		set_task(0.1,"turnOffGlowShroom", ent);
 		refreshCounter();
-		fm_cs_get_weapon_ammo( get_pdata_cbase(id, 373) ,  7 );
+		fm_cs_get_weapon_ammo( get_pdata_cbase(id, OFFSET_ACTIVE_ITEM) ,  7 );
 		if(task_exists(GRZYBKITHINK) )
 			remove_task(GRZYBKITHINK);
 		set_task(0.2,"grzybkiPlay", GRZYBKITHINK);

@@ -669,7 +669,7 @@ public OnResetHud(id){
 	if (!hideWeapon) hideWeapon = get_user_msgid("HideWeapon");
 
 	message_begin(MSG_ONE, hideWeapon, _, id);
-	write_byte(HUD_HIDE_FLASH  | HUD_HIDE_TIMER /* | HUD_HIDE_RHA*/ | HUD_HIDE_MONEY);
+	write_byte(HUD_HIDE_FLASH  | HUD_HIDE_TIMER  | HUD_HIDE_RHA | HUD_HIDE_MONEY);
 	message_end();
 }
 
@@ -760,7 +760,7 @@ public CurWeapon(id){
 	}	
 	
 	if( checkWeapon(weapon) ){
-		if( get_gametime() < userUnlimited[id] ) fm_cs_get_weapon_ammo( get_pdata_cbase(id, 373), g_MaxClipAmmo[weapon]);		
+		if( get_gametime() < userUnlimited[id] ) fm_cs_get_weapon_ammo( get_pdata_cbase(id, OFFSET_ACTIVE_ITEM), g_MaxClipAmmo[weapon]);		
 	}
 }
 
@@ -856,8 +856,8 @@ public fw_PlayerPreThink(id){
 			get_weaponname(get_user_weapon(id), nameWeapon, sizeof(nameWeapon));
 			new weapon = fm_find_ent_by_owner(-1, nameWeapon, id);					
 			if(weapon){
-				set_pdata_float(weapon, 46, ( get_pdata_float(weapon, 46, 4) * speedMulti), 4);
-				set_pdata_float(weapon, 47, ( get_pdata_float(weapon, 47, 4) * speedMulti), 4);
+				set_pdata_float(weapon, OFFSET_PRIMARY_ATTACK, ( get_pdata_float(weapon, OFFSET_PRIMARY_ATTACK, OFFSET_LINUX_WEAPONS) * speedMulti), OFFSET_LINUX_WEAPONS);
+				set_pdata_float(weapon, OFFSET_SECONDARY_ATTACK, ( get_pdata_float(weapon, OFFSET_SECONDARY_ATTACK, OFFSET_LINUX_WEAPONS) * speedMulti), OFFSET_LINUX_WEAPONS);
 			}
 		}
 	}
@@ -1357,7 +1357,7 @@ public messageStatusIcon(const iMsgId, const iMsgDest, const iPlayer){
 		
 		for(new i = 0; i < sizeof(blockIcon); i ++){
 			if(equal(szMsg, blockIcon[i])){
-				set_pdata_int(iPlayer, 235, get_pdata_int(iPlayer, 235) & ~(1<<0));
+				set_pdata_int(iPlayer, OFFSET_BUYZONE, get_pdata_int(iPlayer, OFFSET_BUYZONE) & ~(1<<0));
 				return PLUGIN_HANDLED;
 			}
 		}

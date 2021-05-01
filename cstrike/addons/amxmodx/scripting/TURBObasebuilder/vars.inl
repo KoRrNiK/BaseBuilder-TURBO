@@ -19,11 +19,18 @@ new const accentColorHud[]	=	{ 120, 250, 50 };
 #define DAY 				86400
 #define HOUR 				3600
 #define MINUTE 				60
+
 #define OFFSET_CLIPAMMO        		51
 #define OFFSET_LINUX_WEAPONS   		4
-
 #define OFFSET_LASTHITGROUP 		75
 #define OFFSET_LINUX_PLAYER		5
+#define OFFSET_NEXT 			42
+#define OFFSET_ITEM_SLOT 		367
+#define OFFSET_ID 			43
+#define OFFSET_ACTIVE_ITEM 		373
+#define OFFSET_PRIMARY_ATTACK 		46
+#define OFFSET_SECONDARY_ATTACK 	47
+#define OFFSET_BUYZONE 			235
 
 #define HUD_HIDE_MONEY 			(1<<5)
 #define	HUD_HIDE_FLASH 			(1<<1)

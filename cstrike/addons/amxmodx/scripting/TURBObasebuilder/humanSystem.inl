@@ -935,7 +935,7 @@ public ammoThinkBonus(ent){
 				
 
 		if( checkWeapon(get_user_weapon(i))){
-			fm_cs_get_weapon_ammo( get_pdata_cbase(i, 373), g_MaxClipAmmo[get_user_weapon(i)]);
+			fm_cs_get_weapon_ammo( get_pdata_cbase(i, OFFSET_ACTIVE_ITEM), g_MaxClipAmmo[get_user_weapon(i)]);
 		}
 	}
 	if( gTime > 1.0 ) remove_entity(ent);
