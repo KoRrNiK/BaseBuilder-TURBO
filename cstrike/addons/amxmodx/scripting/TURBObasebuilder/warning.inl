@@ -8,7 +8,6 @@
 #include <hamsandwich>
 #include <sqlx>
 
-new userWarningAccept[33];
 
 public warningInfo(id){
 	
@@ -131,8 +130,15 @@ public warningAddMenu_2(id, item){
 			chatPrint(target, PREFIX_LINE, "Dostales ostrzezenie od^3 %s^1!", userName[id]); 
 			chatPrint(target, PREFIX_LINE, "Opis:^3 %s", userWarningName[target]); 
 			chatPrint(id, PREFIX_LINE, "Dales ostrzezenie graczowi:^3 %s", userName[target]); 
-				
+			
+			userWarningHudTarget[target] = id;
+			userWarningHudStart[target] = true;
+			userWarningHudTime[target] = 10;
+			userWarningHudInfo[target] = userWarningName[target];
+			
 			userWarningAmount[target] ++;
+			
+			if(!task_exists(target + TASK_WARNINGHUD)) set_task(1.0, "hudWarning", target + TASK_WARNINGHUD);
 			
 			saveWarning(id, target);
 		}
@@ -351,6 +357,36 @@ public saveWarning(id, target){
 	
 	userWarningAccept[id] = false;
 	warningInfo(id);
+}
+
+public hudWarning(id){
+	id -= TASK_WARNINGHUD;
+	
+	if(!is_user_connected(id)) return;
+	if(!userWarningHudStart[id]) return;
+	
+	if(entity_get_int(id, EV_INT_button) & IN_JUMP ) userWarningHudTime[id] --;
+	else userWarningHudTime[id] = 10;
+	
+	
+	Display_Fade(id,128, 128, 128,200, 0, 0, 150);
+
+	set_dhudmessage(255, userWarningHudTime[id] % 2 == 0 ? 0 : 255, userWarningHudTime[id] % 2 == 0 ? 0 : 255, -1.0, 0.4, 0, 0.0, 1.0, 0.01, 0.02);
+	show_dhudmessage(id, "!== POWDO OSTRZEZENIA ==!^n%s", userWarningHudInfo[id]);
+	
+	set_dhudmessage(255, userWarningHudTime[id] % 2 == 0 ? 0 : 255, userWarningHudTime[id] % 2 == 0 ? 0 : 255, -1.0, 0.55, 0, 0.0, 1.0, 0.01, 0.02);
+	show_dhudmessage(id, "Otrzymales ostrzezenie od: %s^nPrzytrzymaj spacje przez %d sekund!^nAby potwierdzic ostrzezenie!", userName[userWarningHudTarget[id]], userWarningHudTime[id]);
+	
+	Display_Fade(id,(1<<12),(1<<12),(1<<12),255, 0, 0, 190);
+	
+	if(userWarningHudTime[id] > 0) set_task(0.9, "hudWarning", id + TASK_WARNINGHUD);
+	else {
+		userWarningHudInfo[id] = "";
+		userWarningHudStart[id] = false;
+		userWarningHudTime[id] = 0;
+		remove_task(id, TASK_WARNINGHUD);
+		return;
+	}
 }
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }

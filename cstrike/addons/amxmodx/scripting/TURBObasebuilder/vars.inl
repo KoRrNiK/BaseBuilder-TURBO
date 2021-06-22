@@ -115,7 +115,8 @@ enum ( += 100){
 	TASK_EXPLODETORPED,
 	TASK_SHOW_AD,
 	TASK_TUTOR,
-	TASK_ADVERTISMENT
+	TASK_ADVERTISMENT,
+	TASK_WARNINGHUD
 };
 
 
@@ -1340,6 +1341,12 @@ new userWarningAmount[33];
 new userWarningInfo[33];
 new userWarningMenu[33][33];
 new userWarningItem[33];
+
+new userWarningHudTime[33];
+new userWarningHudInfo[33][MAXLEN];
+new userWarningAccept[33];
+new bool:userWarningHudStart[33];
+new userWarningHudTarget[33];
 
 new userViewClan[33][33];
 new userViewClanInfo[33];

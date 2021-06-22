@@ -517,7 +517,7 @@ public teamCampTouching(id){
 		if( getOwner(ground) != id && getOwner(ground) != 0 && getOwner(ground) != userTeam[id] ){				
 			static Float:fTime[ 33 ];
 			if( ( get_gametime() - fTime[ id ] ) >= 1.0 ){
-
+	
 				new Float:fPunchAngle[3];
 				fPunchAngle[0] = float(random(15));
 				fPunchAngle[1] = float(random(15));
@@ -1199,8 +1199,10 @@ public globalHud(id){
 		set_task(1.0, "globalHud" ,id+ TASK_GLOBAL);
 		return PLUGIN_CONTINUE;
 	}
+	
 
-	if(userLogged[id] && !(userExtraFps[id] || userFPS[id] >= bbCvar[cvarLimitFPS] + 49)){
+	
+	if(userLogged[id] && !(userExtraFps[id] || userFPS[id] >= bbCvar[cvarLimitFPS] + 49) && !userWarningHudStart[id]){
 		
 		if( get_user_team(id) == 1) iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n|^t%s Zombie^t|^n", classesZombies[userClass[id]][0]) ;
 		else if(get_user_team(id) == 2 && hasClassHuman(id, userClassHuman[id])) iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n|^t%s - Lv: %d - XP: %0.2f%%^t|^n", classesHuman[userClassHuman[id]][0],  userHumanLevel[id][userClassHuman[id]], (userExpClass[id][userClassHuman[id]]*100.0/needXpClass(userHumanLevel[id][userClassHuman[id]])));
