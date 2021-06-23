@@ -205,7 +205,7 @@ public caseInfo(id, ent, Float:cordx, Float:cordy){
 		break;
 	}
 	
-	if( entClose > 0 ){
+	if( entClose > 0 && !userWarningHudStart[id]){
 		if( get_gametime()-userAimingHud[id] >= 0.2){
 			iLen += format(gText[iLen], sizeof(gText)-1-iLen, "Skrzynia | Kliknij 'E' aby otworzyc^n");
 			if(pev(entClose, pev_iuser2) == 1)

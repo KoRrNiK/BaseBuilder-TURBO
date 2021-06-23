@@ -278,12 +278,14 @@ public startLogin(id){
 		if(!is_user_hltv(id)){
 			userSpeedAdmin[id] = 1000.0;
 			
-			Display_Fade(id, 4096,4096, 4096,1, 1, 1,255);
-			set_dhudmessage(255, 102, 0, -1.0, 0.2, 0, 0.5, 0.9, 0.5, 0.5);
-			
-			if( strlen(userPassword[id]) < 2 )
-				show_dhudmessage(id, "[ Zarejestruj Sie ]^n[ Wpisz /konto | /zarejestruj ]");
-			else show_dhudmessage(id, "[ Zaloguj Sie ]^n[ Wpisz /konto | /login ]");
+			if(!userWarningHudStart[id]){
+				Display_Fade(id, 4096,4096, 4096,1, 1, 1,255);
+				set_dhudmessage(255, 102, 0, -1.0, 0.2, 0, 0.5, 0.9, 0.5, 0.5);
+				
+				if( strlen(userPassword[id]) < 2 )
+					show_dhudmessage(id, "[ Zarejestruj Sie ]^n[ Wpisz /konto | /zarejestruj ]");
+				else show_dhudmessage(id, "[ Zaloguj Sie ]^n[ Wpisz /konto | /login ]");
+			}
 		} else {
 			
 			new szCurrentTime[9];

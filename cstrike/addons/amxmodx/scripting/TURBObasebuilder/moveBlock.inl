@@ -47,7 +47,7 @@ public buildingInfo(id){
 	
 	caseInfo(id, ent, cordx, cordy);
 
-	if( ent != 0 ){
+	if( ent != 0 && !userWarningHudStart[id]){
 		if( get_gametime()-userAimingHud[id] >= 0.2){
 			
 			if( canBeMoved(id, ent) && !isPlayer(ent)){
@@ -346,13 +346,13 @@ public buildingBuild(id){
 	}
 	if( (pev(id, pev_button)& IN_ATTACK) ){
 		if( userGrab[id] != 0 ){
-			client_print(id, print_center, "--Oddalanie--");
+			if(!userWarningHudStart[id]) client_print(id, print_center, "--Oddalanie--");
 			userLength[id] += userLength[id] > 150 ? (userLength[id] > 700? 10.0:7.0) : 1.5;
 		}
 	}
 	if( (pev(id, pev_button) & IN_ATTACK2) ){
 		if( userGrab[id] != 0 ){
-			client_print(id, print_center, "--Przyblizanie--");
+			if(!userWarningHudStart[id]) client_print(id, print_center, "--Przyblizanie--");
 			userLength[id] -= userLength[id] > 150 ? (userLength[id] > 700? 10.0:7.0) : 1.5;		
 		}
 	}

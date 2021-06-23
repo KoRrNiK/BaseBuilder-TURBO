@@ -233,8 +233,11 @@ public grzybekDMG(id, ent, Float:damage){
 		set_task(5.0, "endShroomGameAfk", shroomPlayer+TASK_SHROOMAFK);
 		if( entity_get_int(ent, EV_INT_skin) == 3 ){
 			totalPointsMooshrom += 10;			
-			set_dhudmessage(255, 255, 85,  -1.0, 0.6, 0, 6.0, 0.4, 0.1, 0.1);
-			show_dhudmessage(id, "+10");
+			
+			if(!userWarningHudStart[id]){
+				set_dhudmessage(255, 255, 85,  -1.0, 0.6, 0, 6.0, 0.4, 0.1, 0.1);
+				show_dhudmessage(id, "+10");
+			}
 
 			#if defined CHRISTMAS_ADDON
 		
@@ -245,8 +248,12 @@ public grzybekDMG(id, ent, Float:damage){
 			
 		}else if( entity_get_int(ent, EV_INT_skin) == 1 ){ 
 			new ran = random_num(1,3);
-			set_dhudmessage(153, 255, 102, -1.0, 0.6, 0, 6.0, 0.4, 0.1, 0.1);
-			show_dhudmessage(id, "+%d", ran);
+			
+			if(!userWarningHudStart[id]){
+				set_dhudmessage(153, 255, 102, -1.0, 0.6, 0, 6.0, 0.4, 0.1, 0.1);
+				show_dhudmessage(id, "+%d", ran);
+			}
+			
 			totalPointsMooshrom += ran;	
 			#if defined CHRISTMAS_ADDON
 		
@@ -422,7 +429,6 @@ public endGame(){
 			case 1..5:{
 				createNuggetOrigin(fOrigin, award,award, PINK_NUGGET, 	.owner=shroomPlayer);	
 				chatPrint(0, PREFIX_LINE, "%s otrzymal^4 %d^1 Rozowych brylek ! Za ustrzelenie^4 %d^1 grzybkow", userName[shroomPlayer],award,totalPointsMooshrom);
-				
 			}
 			case 6..16: {
 				createNuggetOrigin(fOrigin, award,award, BLUE_NUGGET, 	.owner=shroomPlayer);

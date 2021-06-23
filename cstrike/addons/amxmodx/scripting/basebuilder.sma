@@ -528,8 +528,11 @@ public teamCampTouching(id){
 				
 				screenShake(id, 5,1 ,5);
 			
-				set_dhudmessage(85, 255, 170, -1.0, 0.7, 0, 0.0, 1.0, 0.01, 0.02);
-				show_dhudmessage(id, "To nie twoj Blok!^nWlasciciel bloku: %s", userName[getOwner(ground)]);
+				if(!userWarningHudStart[id]){
+					set_dhudmessage(85, 255, 170, -1.0, 0.7, 0, 0.0, 1.0, 0.01, 0.02);
+					show_dhudmessage(id, "To nie twoj Blok!^nWlasciciel bloku: %s", userName[getOwner(ground)]);
+				}
+				
 				fTime[ id ] = get_gametime() ;
 			}
 			set_pev(id, pev_gravity, 5.0);
@@ -1324,23 +1327,27 @@ public hudDealDmg(id, Float:dmg, szText[]){
 	
 	userHudDeal[id] = (userHudDeal[id]+1)% sizeof(hudPosHit);
 	
-	if( strlen(szText) > 0) set_dhudmessage(128,213,255, 0.75, hudPosHit[userHudDeal[id]][0], 0, 6.0, 0.3, 0.1, 0.1);
-	else set_dhudmessage(0, 170, 255, 0.75, hudPosHit[userHudDeal[id]][0], 0, 6.0, 0.3, 0.1, 0.1);
+	if(!userWarningHudStart[id]){
+		if( strlen(szText) > 0) set_dhudmessage(128,213,255, 0.75, hudPosHit[userHudDeal[id]][0], 0, 6.0, 0.3, 0.1, 0.1);
+		else set_dhudmessage(0, 170, 255, 0.75, hudPosHit[userHudDeal[id]][0], 0, 6.0, 0.3, 0.1, 0.1);
+	}
 
 	new ammo[15];
 	new bool:isProAdd = didPro(id, pro_LARGEAMMO);
 	format(ammo, sizeof(ammo), "| %d Ammo", 1 + (isProAdd ? 1 : 0 ));
-	show_dhudmessage(id, "%d %s%s %s", floatround(dmg), userCritical[id] ? "| Kryt" : "", userAddAmmo[id] ? ammo : "", szText);	
+	if(!userWarningHudStart[id]) show_dhudmessage(id, "%d %s%s %s", floatround(dmg), userCritical[id] ? "| Kryt" : "", userAddAmmo[id] ? ammo : "", szText);	
 	
 	
 }
 public hudGetDmg(id, Float:dmg, szText[]){
 	userHudGet[id] = (userHudGet[id]+1)% sizeof(hudPosHit);
 	
-	if( strlen(szText) > 0)
-		set_dhudmessage(240, 119, 143, 0.9, hudPosHit[userHudGet[id]][0], 0, 6.0, 0.3, 0.1, 0.1);
-	else set_dhudmessage(255, 42, 85, 0.9, hudPosHit[userHudGet[id]][0], 0, 6.0, 0.3, 0.1, 0.1);
-	show_dhudmessage(id, "%d %s", floatround(dmg), szText);
+	if(!userWarningHudStart[id]){
+		if( strlen(szText) > 0)
+			set_dhudmessage(240, 119, 143, 0.9, hudPosHit[userHudGet[id]][0], 0, 6.0, 0.3, 0.1, 0.1);
+		else set_dhudmessage(255, 42, 85, 0.9, hudPosHit[userHudGet[id]][0], 0, 6.0, 0.3, 0.1, 0.1);
+		show_dhudmessage(id, "%d %s", floatround(dmg), szText);
+	}
 	
 }
 public messageStatusIcon(const iMsgId, const iMsgDest, const iPlayer){
@@ -1611,8 +1618,10 @@ public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 							
 							set_user_health(i, get_user_health(i) + 250);
 							Display_Fade(i, 2048, 2048, 2048, 255, 64, 64, 130);
-							set_dhudmessage(33, 255,32, -1.0, -1.0, 0, 0.3, 0.8, 0.3);
-							show_dhudmessage(i, "++ Zostales Ulczony ++");
+							if(!userWarningHudStart[i]){
+								set_dhudmessage(33, 255,32, -1.0, -1.0, 0, 0.3, 0.8, 0.3);
+								show_dhudmessage(i, "++ Zostales Ulczony ++");
+							}
 							
 							BeamLight(fOrigin, fOriginTarget, spriteBeam, 0, 0, 3, 8, 5, 255, 32, 32, 255, 255)	;
 						}
@@ -1783,9 +1792,10 @@ public class_poison_active(id){
 		ExecuteHamB( Ham_TakeDamage, id, userPoisonKiller[id], userPoisonKiller[id], float(damage), DMG_SONIC );		
 		
 		Display_Fade(id,1024,1024,1024,0,128,0, 200);
-		set_dhudmessage(33, 255,32, -1.0, -1.0, 0, 0.3, 0.8, 0.3);
-		show_dhudmessage(id, "!! Zostales Zatruty !!");
-	
+		if(!userWarningHudStart[id]){
+			set_dhudmessage(33, 255,32, -1.0, -1.0, 0, 0.3, 0.8, 0.3);
+			show_dhudmessage(id, "!! Zostales Zatruty !!");
+		}
 		userPoison[id] --;
 	}
 	if(userPoison[id] > 0) set_task(1.0, "class_poison_active", id+TASK_CLASS_POISON);
@@ -1855,8 +1865,10 @@ public class_humanTakeDamage(victim, inflictor, attacker, Float:damage, damagebi
 					userClassUsed[attacker][bonus_BOTTLE] = 0.0;
 				
 					Display_Fade(attacker,1024,1024,1024,0,128,0, 200);
-					set_dhudmessage(33, 255,32, -1.0, -1.0, 0, 0.3, 0.8, 0.3);
-					show_dhudmessage(attacker, "!! Fiolka zostala uzupelniona !!");
+					if(!userWarningHudStart[attacker]){
+						set_dhudmessage(33, 255,32, -1.0, -1.0, 0, 0.3, 0.8, 0.3);
+						show_dhudmessage(attacker, "!! Fiolka zostala uzupelniona !!");
+					}
 		
 					chatPrint(attacker, PREFIX_LINE, "Fiolka zostala uzupelniona!");
 				}
@@ -2152,8 +2164,10 @@ public timerStart(){
 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "%s[ %s - %d:%s%d ]", happy, gRound, gTime/60, (gTime%60 < 10 ? "0" : ""), gTime%60);
 	
 	nextColorsHappy = (nextColorsHappy+1)%sizeof(colorsHappy);	
+	
 	set_dhudmessage(hourTime ? colorsHappy[nextColorsHappy][0] : 255, hourTime ? colorsHappy[nextColorsHappy][1] : 102, hourTime ? colorsHappy[nextColorsHappy][2] : 0, -1.0, 0.0, 0, 0.5, 0.9, 0.5, 0.5);
 	show_dhudmessage(0, "%s",gText);
+	
 	
 	if(hourTime && ( buildTime || prepTime ) ) happyColorBarrier();
 	
@@ -2172,8 +2186,10 @@ public startRelease(){
 		Display_Fade(i,1024,1024,1024,0, 0, 0, 180);
 	}
 	
+
 	set_dhudmessage(255, 16, 255, -1.0, 0.20, 0, 0.5, 1.0, 0.5, 0.5);
 	show_dhudmessage(0,  "^n!! RUNDA WYSTARTOWALA !!");
+	
 	
 	removeNotUsedBlock();
 	
@@ -2238,8 +2254,11 @@ public gameEnd(){
 	
 	if( roundGood ){
 		if( ctAlive > 0 ){
+	
 			set_dhudmessage(16, 16, 255, -1.0, 0.20, 0, 0.5, 3.0, 0.5, 0.5);
 			show_dhudmessage(0,  "^n!! BUDOWNICZY WYGRALI !!");
+			
+			
 			spkGameSound(0, sound_WINCT);
 			
 			for(new i = 1; i < maxPlayers; i ++){
@@ -2278,6 +2297,7 @@ public gameEnd(){
 		}else {
 			set_dhudmessage(255, 16, 16, -1.0, 0.20, 0, 0.5, 3.0, 0.5, 0.5);
 			show_dhudmessage(0, "^n!! ZOMBI WYGRALO !!");
+			
 			spkGameSound(0, sound_WINTT);
 		}	
 		if( ct > 0 || tt > 0 ){
@@ -3075,8 +3095,10 @@ public cmdUnstuck(id){
 				if (is_hull_vacant(vec, hull,id)) {
 					engfunc(EngFunc_SetOrigin, id, vec);
 					Display_Fade(id, 512,512,512, 255,32,32, 90);
-					set_dhudmessage(255, 32, 32, -1.0, 0.3, 0, 0.5, 0.9, 0.5, 0.5);
-					show_dhudmessage(id, "!! Odblokowano !!");
+					if(!userWarningHudStart[id]){
+						set_dhudmessage(255, 32, 32, -1.0, 0.3, 0, 0.5, 0.9, 0.5, 0.5);
+						show_dhudmessage(id, "!! Odblokowano !!");
+					}
 					set_pev(id,pev_velocity,{0.0,0.0,0.0});
 					o = sizeof size;
 				}	
@@ -3455,8 +3477,10 @@ public checkFPS(id){
 		
 		Display_Fade(id, 4096,4096, 4096,color[0],color[1], color[2],255);
 		chatPrint(id, PREFIX_LINE, "Ustaw^3 fps_max^4 101^1 |^3 fps_modem^4 101^1 aby nie byc blokowanym");
-		set_dhudmessage(color[0]*3, color[1]*3, color[2]*3, -1.0, -1.0, _, _, 0.9, _, _);
-		show_dhudmessage(id, "Wpisz w konsoli fps_max 101 | fps_modem 101 aby moc grac^n^n");
+		if(!userWarningHudStart[id]){
+			set_dhudmessage(color[0]*3, color[1]*3, color[2]*3, -1.0, -1.0, _, _, 0.9, _, _);
+			show_dhudmessage(id, "Wpisz w konsoli fps_max 101 | fps_modem 101 aby moc grac^n^n");
+		}
 		
 		client_cmd(id, "fp%s%s 1%s", "s_m", "ax", "01");
 	}

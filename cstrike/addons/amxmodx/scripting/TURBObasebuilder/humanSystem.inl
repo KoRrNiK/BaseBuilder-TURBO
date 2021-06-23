@@ -667,9 +667,11 @@ public poisonTouch(ent, toucher){
 			if(userClass[i] == class_POISON ){
 				set_user_health(i, min(userMaxHealth[i], get_user_health(i) + dmg));
 				Display_Fade(i, 2048, 2048, 2048, 64, 250, 64, 60);
-				set_dhudmessage(33, 255,32, -1.0, -1.0, 0, 0.3, 0.8, 0.3);
-				show_dhudmessage(i, "++ Zostales Ulczony Trucizna ++");
-							
+				
+				if(!userWarningHudStart[i]){
+					set_dhudmessage(33, 255,32, -1.0, -1.0, 0, 0.3, 0.8, 0.3);
+					show_dhudmessage(i, "++ Zostales Ulczony Trucizna ++");
+				}
 			} else  {
 				ExecuteHamB( Ham_TakeDamage, i, owner, owner, float(dmg), DMG_POISON );
 				addPro(owner, pro_RADIO,dmg);
@@ -758,8 +760,10 @@ public trapThink(ent){
 					addPro(owner, pro_JELLY, i);
 					userSlow[i] = 500.0;
 					Display_Fade(i, 2048, 2048, 2048, 255, 255, 64, 60);
-					set_dhudmessage(255, 255,32, -1.0, -1.0, 0, 0.3, 0.8, 0.3);
-					show_dhudmessage(i, "!! Zostales Zatrzymany !!");
+					if(!userWarningHudStart[i]){
+						set_dhudmessage(255, 255,32, -1.0, -1.0, 0, 0.3, 0.8, 0.3);
+						show_dhudmessage(i, "!! Zostales Zatrzymany !!");
+					}
 					new bool:isProTime = didPro(owner, pro_BEAR);
 					new Float:timeTrap = 1.5 + ( isProTime ? 2.0 : 0.0);
 					set_task(timeTrap, "removeSlow", i);
