@@ -100,7 +100,7 @@ public plugin_precache()
 
 public plugin_init()
 {
-	register_plugin("Napalm Nades2", "1.3a", "MeRcyLeZZ")
+	register_plugin("Napalm Nades2", "1.3a", "MeRcyLeZZ edit: KoRrNiK - amxx.pl/user/69614-korrnik/")
 	
 	register_event("HLTV", "event_round_start", "a", "1=0", "2=0")
 	register_forward(FM_SetModel, "fw_SetModel")
@@ -836,3 +836,6 @@ stock fm_get_user_buyzone(id)
 	
 	return 0;
 }
+/* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
+*{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
+*/

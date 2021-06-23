@@ -1,8 +1,7 @@
 new const PLUGIN[] 		= 	"BaseBuilder TURBO";
-new const VERSION[] 		= 	"v1.3.6";
-new const AUTHOR[] 		= 	"KoRrNiK";
-new const fVAULTFILE[]		=	 "TURBOBB";
+new const AUTHOR[] 		= 	"KoRrNiK - amxx.pl/user/69614-korrnik/";
 
+new const fVAULTFILE[]		=	 "TURBOBB";
 new const fVAULTFILE_BACKUP[]	=	 "TURBOBB_BACKUP";
 
 new const PREFIXSAY_NORMAL[] 	=  	"[BaseBuilder]";

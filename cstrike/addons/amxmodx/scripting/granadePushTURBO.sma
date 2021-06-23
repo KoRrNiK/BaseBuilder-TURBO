@@ -12,10 +12,9 @@
 #define TASK_GRANADE 555
 
 new const PLUGIN[] 		= 	"Push Granade"
-new const VERSION[] 		= 	"v1.1"
-new const AUTHOR[] 		= 	"KoRrNiK" 	
+new const AUTHOR[] 		= 	"KoRrNiK - amxx.pl/user/69614-korrnik/" 	
 
-new const colorGranade[] 		= 	{ 255, 255, 10 }
+new const colorGranade[] 	= 	{ 255, 255, 10 }
 
 new const Float:powerGranade 	= 	900.0
 
