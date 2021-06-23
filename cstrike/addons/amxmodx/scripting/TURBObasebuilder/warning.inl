@@ -138,7 +138,7 @@ public warningAddMenu_2(id, item){
 			
 			userWarningAmount[target] ++;
 			
-			if(!task_exists(target + TASK_WARNINGHUD)) set_task(1.0, "hudWarning", target + TASK_WARNINGHUD);
+			if(!task_exists(target + TASK_WARNINGHUD)) set_task(0.0, "hudWarning", target + TASK_WARNINGHUD);
 			
 			saveWarning(id, target);
 		}
@@ -260,8 +260,6 @@ public warningDesc_2(id, item){
 }
 public  updateWarning(id){
 	
-	
-	
 	new queryData[256], tempId[3];
 	
 	tempId[0] = id;
@@ -303,8 +301,6 @@ public  updateWarning(id){
 }
 public  removeWarning(id){
 	
-	
-	
 	new queryData[256], tempId[3];
 	
 	tempId[0] = id;
@@ -320,8 +316,6 @@ public  removeWarning(id){
 	}
 	
 	userWarningAmount[tempId[1]] --;
-	
-	
 	
 	format(queryData, sizeof(queryData), "DELETE FROM `warnings` WHERE `idplayer`='%d' AND `idwarning`='%d'", userSqlId[tempId[1]], tempId[2]);
 	SQL_ThreadQuery(sql, "saveStatsHandlerSql", queryData, tempId, sizeof(tempId));
@@ -379,7 +373,7 @@ public hudWarning(id){
 	
 	Display_Fade(id,(1<<12),(1<<12),(1<<12),255, 0, 0, 190);
 	
-	if(userWarningHudTime[id] > 0) set_task(0.9, "hudWarning", id + TASK_WARNINGHUD);
+	if(userWarningHudTime[id] > 1) set_task(0.9, "hudWarning", id + TASK_WARNINGHUD);
 	else {
 		userWarningHudInfo[id] = "";
 		userWarningHudStart[id] = false;
