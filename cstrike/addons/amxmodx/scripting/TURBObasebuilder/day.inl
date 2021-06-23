@@ -11,17 +11,20 @@
 #include <	xs		>
 
 public data(id){
-	new day;
-	date(_,_,day);
 	
-	if(userLastDay[id] != day){
-		userNugget[id] += 10;
-		chatPrint(id, PREFIX_NONE, "Otrzymales darmowe 10 Brylek");
-		userLastDay[id] = day;
-	} else {
-		chatPrint(id, PREFIX_NONE, "Odebrales juz swoje darmowe brylki!");	
-	}
-	return PLUGIN_CONTINUE;
+	new month;
+	date(_,month,_);
+	
+	if(userLastDay[id] != month){
+		new ran = random(100) * ( userLevel[id] == 0 ? userLevel[id]+1 :userLevel[id] + 1 ) * 2;
+		userNugget[id] += ran;
+		chatPrint(id, PREFIX_LINE, "Otrzymales darmowe %s Brylek", formatNumber(ran));
+		userLastDay[id] = month;
+	
+	} else chatPrint(id, PREFIX_LINE, "Odebrales juz swoje darmowe brylki!");	
+	
+	chatPrint(id, PREFIX_NONE, "^3Nastepna nagroda w kolejnym miesiacu");	
+	
 }
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }

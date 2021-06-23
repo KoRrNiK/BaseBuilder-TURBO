@@ -501,9 +501,8 @@ public touchPlayerWall(id, ent){
 	new szTarget[7];
 	entity_get_string(ent, EV_SZ_targetname, szTarget, sizeof(szTarget));
 	
-	if(equal(szTarget, "JUMP")){
-		jumpFuncBlock(id, 2);
-	} 
+	if(equal(szTarget, "JUMP")) jumpFuncBlock(id, 2);
+	
 }
 public teamCampTouching(id){
 	
@@ -536,8 +535,7 @@ public teamCampTouching(id){
 				fTime[ id ] = get_gametime() ;
 			}
 			set_pev(id, pev_gravity, 5.0);
-			if( task_exists(id+TASK_GRAVITY) )
-				remove_task(id+TASK_GRAVITY);
+			if( task_exists(id+TASK_GRAVITY) ) remove_task(id+TASK_GRAVITY);
 			set_task(0.1, "removeGravity", id+TASK_GRAVITY);
 			
 			userDarkScreen[id]=min( 275, userDarkScreen[id]+5);
@@ -2888,6 +2886,12 @@ public cmdSay(id){
 				}
 				return PLUGIN_HANDLED;
 			}	
+			
+			if(equal(szMessage, "/miesiac")){
+				data(id);
+				return PLUGIN_HANDLED;
+			}
+			
 		}
 		
 		chatPrint(id, PREFIX_LINE, "Nie ma takiej komendy");

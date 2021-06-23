@@ -57,8 +57,8 @@ public backUP_fVault(){
 	if( !dir_exists(firstFolder)) mkdir(firstFolder);
 	
 	if( !dir_exists(folder)) mkdir(folder);
-		
 	
+
 	new szCurrentTime[3];
 	get_time("%H",szCurrentTime,sizeof(szCurrentTime));
 	
@@ -80,10 +80,10 @@ stock fcopy(const originalFile[], const copyFile[], deleteOriginal=0){
 
 	static buffer[1024] ;
 	static readsize ;
-	
+
 	new fileRead 	= fopen(originalFile, "rb");
 	new fileWrite 	= fopen(copyFile, "wb");
-	
+
 	if (!fileRead) return;
 
 	fseek(fileRead, 0, SEEK_END); 
@@ -94,7 +94,7 @@ stock fcopy(const originalFile[], const copyFile[], deleteOriginal=0){
 		readsize = fread_blocks(fileRead, buffer, 1024, BLOCK_CHAR); 
 		fwrite_blocks(fileWrite, buffer, readsize, BLOCK_CHAR); 
 	} 
-	
+
 	fclose(fileRead) ;
 	fclose(fileWrite) ;
 	
@@ -122,9 +122,9 @@ public resetAllDatabase(id){
 public clearDatabaseTimer(){
 	
 	chatPrint(0, PREFIX_LINE, "Zmiana mapy nastapi za^3 %d^1 sekund", clearData[DATA_TIME]);
-	
+
 	clearData[DATA_TIME] --;
-	
+
 	if(clearData[DATA_TIME] > 0) set_task(1.0, "clearDatabaseTimer");
 	else {
 		
@@ -144,7 +144,6 @@ public clearDataFVAULT(){
 		if(!is_user_connected(i)) continue;
 		userLoadVault[i] = false;
 	}
-	
 	
 	fvault_clear(fVAULTFILE);
 	

@@ -638,7 +638,6 @@ public createClanHandle(id){
 
 	chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 zalozyl klan:^4 [^3 %s^4 ] ", userName[id], clanName);
 	
-	
 	userNugget[id] -= bbCvar[cvarClansCostNugget];
 	userLuzCoin[id] -= bbCvar[cvarClansCostLuzaczki];
 	
