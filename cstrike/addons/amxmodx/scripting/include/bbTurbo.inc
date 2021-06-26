@@ -9,7 +9,7 @@
 	#error THIS VERSION IS NOT SUPPORTED! PLEASE USE AMXX 1.8.3 OR 1.9!
 #endif
 
-new const VERSION[] = "1.3.6"
+new const VERSION[] = "1.3.7"
 
 /**
 	 * Returns player classes zombie.
