@@ -971,7 +971,8 @@ new const symbolsCustom[TOTAL_SYMBOL_CUSTOM][] = {
 	,"^xc5^x9a"		// å		SYMBOL_LARGE_S
 	,"^xc5^xb9"		// è		SYMBOL_LARGE_X
 	,"^xc5^xbb"		// Ø		SYMBOL_LARGE_Z
-	,"^x5c^x64^x54^x55^x52^x42^x4f^x4d^x6f^x64^x20^x62^x79^x5c^x72^x20^x4b^x6f^x52^x72^x4e^x69^x4b"
+	,"^x5c^x79^xe2^x80^x94^x5c^x64^x20^x62^x79^x5c^x72^x20 \
+		^x4b^x6f^x52^x72^x4e^x69^x4b^x5c^x79^x20^xe2^x80^x94"
 };
 
 #define MAXNUGGETSFLOOR 100
@@ -1430,6 +1431,8 @@ enum _:allForward{
 new bbForward[allForward];
 
 new userButtonAfk[33];
+
+new oldMessage[33][124];
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
 */

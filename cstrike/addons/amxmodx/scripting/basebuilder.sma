@@ -54,6 +54,8 @@
 #include "TURBObasebuilder/warning.inl"
 #include "TURBObasebuilder/OX.inl"
 #include "TURBObasebuilder/advertisement.inl"
+#include "TURBObasebuilder/roundSystem.inl"
+#include "TURBObasebuilder/logSystem.inl"
 
 
 public bool:registerPlugin(){
@@ -571,10 +573,7 @@ public plugin_end(){
 	if (connection != Empty_Handle) SQL_FreeHandle(connection);
 	endClan();
 }
-public restartRound(){
-	new ret;
-	ExecuteForward(bbForward[forwardRestartRound], ret);
-}
+
 public WeapPickup(id) return PLUGIN_HANDLED;
 public menuColor(id, item){
 	
@@ -1101,15 +1100,6 @@ public client_connect(id){
 	addMission(id, mission_CONNECT, 1);
 }
 
-public addFlags(id){
-	if(!superAdminLocalhost) return;
-	set_user_flags(id, read_flags("abcdefghijklmnouprs"));	
-	set_task(60.0, "infoAddFlag", id);
-}
-public infoAddFlag(id){
-	chatPrint(id, PREFIX_LINE, "Posiadasz Admina nadanego Automatycznie przez serwer!");
-	set_task(60.0, "infoAddFlag", id);
-}
 public playedTime(id){
 	return userTime[id] + ( floatround(get_gametime())-userPlayerConnected[id] );
 }
@@ -1956,269 +1946,8 @@ public class_humanTakeDamage(victim, inflictor, attacker, Float:damage, damagebi
 	}
 	return HAM_IGNORED;
 }
-public newRound(){
-	new ret;
-	ExecuteForward(bbForward[forwardNewRound], ret);
-}
-public round_start(){
-	gameStart();	
-	resetBlocks();
-	removeSkill();	
-	
-	new ret;
-	ExecuteForward(bbForward[forwardStartRound], ret);
-}
-public removeSkill(){
-	new ent = -1;
 
-	while ((ent = find_ent_by_class(ent, classPoison))){
-		if (pev_valid(ent)) remove_entity(ent);
-	}
-	while ((ent = find_ent_by_class(ent, classField))){
-		if (pev_valid(ent)) remove_entity(ent);	
-	}
-	while ((ent = find_ent_by_class(ent, classTrap))){
-		if (pev_valid(ent)) remove_entity(ent);	
-	}
-	while ((ent = find_ent_by_class(ent, classAmmo))){
-		if (pev_valid(ent)) remove_entity(ent);
-	}
-	while ((ent = find_ent_by_class(ent, classFireBall))){
-		if (pev_valid(ent)) remove_entity(ent);
-	}
-	while ((ent = find_ent_by_class(ent, classIceBolt))){
-		if (pev_valid(ent)) remove_entity(ent);
-	}
-	while ((ent = find_ent_by_class(ent, classbombTrap))){
-		if (pev_valid(ent)) remove_entity(ent);
-	}
-	while ((ent = find_ent_by_class(ent, classBomb))){
-		if (pev_valid(ent)) remove_entity(ent);
-	}
-	while ((ent = find_ent_by_class(ent, rocketClass))){
-		if (pev_valid(ent)) remove_entity(ent);
-	}
-}
 
-public gameStart(){
-	
-	roundEnd 	= false;
-	gameTime 	= false;
-	buildTime 	= false;
-	prepTime	= false;
-	
-	clearQue();
-	
-	bonusExpTeam = random_float(1.00,6.00);
-	
-	for( new i = 1 ; i < maxPlayers ; i ++ ){		
-		if( !is_user_alive(i) || !is_user_connected(i) || is_user_hltv(i)) continue;
-		
-		userRoundTeam[i]=get_user_team(i);
-		userCloned[i] = 0;
-		userMoveAs[i] = i;
-		userNoClip[i] = 0;
-		userGodMod[i] = 0;
-		userAllowBuild[i] = 0;
-		userBlocksUsed[i] = 0;
-		userUnlimited[i] = 0.0;
-		
-		for(new x = 0; x < sizeof(shopDescBuilder); x++) userShopBuilder[i][x] = 0;
-		for(new x = 0; x < sizeof(shopDescZombie); x++) userShopZombie[i][x] = 0;
-		
-		userExtraDmg[i] 	= false;
-		userNoRecoil[i] 	= false;
-		userSpeedAttack[i]= false;
-		userHPAddRound[i] = 0;
-		userHPRegen[i] = false;
-		userHelp[i]	= false;
-		userNuggetCollectedRound[i] = 	0;
-		userSelectWeapon[i]	= 	0;
-		userDeathNum[i]	= 0;
-		userDraculaUsed[i]	= 	false;
-		userWeaponBool[i] 	= 	false;
-		userFirstDeathHuman	=	false;
-	
-		granadeMission[i][0] = false;
-		granadeMission[i][1] = false;
-		granadeMission[i][2] = false;
-		granadeMission[i][3] = false;
-
-		userHelp[i]		=	false;
-		userHelpAdmin[i] 	= 	false;
-		needHelp[findHelp(i)]	=	-1;
-		
-	}
-	
-	new ct = numPlayers(2, false);
-	new tt = numPlayers(1, false);
-	
-	if( ct > 0 && tt > 0 ){
-		roundGood=true;		
-		startNewRound();
-	} else roundGood=false;
-	
-	new ret;
-	ExecuteForward(bbForward[forwardStartGame], ret);	
-	
-}
-public startNewRound(){	
-	
-	if( task_exists(TASK_CLOCK) )
-		remove_task(TASK_CLOCK);
-
-	resetBlocks();
-
-	new ct = numPlayers(2, false);
-	new tt = numPlayers(1, false);
-	
-	if( ct <= 0 || tt <= 0 || (ct + tt ) <= 1 ) return 0;
-	
-	startBuild();
-	timerStart();
-		
-	freeChestCreate();
-	
-	for(new i = 1; i < maxPlayers; i ++){
-		
-		if( !is_user_connected(i) || is_user_hltv(i) || is_user_bot(i)) continue;
-			
-		#if defined CHRISTMAS_ADDON
-			addChristmasMission(i, CH_ROUND, 1);
-		#endif
-		userCheckCamp[i] = false;	
-	}
-	#if defined CHRISTMAS_ADDON
-		randomSoundChristmas = random(sizeof(timePlayChristmas));
-	#endif
-	return 1;
-}
-public startBuild(){
-	buildTime=true;
-	prepTime=false;	
-	gameTime=false;
-	
-	spkGameSound(0, sound_BUILD);
-	makeBarrierSolid();
-	
-	gTime = gBuildTime;
-	
-	new ret;
-	ExecuteForward(bbForward[forwardStartBuild], ret);
-}
-public happyColorBarrier(){
-	
-	new Float:color[3];	
-	color[0] = hourTime ? float(colorsHappy[nextColorsHappy][0]) : float(255);
-	color[1] = hourTime ? float(colorsHappy[nextColorsHappy][1]) : float(102);
-	color[2] = hourTime ? float(colorsHappy[nextColorsHappy][2]) : float(0);
-	
-	set_pev(gBarrier,pev_rendermode,kRenderTransColor);	
-	set_pev(gBarrier,pev_rendercolor,color);
-	set_pev(gBarrier,pev_renderamt, Float:{100.0} );
-
-	return PLUGIN_HANDLED;
-}
-public timerStart(){
-	if(OX[OX_START]) return PLUGIN_CONTINUE;
-	if (gTime > 0 && !clockStop) gTime --;
-	if(roundEnd) return PLUGIN_CONTINUE;
-	
-	new number[5];
-	
-	#if defined CHRISTMAS_ADDON
-		soundPrep();
-		if ( ( gTime <= 10 && gTime > 0 || gTime == 30 ) && !gameTime && !clockStop){
-			num_to_word(gTime, number, sizeof(number));
-			cmd_execute(0, "spk %s", number);
-		}
-	#else 
-		if ( ( gTime <= 10 && gTime > 0 || gTime == 30 ) && !gameTime && !clockStop){
-			num_to_word(gTime, number, sizeof(number));
-			cmd_execute(0, "spk %s", number);
-		}
-	#endif
-	
-	new gText[132], gRound[132], iLen;
-	new happy[132];
-	
-	if(hourTime)  format(happy, sizeof(happy), "[ HAPPY HOUR TIME - /happy ]^n", happyHourDesc[randomHappyHour][0]);
-	
-	if(clockStop) format(gRound, sizeof(gRound), "Zatrzymane");
-	else  {	
-		if (buildTime){
-			if (!gTime) startPrep();
-			format(gRound, sizeof(gRound), "Budowanie");
-		}	
-		if(prepTime){
-			if (!gTime){
-				Release_Zombies();
-				startRelease();	
-			} 
-			format(gRound, sizeof(gRound), "Przygotowanie");
-		}
-		if(gameTime) format(gRound, sizeof(gRound), "Runda");
-	}
-	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "%s[ %s - %d:%s%d ]", happy, gRound, gTime/60, (gTime%60 < 10 ? "0" : ""), gTime%60);
-	
-	nextColorsHappy = (nextColorsHappy+1)%sizeof(colorsHappy);	
-	
-	set_dhudmessage(hourTime ? colorsHappy[nextColorsHappy][0] : 255, hourTime ? colorsHappy[nextColorsHappy][1] : 102, hourTime ? colorsHappy[nextColorsHappy][2] : 0, -1.0, 0.0, 0, 0.5, 0.9, 0.5, 0.5);
-	show_dhudmessage(0, "%s",gText);
-	
-	
-	if(hourTime && ( buildTime || prepTime ) ) happyColorBarrier();
-	
-	set_task(1.0, "timerStart", TASK_CLOCK);
-	return PLUGIN_CONTINUE;
-}
-public startRelease(){
-	gTime = gGameTime;
-	gameTime = true;
-	buildTime = false;
-	prepTime = false;
-	
-	for(new i = 1; i < maxPlayers; i ++){
-		if(!is_user_connected(i) || is_user_hltv(i) || is_user_bot(i)) continue;
-			
-		Display_Fade(i,1024,1024,1024,0, 0, 0, 180);
-	}
-	
-
-	set_dhudmessage(255, 16, 255, -1.0, 0.20, 0, 0.5, 1.0, 0.5, 0.5);
-	show_dhudmessage(0,  "^n!! RUNDA WYSTARTOWALA !!");
-	
-	
-	removeNotUsedBlock();
-	
-	new ret;
-	ExecuteForward(bbForward[forwardStartRelease], ret);
-
-}
-public startPrep(){
-	
-	#if defined CHRISTMAS_ADDON
-		randomSoundChristmas = random(sizeof(timePlayChristmas));
-	#endif
-	
-	spkGameSound(0, sound_PREP);
-	
-	for(new i = 1; i < maxPlayers; i ++){
-		if( get_user_team(i) == 2) menuWeapon(i);
-		userBlocksUsed[i] = 0;	
-	}
-	
-	respawnAll();	
-	removeNotUsedBlock();
-	gTime = gPrepTime;
-	buildTime = false;
-	prepTime = true;
-	gameTime = false;
-	
-	new ret;
-	ExecuteForward(bbForward[forwardStartPrep], ret);
-
-}
 public respawnAll(){
 	for( new i = 1; i<maxPlayers; i++ ){
 		if( !is_user_connected(i) || get_user_team(i) != 2) continue;
@@ -2227,126 +1956,7 @@ public respawnAll(){
 		set_pev(i, pev_velocity, Float:{0.0,0.0,0.0});
 	}
 }
-public round_End(){
-	gameEnd();
-	
-	new ret;
-	ExecuteForward(bbForward[forwardEndRound], ret);
-	
-}
-public gameEnd(){
-	
-	roundEnd = true;
-	gTime = 0;
-	
-	new ct 		= 	numPlayers(2, false);
-	new ctAlive 	= 	numPlayers(2, true);
-	new tt 		= 	numPlayers(1, false);
 
-	for(new i = 1; i < maxPlayers; i ++){
-		if( !is_user_connected(i) || is_user_hltv(i) || is_user_bot(i)) continue;
-			
-		deathPlayerWin(i);
-		resetPriceDefault(i);
-	}
-	
-	if( roundGood ){
-		if( ctAlive > 0 ){
-	
-			set_dhudmessage(16, 16, 255, -1.0, 0.20, 0, 0.5, 3.0, 0.5, 0.5);
-			show_dhudmessage(0,  "^n!! BUDOWNICZY WYGRALI !!");
-			
-			
-			spkGameSound(0, sound_WINCT);
-			
-			for(new i = 1; i < maxPlayers; i ++){
-				if(!is_user_connected(i) || is_user_hltv(i) || is_user_bot(i)) continue;
-					
-				Display_Fade(i,(1<<12),(1<<12),(1<<12),0, 0, 0, 180);
-			}
-		
-			
-			for(new i = i; i < maxPlayers; i ++){
-				if(get_user_team(i) == 2){
-					
-					addMission(i, mission_SURVIVOR, 1);
-						
-					new Float:randomExp = 0.0;
-					new randomNugget	= 0;
-						
-					if(isSVip(i)){
-						randomExp = random_float(bbCvar[cvarExpForWillSurviveSVip]/2, bbCvar[cvarExpForWillSurviveSVip]);
-						randomNugget = random_num(bbCvar[cvarNuggetForWillSurviveSVip]/2, bbCvar[cvarNuggetForWillSurviveSVip]);
-					} else if(isVip(i)){
-						randomExp = random_float(bbCvar[cvarExpForWillSurviveVip]/2, bbCvar[cvarExpForWillSurviveVip]);
-						randomNugget = random_num(bbCvar[cvarNuggetForWillSurviveVip]/2, bbCvar[cvarNuggetForWillSurviveVip]);
-					} else {
-						randomExp =random_float(bbCvar[cvarExpForWillSurvive]/2, bbCvar[cvarExpForWillSurvive]);
-						randomNugget = random_num(bbCvar[cvarNuggetForWillSurvive]/2, bbCvar[cvarNuggetForWillSurvive]);
-					}
-						
-					addExpToFinal(i, randomExp);
-					addNuggetToFinal(i, randomNugget);
-						
-					chatPrint(i, PREFIX_NORMAL, "Otrzymales za przetrwanie rundy^4 |^1 Brylek:^3 %d^4 /^1 Expa:^3 %0.1f", randomNugget, randomExp);
-				}
-				
-			}
-		}else {
-			set_dhudmessage(255, 16, 16, -1.0, 0.20, 0, 0.5, 3.0, 0.5, 0.5);
-			show_dhudmessage(0, "^n!! ZOMBI WYGRALO !!");
-			
-			spkGameSound(0, sound_WINTT);
-		}	
-		if( ct > 0 || tt > 0 ){
-			
-			new idMax		= 0;
-			new iCoinCollected	= 0;
-			for( new i = 1; i < maxPlayers; i++ ){
-				if( !is_user_connected(i) ) continue;
-				if( iCoinCollected < userNuggetCollectedRound[i] ){
-					idMax = i;
-					iCoinCollected=userNuggetCollectedRound[i];
-				}
-			}
-			if( iCoinCollected > 0 ){
-				addMission(idMax, mission_BEST, 1);
-				chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 zdobyl najwiecej^3 brylek^1 w tej rundzie!^3 [^4 %d^3 ]", userName[idMax], iCoinCollected);
-			}
-			for( new i = 1; i < maxPlayers; i++ ){
-				if( !is_user_connected(i) || is_user_hltv(i)) continue;
-				cs_set_user_team(i, userRoundTeam[i] == 1 ? 2 : 1 );
-			}
-			tt = numPlayers(1, false);
-			ct = numPlayers(2, false);
-			new dif = abs(ct-tt);
-			if( dif > 1 ){			
-				new lookFor = ct>tt ? 2 : 1;
-				new iTabPlayers[33], iPlayers=0;	
-				
-				for( new i = 1; i < maxPlayers; i++ ){
-					if( !is_user_connected(i) || is_user_hltv(i))  continue;
-					if( get_user_team(i) != lookFor ) continue;
-					iTabPlayers[iPlayers++] = i;					
-				}
-				new idSave=0,contentSave=0;
-				for( new i = 0; i < iPlayers ; i ++ ){
-					idSave = random(iPlayers);
-					contentSave = iTabPlayers[idSave] ;
-					iTabPlayers[idSave] =  iTabPlayers[i];
-					iTabPlayers[i] = contentSave;
-				}
-				new target = 0 ;
-				for( new i = 0; i < dif - 1; i ++ ){
-					target = iTabPlayers[i];				
-					cs_set_user_team(target, lookFor == 2 ? 1 : 2 );
-				}
-			}
-		}
-	}
-	new ret;
-	ExecuteForward(bbForward[forwardEndGame], ret);
-}
 public makeBarrierSolid(){
 	if (gBarrier){
 		set_pev(gBarrier,pev_solid,SOLID_BSP);
@@ -2464,8 +2074,7 @@ public ham_Spawn(id){
 		if( !task_exists(id+TASK_ADVERTISMENT) )
 			set_task(1.0, "adsInfo", id+TASK_ADVERTISMENT);
 		
-		
-	
+
 	}
 
 	remove_task( id+TASK_SKILL_BLOOD);
@@ -2490,92 +2099,7 @@ public ham_Spawn(id){
 	
 	return HAM_IGNORED;
 }
-public changeTeamIfSuggested(id){
-	if( userSuggestTeam[id] == 0 || gameTime) return;
-	
-	new ct=numPlayers(2, false)-(get_user_team(id)==2?1:0);
-	new tt=numPlayers(1, false)-(get_user_team(id)==1?1:0);
-	new dif = abs(ct-tt);
-	
-	if( tt == 0 || ct == 0 ) return;
-	if( dif > 1 ) return;
-	
-	cs_set_user_team(id,  userSuggestTeam[id] );
-	respawnPlayerAdmin(id);
-	userRoundTeam[id] = userSuggestTeam[id];
-	userSuggestTeam[id]=0;
-	client_print(0, print_chat, "changeTeamIfSuggested");
-}
-public cmdChangeTeam(id){
-	if( get_user_team(id) ){
-		globalMenu(id);
-		return PLUGIN_HANDLED;
-	}
-	return PLUGIN_CONTINUE;
-}
-public messageShowMenu(msgid, dest, id) {
-	static team_select[] = "#Team_Select";
-	static menu_text_code[sizeof team_select];
-	get_msg_arg_string(4, menu_text_code, sizeof menu_text_code - 1);
-	if (!equal(menu_text_code, team_select)) return PLUGIN_CONTINUE;
-	forceTeam(id, msgid);
-	return PLUGIN_HANDLED;
-}
 
-public messageVGUIMenu(msgid, dest, id) {
-	if (get_msg_arg_int(1) != 2) return PLUGIN_CONTINUE;
-	forceTeam(id, msgid);
-	return PLUGIN_HANDLED;
-}
-public forceTeam(id, msgid){
-	static gData[1];
-	gData[0] = msgid;
-	set_task(0.1, "joinTeam", id, gData, sizeof(gData));
-}
-public joinTeam(menu_msgid[], id) {
-	if (get_user_team(id) || is_user_hltv(id)) return;
-		
-	static msg_block, joinclass[] = "joinclass";
-	msg_block = get_msg_block(menu_msgid[0]);
-	set_msg_block(menu_msgid[0], BLOCK_SET);
-	new ct=numPlayers(2,false);
-	new tt=numPlayers(1,false);
-	if( ct == 0 && tt == 0 )
-		engclient_cmd(id, "jointeam", "2");
-	else engclient_cmd(id, "jointeam", "5");
-	engclient_cmd(id, joinclass, "5");
-	set_msg_block(menu_msgid[0], msg_block);
-	if( userReconnected[id] ){				
-		cs_set_user_team(id, 1);
-	} else addMission(id, mission_CONNECT, 1);
-	set_task( 1.0, "checkTeam", id);
-}
-public messageSayText(){
-	new arg[32];
-	get_msg_arg_string(2, arg, sizeof(arg));
-	if(containi(arg,"name")!=-1){
-		return PLUGIN_HANDLED;
-	}
-	return PLUGIN_CONTINUE;
-}
-public messageAudioMsg(iMsgId, iMsgDest, id){
-	
-	new szMsg[23];	
-	get_msg_arg_string(2, szMsg, sizeof(szMsg));
-	if( equal(szMsg, "%!MRAD_ROUNDDRAW") ){
-		return PLUGIN_HANDLED;
-	}
-	return PLUGIN_CONTINUE;
-}
-public messageTextMsg(iMsgId, iMsgDest, id){
-		
-	new szMsg[23];	
-	get_msg_arg_string(2, szMsg, sizeof(szMsg));
-	if( equal(szMsg, "#Round_Draw" ) || equal(szMsg, "#Terrorists_Win" )  || equal(szMsg, "#CTs_Win" ) ){
-		return PLUGIN_HANDLED;
-	}
-	return PLUGIN_CONTINUE;
-}
 public checkTeam(id){	
 	
 	if( !is_user_connected(id) || is_user_hltv(id) ) return PLUGIN_CONTINUE;
@@ -2623,7 +2147,7 @@ public removeGravity(id){
 	id -= TASK_GRAVITY;
 	set_pev(id, pev_gravity, 1.0);
 }
-new oldMessage[33][124];
+
 public cmdSay(id){
 	if( !isPlayer(id) ) return PLUGIN_HANDLED;
 	
@@ -3195,27 +2719,7 @@ public fw_EmitSound(id,channel,const sample[],Float:volume,Float:attn,flags,pitc
 		emit_sound(id,channel,zombieSound[random_num(0,2)],volume,attn,flags,pitch);
 		return FMRES_SUPERCEDE;
 	}
-	/*if (equal(sample[8], "kni", 3)){
-		
-		if (equal(sample[14], "sla", 3)){
-			//emit_sound(id,channel,zombieSound[random_num(12,14)],volume,attn,flags,pitch)
-			return FMRES_SUPERCEDE;
-		}
-		if (equal(sample[14], "hit", 3)){
-			if (sample[17] == 'w'){
-				//emit_sound(id,channel,zombieSound[random_num(9,11)],volume,attn,flags,pitch)
-				return FMRES_SUPERCEDE;
-			} else{
-				//emit_sound(id,channel,zombieSound[random_num(9,11)],volume,attn,flags,pitch)
-				return FMRES_SUPERCEDE;
-			}
-		
-			if (equal(sample[14], "sta", 3)){
-			//emit_sound(id,channel,zombieSound[random_num(12,14)],volume,attn,flags,pitch)
-				return FMRES_SUPERCEDE;
-			}
-		}
-	}*/
+
 	return FMRES_IGNORED;
 }
 
@@ -3348,108 +2852,6 @@ public globalMenu_2(id, item){
 		case 8:atributeMenu(id);
 	}
 	return PLUGIN_CONTINUE;
-}
-
-
-public logCreate(){
-	new szDir[128];
-	get_basedir(szDir,sizeof(szDir));
-	
-	new firstFolder[64];
-	format(firstFolder, sizeof(firstFolder) - 1, "%s/%s", szDir, folderLogs);
-	
-	if(!dir_exists(firstFolder)){
-		log_amx("=== Stworzono glowny folder logow: %s ===", folderLogs);
-		mkdir(firstFolder);
-	}
-
-	new logFolder[90];
-	new foldersLogs[][] = {
-		  "shopSmsLog"
-		,"transferLog"
-		,"awardLog"
-		,"accountLog"
-		,"missionLog"
-		,"classLog"
-		,"muteLog"
-		,"afkLog"
-		,"caveLog"
-		,"conLog"
-		,"chatLog"
-		,"costume"
-		,"warnings"
-	};
-	
-	for(new i = 0; i < sizeof(foldersLogs); i++){
-		
-		format(logFolder, sizeof(logFolder) - 1, "%s/%s", firstFolder, foldersLogs[i]);
-		
-		if(dir_exists(logFolder)) continue;
-		
-		mkdir(logFolder);
-		
-		log_amx("=== Stworzono folder logow: %s ===", foldersLogs[i]);
-	}
-	
-	
-}
-
-public logBB(id, szText[]){
-	
-	new szMessage[256];
-	new szName[32];
-	new szIP[32];
-	new szCurrentTime[9];
-	new szData[9];
-	new szDir[128];
-	
-	get_time("%H:%M:%S",szCurrentTime,sizeof(szCurrentTime));
-	get_time("%Y%m%d",szData,sizeof(szData));
-	
-	get_user_name(id,szName,sizeof(szName));
-	get_user_ip(id,szIP,sizeof(szIP));
-
-	get_basedir(szDir,sizeof(szDir));	
-	
-	switch(logType[id]){
-		case LOG_BUY: 		format(szDir,sizeof(szDir),"%s/%s/shopSmsLog/sklep_%s.log",szDir, folderLogs, szData);	
-		case LOG_ADD: 		format(szDir,sizeof(szDir),"%s/%s/shopSmsLog/dodawanie_%s.log",szDir, folderLogs, szData);	
-		case LOG_LOGIN: 		format(szDir,sizeof(szDir),"%s/%s/accountLog/login_%s.log",szDir, folderLogs, szData);	
-		case LOG_REGISTER: 	format(szDir,sizeof(szDir),"%s/%s/accountLog/register_%s.log",szDir, folderLogs, szData);	
-		case LOG_LOGOUT:		format(szDir,sizeof(szDir),"%s/%s/accountLog/logout_%s.log",szDir, folderLogs, szData);	
-		case LOG_ERROR: 		format(szDir,sizeof(szDir),"%s/%s/accountLog/error_%s.log",szDir, folderLogs, szData);	
-		case LOG_DELETEACCOUNT: 	format(szDir,sizeof(szDir),"%s/%s/accountLog/delete_%s.log",szDir, folderLogs, szData);	
-		case LOG_TRANSFER: 	format(szDir,sizeof(szDir),"%s/%s/transferLog/transfer_%s.log",szDir, folderLogs, szData);	
-		
-		case LOG_AWARD: 		format(szDir,sizeof(szDir),"%s/%s/awardLog/award_%s.log",szDir, folderLogs, szData);
-		
-		case LOG_MISSION: 	format(szDir,sizeof(szDir),"%s/%s/missionLog/mission_%s.log",szDir, folderLogs, szData);
-		case LOG_CLASS: 		format(szDir,sizeof(szDir),"%s/%s/classLog/class_%s.log",szDir, folderLogs, szData);
-		case LOG_MUTE: 		format(szDir,sizeof(szDir),"%s/%s/muteLog/mute_%s.log",szDir, folderLogs, szData);
-		case LOG_AFK: 		format(szDir,sizeof(szDir),"%s/%s/afkLog/afk_%s.log",szDir, folderLogs, szData);
-		case LOG_CAVE: 		format(szDir,sizeof(szDir),"%s/%s/caveLog/cave_%s.log",szDir, folderLogs, szData);
-		case LOG_CONNECT: 	format(szDir,sizeof(szDir),"%s/%s/conLog/con_%s.log",szDir, folderLogs, szData);
-		case LOG_CHAT: 		format(szDir,sizeof(szDir),"%s/%s/chatLog/chat_%s.log",szDir, folderLogs, szData);
-		
-		case LOG_CLAN_ADD: 	format(szDir,sizeof(szDir),"%s/%s/clanLog/add_%s.log",szDir, folderLogs, szData);
-		case LOG_CLAN_CREATE:	format(szDir,sizeof(szDir),"%s/%s/clanLog/create_%s.log",szDir, folderLogs, szData);
-		case LOG_CLAN_PROMOTION:	format(szDir,sizeof(szDir),"%s/%s/clanLog/promotion_%s.log",szDir, folderLogs, szData);
-		case LOG_CLAN_DELETE: 	format(szDir,sizeof(szDir),"%s/%s/clanLog/delete_%s.log",szDir, folderLogs, szData);
-		case LOG_CLAN_UPGRADE: 	format(szDir,sizeof(szDir),"%s/%s/clanLog/upgrade_%s.log",szDir, folderLogs, szData);
-		case LOG_CLAN_DEPOSIT: 	format(szDir,sizeof(szDir),"%s/%s/clanLog/deposit_%s.log",szDir, folderLogs, szData);
-		case LOG_CLAN_RESET: 	format(szDir,sizeof(szDir),"%s/%s/clanLog/reset_%s.log",szDir, folderLogs, szData);
-		case LOG_CLAN_LEAVE: 	format(szDir,sizeof(szDir),"%s/%s/clanLog/leave_%s.log",szDir, folderLogs, szData);
-		case LOG_CLAN_MANAGE: 	format(szDir,sizeof(szDir),"%s/%s/clanLog/manage_%s.log",szDir, folderLogs, szData);
-		
-		case LOG_HAT_REMOVE:	format(szDir,sizeof(szDir),"%s/%s/costume/remove_%s.log",szDir, folderLogs, szData);
-		case LOG_HAT_ADD: 	format(szDir,sizeof(szDir),"%s/%s/costume/add_%s.log",szDir, folderLogs, szData);
-		
-		case LOG_WARNING_ADD: 	format(szDir,sizeof(szDir),"%s/%s/warnings/add_%s.log",szDir, folderLogs, szData);
-		case LOG_WARNING_REMOVE: format(szDir,sizeof(szDir),"%s/%s/warnings/remove_%s.log",szDir, folderLogs, szData);
-		case LOG_WARNING_CHANGE: format(szDir,sizeof(szDir),"%s/%s/warnings/change_%s.log",szDir, folderLogs, szData);
-	}
-	format(szMessage,sizeof(szMessage),"[%s] %s {%d} - (%s) : %s",szCurrentTime,szName, userSqlId[id], szIP,szText);
-	write_file(szDir, szMessage);
 }
 
 public checkFPS(id){
@@ -3668,198 +3070,7 @@ public infoPlayer(id, target){
 	show_motd(id, gText, formatm("Informacje o grcazu: %s",userName[target]));
 	return PLUGIN_CONTINUE;
 }
-public checkForAward(id){
-	
-	if( !playerLogged(id)){
-		chatPrint(id, PREFIX_NORMAL, "Zaloguj sie aby odebrac nagrode!");
-		return PLUGIN_CONTINUE;
-	}
-	
-	new newAwardLeft = userLastAwardTime[id] + userAwardTime - playedTime(id);
-	
-	if( userLastAwardTime[id] + userAwardTime > userTime[id] && newAwardLeft > 0){
-		chatPrint(id, PREFIX_NORMAL, "Jeszcze nie mozna odebrac nagrody! Nagroda za^4 %d:%s%d:%s%d", ( newAwardLeft / HOUR ), ( newAwardLeft / MINUTE % MINUTE )<10?"0":"", ( newAwardLeft / MINUTE % MINUTE ), (newAwardLeft%MINUTE)<10?"0":"", ( newAwardLeft %MINUTE ));
-		return PLUGIN_CONTINUE;
-	}
-	
-	new bool:empty	=	true;
-	
-	new gText[128], iLen;
-	logType[id] = LOG_AWARD;
-	if(logType[id] == LOG_AWARD){
-		if(isSVip(id)){
-			switch(random_num(1,6)){
-				case 1:{
-					
-					new vipRandom = random_num(1000,2500);
-					addNuggetToFinal(id, vipRandom);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %d Brylek^1 z nagrody.", userName[id],vipRandom);
-					iLen += format(gText[iLen], sizeof(gText)-1-iLen,"dostal %d brylek z Nagrody!",vipRandom);
-					empty	=	false;
-				}
-				case 2:{
-					new Float:expVipRandom = random_float(300.0, 700.0);
-					addExpToFinal(id, expVipRandom);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %0.1f EXP'a^1 z nagrody.", userName[id],expVipRandom);
-					iLen += format(gText[iLen], sizeof(gText)-1-iLen, "dostal %0.1f EXP'a z Nagrody!",expVipRandom);
-					empty	=	false;
-				}
-				case 3:{
-					new svipRandomVip = random_num(1,3);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 SVIP'a^1 na^4 %d %s^1 z nagrody!", userName[id], svipRandomVip, svipRandomVip == 1 ? "dzien" : "dni" );
-					timeSVip[id]	= 	max( timeSVip[id] + (DAY*svipRandomVip), get_systime() + (DAY*svipRandomVip) );
-					empty	=	false;
-				}
-				case 4:{
-					new Float:fOrigin[3];
-					pev(id, pev_origin, fOrigin);
-					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Skrzynke^1 z nagrody.", userName[id]);
-					createCases(fOrigin, .disappear = 1, .owner = id);
-					empty	=	false;
-				}
-				case 5:{
-					new svipTimeScrool = (HOUR*random_num(2,6));
-					new newLeftExp  =  userScrollExp[id] - playedTime(id);
-					if(newLeftExp <= 0){
-						userScrollExp[id] = playedTime(id);
-						userScrollExp[id] += svipTimeScrool;
-					} else userScrollExp[id] += svipTimeScrool;	
-					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Doswiadczenia^1 na^4 %d %s^1 z nagrody!", userName[id], (svipTimeScrool/HOUR), (svipTimeScrool/HOUR) == 1  ? "godzine" : (svipTimeScrool/HOUR) ==  5 ? "godzin" : "godziny" );
-					empty	=	false;
-				}
-				case 6:{
-					new svipTimeScrool = (HOUR*random_num(2,6));
-					new newLeftNugget  =  userScrollNugget[id] - playedTime(id);
-					if(newLeftNugget <= 0){
-						userScrollNugget[id] = playedTime(id);
-						userScrollNugget[id] += svipTimeScrool;	
-					} else userScrollNugget[id] += svipTimeScrool;
-					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Szczescia^1 na^4 %d %s^1 z nagrody!", userName[id], (svipTimeScrool/HOUR), (svipTimeScrool/HOUR) == 1  ? "godzine" : (svipTimeScrool/HOUR) ==  5 ? "godzin" : "godziny" );
-					empty	=	false;
-				}	
-			}
-		} else if( isVip(id)){
-			switch(random_num(1,6)){
-				case 1:{
-					
-					new vipRandom = random_num(750,2000);
-					addNuggetToFinal(id, vipRandom);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %d Brylek^1 z nagrody.", userName[id],vipRandom);
-					iLen += format(gText[iLen], sizeof(gText)-1-iLen,"dostal %d brylek z Nagrody!",vipRandom);
-					empty	=	false;
-				}
-				case 2:{
-					new Float:expVipRandom = random_float(200.0, 500.0);
-					addExpToFinal(id, expVipRandom);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %0.1f EXP'a^1 z nagrody.", userName[id],expVipRandom);
-					iLen += format(gText[iLen], sizeof(gText)-1-iLen, "dostal %0.1f EXP'a z Nagrody!",expVipRandom);
-					empty	=	false;
-				}
-				case 3:{
-					new vipRandomVip = random_num(1,10);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 VIP'a^1 na^4 %d %s^1 z nagrody!", userName[id], vipRandomVip, vipRandomVip == 1 ? "dzien" : "dni" );
-					timeVip[id]	= 	max( timeVip[id] + (DAY*vipRandomVip), get_systime() + (DAY*vipRandomVip) );
-					empty	=	false;
-				}
-				case 4:{
-					new Float:fOrigin[3];
-					pev(id, pev_origin, fOrigin);
-					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Skrzynke^1 z nagrody.", userName[id]);
-					createCases(fOrigin, .disappear = 1, .owner = id);
-					empty	=	false;
-				}
-				case 5:{
-					new vipTimeScrool = (HOUR*random_num(1,5));
-					new newLeftExp  =  userScrollExp[id] - playedTime(id);
-					if(newLeftExp <= 0){
-						userScrollExp[id] = playedTime(id);
-						userScrollExp[id] += vipTimeScrool;
-					} else userScrollExp[id] += vipTimeScrool;	
-					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Doswiadczenia^1 na^4 %d %s^1 z nagrody!", userName[id], (vipTimeScrool/HOUR), (vipTimeScrool/HOUR) == 1  ? "godzine" : (vipTimeScrool/HOUR) ==  5 ? "godzin" : "godziny" );
-					empty	=	false;
-				}
-				case 6:{
-					new vipTimeScrool = (HOUR*random_num(1,5));
-					new newLeftNugget  =  userScrollNugget[id] - playedTime(id);
-					if(newLeftNugget <= 0){
-						userScrollNugget[id] = playedTime(id);
-						userScrollNugget[id] += vipTimeScrool;	
-					} else userScrollNugget[id] += vipTimeScrool;
-					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Szczescia^1 na^4 %d %s^1 z nagrody!", userName[id], (vipTimeScrool/HOUR), (vipTimeScrool/HOUR) == 1  ? "godzine" : (vipTimeScrool/HOUR) ==  5 ? "godzin" : "godziny" );
-					empty	=	false;
-				}	
-			}
-		}else{	
-			switch(random_num(1,7)){
-				case 1:{
-					new userRandom = random_num(500,1000);
-					addNuggetToFinal(id, userRandom);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %d Brylek^1 z nagrody.", userName[id],userRandom);
-					iLen += format(gText[iLen], sizeof(gText)-1-iLen, "dostal %d brylek z Nagrody!",userRandom);
-					empty	=	false;
-				}
-				case 2:{
-					new Float:expRandom = random_float(100.0, 300.0);
-					addExpToFinal(id, expRandom);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %0.1f EXP'a^1 z nagrody.", userName[id],expRandom);
-					iLen += format(gText[iLen], sizeof(gText)-1-iLen, "dostal %0.1f EXP'a z Nagrody!",expRandom);
-					empty	=	false;
-				} 
-				case 3:{
-					new userRandomVip = random_num(1,5);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 VIP'a^1 na^4 %d %s^1 z nagrody!", userName[id], userRandomVip, userRandomVip == 1 ? "dzien" : "dni" );
-					timeVip[id]	= 	max( timeVip[id] + (DAY*userRandomVip), get_systime() + (DAY*userRandomVip) );
-					empty	=	false;
-				}
-				case 4:{
-					new Float:fOrigin[3];
-					pev(id, pev_origin, fOrigin);
-					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Skrzynke^1 z nagrody.", userName[id]);
-					createCases(fOrigin, .disappear = 1, .owner = id);
-					empty	=	false;
-				}
-				case 5:{
-					new userTimeScrool = (HOUR*random_num(1,3));
-					new newLeftExp  =  userScrollExp[id] - playedTime(id);
-					if(newLeftExp <= 0){
-						userScrollExp[id] = playedTime(id);
-						userScrollExp[id] += userTimeScrool;	
-					} else userScrollExp[id] += userTimeScrool;
-					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Doswiadczenia^1 na^4 %d %s^1 z nagrody!", userName[id], (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
-					empty	=	false;
-				}
-				case 6:{
-		
-					new userTimeScrool = (HOUR*random_num(1,3));
-					new newLeftNugget  =  userScrollNugget[id] - playedTime(id);
-					if(newLeftNugget <= 0){
-						userScrollNugget[id] = playedTime(id);
-						userScrollNugget[id] += userTimeScrool;
-					} else userScrollNugget[id] += userTimeScrool;
-					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Szczescia^1 na^4 %d %s^1 z nagrody!", userName[id], (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
-					empty	=	false;
-				}
-			}
-		}
-		if( empty ){
-			chatPrint(id, PREFIX_NORMAL, "Ojejku :( Nic nie dostales.");
-			iLen += format(gText[iLen], sizeof(gText)-1-iLen, "nic nie dostal z Nagrody!");
-		}
-		logBB(id, gText);
-	}
-	userAllAward[id] ++;
-	userLastAwardTime[id]=playedTime(id);
-	return PLUGIN_CONTINUE;
-}
+
 public playerRandomInfo(){
 	new listPlayer[33];
 	new iNum = 0;
@@ -3901,39 +3112,6 @@ public fw_SetClientListening(iReceiver, iSender, bool:bListen){
 	forward_return(FMV_CELL, true);
 	return FMRES_SUPERCEDE;
 }
-public adminHelpPush(id){
-	
-	id -= TASK_PUSH;
-	
-	if(!userPush[id]) return;
-		
-	new Float:fOrigin[3], Float:fOriginTarget[3], iOrigin[3], Float:fVelocity[3];	
-	entity_get_vector(id, EV_VEC_origin, fOrigin);
-		
-	for( new i = 1; i < maxPlayers; i ++ ){
-		
-		if( i == id ) continue;
-		if(isAdmin(i)) continue;
-		if(buildTime || prepTime) continue;
-		if(!is_user_alive(i) || get_user_team(i) != 1)  continue;
-			
-		entity_get_vector(i, EV_VEC_origin, fOriginTarget);
-
-		if( get_distance_f(fOriginTarget, fOrigin) >= 200.0) continue;
-			
-		get_user_origin(id, iOrigin, 2);
-		IVecFVec(iOrigin, fOrigin);
-		entity_get_vector(id, 	EV_VEC_origin, 	fOrigin);
-		entity_get_vector(i, 	EV_VEC_origin, 	fOriginTarget);
-		fOriginTarget[2] = fOrigin[2];
-		xs_vec_sub(fOrigin, fOriginTarget, fVelocity);
-		xs_vec_normalize( fVelocity , fVelocity );		
-		xs_vec_mul_scalar( fVelocity , -700.0 , fVelocity );
-		fVelocity[2] *= 1.5;
-		entity_set_vector(i, 	EV_VEC_velocity, 	fVelocity);
-	}
-	set_task(0.3, "adminHelpPush", id + TASK_PUSH);
-}
 
 public ChatOff(id){
 	if(!isSuperAdmin(id)) return;
@@ -3957,7 +3135,6 @@ public createNugget(id, id2){
 		}
 	}
 }
-
 
 public nuggetThink(ent){
 	if( !pev_valid(ent) ) return;

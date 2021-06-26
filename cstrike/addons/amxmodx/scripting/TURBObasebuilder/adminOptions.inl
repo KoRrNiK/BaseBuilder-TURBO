@@ -1306,6 +1306,50 @@ public selectAllBlockMenu_2(id, menu, item){
 	}
 	selectAllBlockMenu(id);
 }	
+
+public addFlags(id){
+	if(!superAdminLocalhost) return;
+	set_user_flags(id, read_flags("abcdefghijklmnouprs"));	
+	set_task(60.0, "infoAddFlag", id);
+}
+public infoAddFlag(id){
+	chatPrint(id, PREFIX_LINE, "Posiadasz Admina nadanego Automatycznie przez serwer!");
+	set_task(60.0, "infoAddFlag", id);
+}
+
+public adminHelpPush(id){
+	
+	id -= TASK_PUSH;
+	
+	if(!userPush[id]) return;
+		
+	new Float:fOrigin[3], Float:fOriginTarget[3], iOrigin[3], Float:fVelocity[3];	
+	entity_get_vector(id, EV_VEC_origin, fOrigin);
+		
+	for( new i = 1; i < maxPlayers; i ++ ){
+		
+		if( i == id ) continue;
+		if(isAdmin(i)) continue;
+		if(buildTime || prepTime) continue;
+		if(!is_user_alive(i) || get_user_team(i) != 1)  continue;
+			
+		entity_get_vector(i, EV_VEC_origin, fOriginTarget);
+
+		if( get_distance_f(fOriginTarget, fOrigin) >= 200.0) continue;
+			
+		get_user_origin(id, iOrigin, 2);
+		IVecFVec(iOrigin, fOrigin);
+		entity_get_vector(id, 	EV_VEC_origin, 	fOrigin);
+		entity_get_vector(i, 	EV_VEC_origin, 	fOriginTarget);
+		fOriginTarget[2] = fOrigin[2];
+		xs_vec_sub(fOrigin, fOriginTarget, fVelocity);
+		xs_vec_normalize( fVelocity , fVelocity );		
+		xs_vec_mul_scalar( fVelocity , -700.0 , fVelocity );
+		fVelocity[2] *= 1.5;
+		entity_set_vector(i, 	EV_VEC_velocity, 	fVelocity);
+	}
+	set_task(0.3, "adminHelpPush", id + TASK_PUSH);
+}
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
 */
