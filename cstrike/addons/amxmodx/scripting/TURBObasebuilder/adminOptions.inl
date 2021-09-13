@@ -1307,16 +1307,6 @@ public selectAllBlockMenu_2(id, menu, item){
 	selectAllBlockMenu(id);
 }	
 
-public addFlags(id){
-	if(!superAdminLocalhost) return;
-	set_user_flags(id, read_flags("abcdefghijklmnouprs"));	
-	set_task(60.0, "infoAddFlag", id);
-}
-public infoAddFlag(id){
-	chatPrint(id, PREFIX_LINE, "Posiadasz Admina nadanego Automatycznie przez serwer!");
-	set_task(60.0, "infoAddFlag", id);
-}
-
 public adminHelpPush(id){
 	
 	id -= TASK_PUSH;
