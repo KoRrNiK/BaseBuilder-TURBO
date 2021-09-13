@@ -1434,6 +1434,9 @@ new userButtonAfk[33];
 new oldMessage[33][124];
 
 new Trie:userMutes[33];
+
+new Array:lastPlayerName;
+new Array:lastPlayerTime;
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
 */
