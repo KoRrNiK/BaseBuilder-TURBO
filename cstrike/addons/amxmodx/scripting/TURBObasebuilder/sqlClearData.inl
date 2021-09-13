@@ -159,7 +159,7 @@ public clearDatabase(){
 	
 	new tempData[512];
 	
-	format(tempData, sizeof(tempData) - 1, "DROP TABLE `players`, `clans`, `classhumans`, `classzombies`, `warnings`, `weapons`;");
+	format(tempData, sizeof(tempData) - 1, "DROP TABLE `players`, `clans`, `classhumans`, `classzombies`, `warnings`, `weapons`, `mutedplayers`;");
 	
 	SQL_ThreadQuery(sql, "saveStatsHandlerSql", tempData);
 	

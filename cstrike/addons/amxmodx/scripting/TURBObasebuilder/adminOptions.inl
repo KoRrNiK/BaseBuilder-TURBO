@@ -477,6 +477,7 @@ public choosePlayer(id, item){
 	
 	new daysLeft = 0;	
 	new players;
+	new typeMute;
 	
 	for( new i = 1, x= 0; i < maxPlayers; i ++ ){
 		if( !is_user_connected(i) || is_user_hltv(i)) continue;
@@ -535,16 +536,30 @@ public choosePlayer(id, item){
 				if(newStaminaLeft <= 0) format(gText, sizeof(gText), "\y%s -\d [\rNie posiada staminy\d]", userName[i]);
 				else format(gText, sizeof(gText), "\y%s -\d [\r%d:%s%d:%s%d\d]", userName[i],  (newStaminaLeft / HOUR ), ( newStaminaLeft  / MINUTE % MINUTE )<10?"0":"", ( newStaminaLeft  / MINUTE % MINUTE ), (newStaminaLeft %MINUTE)<10?"0":"", (newStaminaLeft %MINUTE ));
 			}
+			
 			case MENU_PLAYER_MUTE:{
-		
-				if( i == id ) continue;
-				if(isSuperAdmin(i))
-					format(gText, sizeof(gText), "\d%s\r*", userName[i]);
-				else if(userMutePlayer[id][i])
-					format(gText, sizeof(gText), "\w%s\y^t%s^t\rWyciszony", userName[i],symbolsCustom[SYMBOL_DR_ARROW]);
+					
+				if(TrieKeyExists(userMutes[id], userName[i]) || i == id) continue;	
+				
+				if(isSuperAdmin(i)) format(gText, sizeof(gText), "\d%s\r*", userName[i]);
+				else if(isAdmin(i)) format(gText, sizeof(gText), "\d%s\y[Admin]", userName[i]);
 				else format(gText, sizeof(gText), "\w%s", userName[i]);
 				
+					
 			}
+			
+			case MENU_PLAYER_UNMUTE:{
+				
+				if (!TrieKeyExists(userMutes[id], userName[i])) continue;
+				
+				TrieGetCell(userMutes[id], userName[i], typeMute);
+				
+				format(gText, sizeof(gText) - 1, "\w%s %s", userName[i], typeMute ? "\r[Na Zawsze]" : "\r[Na Mape]");
+			}
+			
+			
+			
+			
 			case MENU_PLAYER_WARNING:{
 				if(userWarningAmount[i] == 0) format(gText, sizeof(gText), "\w%s\d |\r Brak Ostrzezen", userName[i]);
 				else format(gText, sizeof(gText), "\w%s\d |\r %d\w/\r%d", userName[i] ,userWarningAmount[i], MAXWAR);
@@ -662,16 +677,57 @@ public choosePlayer_2(id, menu, item){
 		}
 		case MENU_PLAYER_MUTE:{
 			
+			if(!is_user_connected(target)){
+				chatPrint(id, PREFIX_NORMAL, "Wybranego gracza nie ma juz na serwerze!");
+				choosePlayer(id, 0);
+				return PLUGIN_CONTINUE;
+			}
+			
 			if(isSuperAdmin(target)){
 				chatPrint(id, PREFIX_NORMAL, "Nie mozesz wyciszyc opiekuna!");
 				choosePlayer(id, 0);
 				return PLUGIN_CONTINUE;
 			}
 			
+			muteMenuType(id);
+			return PLUGIN_CONTINUE;
+			/*if(isSuperAdmin(target)){
+				chatPrint(id, PREFIX_NORMAL, "Nie mozesz wyciszyc opiekuna!");
+				choosePlayer(id, 0);
+				return PLUGIN_CONTINUE;
+			}
+			
 			userMutePlayer[id][target] =! userMutePlayer[id][target];
-			chatPrint(id, PREFIX_NORMAL, "%s sobie gracza:^3 %s", userMutePlayer[id][target] ? "Wyciszyles" : "Odciszyles", userName[target]);
+			chatPrint(id, PREFIX_NORMAL, "%s sobie gracza:^3 %s", userMutePlayer[id][target] ? "Wyciszyles" : "Odciszyles", userName[target]);*/
+			
 			
 		}
+		
+		case MENU_PLAYER_UNMUTE:{
+			
+			if(!is_user_connected(target)){
+				chatPrint(id, PREFIX_NORMAL, "Wybranego gracza nie ma juz na serwerze!");
+				choosePlayer(id, 0);
+				return PLUGIN_CONTINUE;
+			}
+			
+			TrieDeleteKey(userMutes[id], userName[target]);
+			
+			new queryData[128], tempId[2];
+			tempId[0] = id;
+			tempId[1] = target;
+				
+			format(queryData, sizeof(queryData) - 1, "DELETE FROM `mutedplayers` WHERE `nameplayer` = '%s' AND `mutedplayer` = '%s';", userName[id], userName[target]);
+	
+			SQL_ThreadQuery(sql, "saveStatsHandlerSql", queryData, tempId, sizeof(tempId));
+			
+			
+			chatPrint(id, PREFIX_LINE,  "Odmutowales gracza^3 %s^1.", userName[target]);
+			
+			return PLUGIN_CONTINUE;
+			
+		}	
+		
 		case MENU_PLAYER_WARNING:{
 		
 			userWarningInfo[id] = target;

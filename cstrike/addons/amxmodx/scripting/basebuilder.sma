@@ -58,6 +58,7 @@
 #include "TURBObasebuilder/advertisement.inl"
 #include "TURBObasebuilder/roundSystem.inl"
 #include "TURBObasebuilder/logSystem.inl"
+#include "TURBObasebuilder/mute.inl"
 
 
 public plugin_precache(){
@@ -367,6 +368,9 @@ public plugin_init(){
 	bbForward[forwardStartPrep] 	= 	CreateMultiForward("bb_start_prep", 	ET_IGNORE);
 	bbForward[forwardStartBuild] 	= 	CreateMultiForward("bb_start_build", 	ET_IGNORE);
 	bbForward[forwardStartRelease] 	= 	CreateMultiForward("bb_start_release", 	ET_IGNORE);
+	
+	muteTrie();
+	
 	
 }
 public plugin_natives(){
@@ -2396,8 +2400,7 @@ public cmdSay(id){
 				return PLUGIN_HANDLED;
 			}
 			if (equal(szMessage, "/wycisz")){	
-				userMenuPlayer[id] = MENU_PLAYER_MUTE;
-				choosePlayer(id, 0);
+				mutePlayerMenu(id);
 				return PLUGIN_HANDLED;
 			}
 			if (equal(szMessage, "/ox")){
@@ -2464,6 +2467,7 @@ public cmdSay(id){
 	}
 	return PLUGIN_HANDLED;
 }
+	
 
 public adminsPointHelp(id){	
 		
@@ -3094,24 +3098,6 @@ public playerRandomInfo(){
 	set_task(random_float(60.0, 120.0), "playerRandomInfo");	
 }
 
-public fw_SetClientListening(iReceiver, iSender, bool:bListen){
-	if (get_systime() < userMute[iSender]|| userMutePlayer[iReceiver][iSender]){
-		engfunc(EngFunc_SetClientListening, iReceiver, iSender, false);
-		forward_return(FMV_CELL, false);
-		return FMRES_SUPERCEDE;
-	}
-	
-	if(OX[OX_MICRO] && (!isSuperAdmin(iSender))){
-		engfunc(EngFunc_SetClientListening, iReceiver, iSender, false);
-		forward_return(FMV_CELL, false);
-		return FMRES_SUPERCEDE;
-	}
-	
-	engfunc(EngFunc_SetClientListening, iReceiver, iSender, true);
-	forward_return(FMV_CELL, true);
-	return FMRES_SUPERCEDE;
-}
-
 public ChatOff(id){
 	if(!isSuperAdmin(id)) return;
 	serverOffChat =! serverOffChat;
@@ -3342,3 +3328,6 @@ public freeNgugetSlot(){
 	}
 	return -1;
 }
+/* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
+*{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
+*/

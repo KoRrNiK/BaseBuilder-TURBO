@@ -149,6 +149,17 @@ public plugin_init_sql(){
 	query = SQL_PrepareQuery(connection, queryData);
 	SQL_Execute(query);
 	
+	format(queryData, sizeof(queryData),
+	"CREATE TABLE IF NOT EXISTS `mutedplayers`( \
+		`idmute` INT(11) AUTO_INCREMENT, \
+		`nameplayer` VARCHAR(33) NOT NULL, \
+		`mutedplayer` VARCHAR(33) NOT NULL, \
+		PRIMARY KEY (`idmute`));" 
+	);
+	
+	query = SQL_PrepareQuery(connection, queryData);
+	SQL_Execute(query);
+	
 	SQL_FreeHandle(query);
 	
 	sqlConnected = true;
@@ -281,6 +292,12 @@ public loadStatsSql(id, typeLoad){
 				WHERE 1 \
 				ORDER BY `kills` \
 				DESC LIMIT 10");
+				
+		case 19: format(queryData, sizeof(queryData), "\
+			SELECT \
+				* FROM `mutedplayers` \
+				WHERE nameplayer = ^"%s^"", userName[id]);
+			
 	}
 	SQL_ThreadQuery(sql, "loadStatsHandlerSql", queryData, tempId, sizeof(tempId));
 	return PLUGIN_CONTINUE;
@@ -384,6 +401,7 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 				loadStatsSql(id, 11);		// KLASY ZOMBIE
 				loadStatsSql(id, 12);		// KLASY LUDZI
 				loadStatsSql(id, 17);		// BRONIE 
+				loadStatsSql(id, 19);		// MUTE 
 	
 			}
 			
@@ -958,6 +976,20 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 			iLen += format(gText[iLen], sizeText, "</table>");
 			show_motd(id, gText, "TOP 10 Zabojst Bronia");
 		}
+		case 19:{
+			new muteName[33];
+			
+			while (SQL_MoreResults(query)) {
+				
+				SQL_ReadResult(query, 2, muteName, sizeof(muteName) - 1);
+				
+				TrieSetCell(userMutes[id], muteName, 1);
+		
+				SQL_NextRow(query);
+			}
+			
+		}
+	
 		default:{ }
 	}
 	return PLUGIN_HANDLED;
