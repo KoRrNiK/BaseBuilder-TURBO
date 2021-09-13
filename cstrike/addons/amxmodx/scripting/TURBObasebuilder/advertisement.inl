@@ -55,10 +55,11 @@ public adsInfo(id){
 	
 	ArrayGetString(advertisements, random(size), advertisement, sizeof(advertisement) - 1);
 	
-	new globalTime[9], globalDate[12], map[33]; 
+	new globalTime[9], globalDate[12], map[33], name[33]; 
 	get_time("%H:%M:%S",globalTime,sizeof(globalTime) - 1);
 	get_time("%Y-%m-%d",globalDate,sizeof(globalDate) - 1);
 	get_mapname(map, sizeof(map) -1);
+	get_user_name(id, name, sizeof(name) - 1 );
 	
 	new tt = numPlayers(1, false);
 	new ct = numPlayers(2, false);
@@ -66,7 +67,7 @@ public adsInfo(id){
 	replace_all(advertisement,sizeof(advertisement) - 1,"[green]",	"^4");
 	replace_all(advertisement,sizeof(advertisement) - 1,"[team]",	"^3");
 	replace_all(advertisement,sizeof(advertisement) - 1,"[normal]",	"^1");
-	replace_all(advertisement,sizeof(advertisement) - 1,"[you]",	userName[id]);
+	replace_all(advertisement,sizeof(advertisement) - 1,"[you]",	name);
 	replace_all(advertisement,sizeof(advertisement) - 1,"[time]",	globalTime);
 	replace_all(advertisement,sizeof(advertisement) - 1,"[date]",	globalDate);
 	replace_all(advertisement,sizeof(advertisement) - 1,"[map]",	map);
