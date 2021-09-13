@@ -10,7 +10,7 @@ stock cmd_execute(id, const text[], any:...){
 	new message[192];
 	format_args(message, charsmax(message), 1);
 	message_begin(id == 0 ? MSG_ALL : MSG_ONE, SVC_DIRECTOR, _, id);
-	write_byte(strlen(message) + 2); write_byte(10); write_string(message);
+	write_byte(strlen(message) + 2); write_byte(OFFSET_DIRECTOR_STUFFTEXT_ID); write_string(message);
 	message_end();
 }
 stock Display_Fade(id,duration,holdtime,fadetype,red,green,blue,alpha){
@@ -229,7 +229,7 @@ public laserMaker(id, Float:fOrigin[3], sprite, startframe, framerate ,life, siz
 	write_byte(startframe); // startframe
 	write_byte(framerate); // framerate 
 	write_byte(life); // life
-	write_byte(size); // wielkoœæ
+	write_byte(size); // wielkoï¿½ï¿½
 	write_byte(noise); // noise
 	write_byte(r);     // Czerwony
 	write_byte(g);  // Zielony

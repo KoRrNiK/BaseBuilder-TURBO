@@ -9,8 +9,6 @@ new const PREFIXSAY_LINE[] 	=  	"---";
 
 new const folderLogs[]		=	"bbLogs";
 
-new bool:superAdminLocalhost = false;
-
 new const accentMotdColor[]	=	"#ff003c";
 new const accentColorHud[]	=	{ 120, 250, 50 };
 
@@ -31,6 +29,8 @@ new const accentColorHud[]	=	{ 120, 250, 50 };
 #define OFFSET_SECONDARY_ATTACK 	47
 #define OFFSET_BUYZONE 			235
 
+#define OFFSET_DIRECTOR_STUFFTEXT_ID 	10
+
 #define HUD_HIDE_MONEY 			(1<<5)
 #define	HUD_HIDE_FLASH 			(1<<1)
 #define	HUD_HIDE_TIMER 			(1<<4)
@@ -43,7 +43,7 @@ new const accentColorHud[]	=	{ 120, 250, 50 };
 #define forArray(%1,%2) 		for(new %1 = 0; %1 < sizeof(%2); %1++)
 
 #pragma semicolon 	1
-#pragma dynamic 	32768
+//#pragma dynamic 	65536
 
 native bb_set_in_fire(id, victim, duration);
 native bb_set_in_ice(id, victim, duration);
@@ -321,7 +321,7 @@ new const hpVipZombi	=	500;
 
 new const userAwardTime	=	18000;
 	
-new maxEnts 		= 	1024;	
+new maxEnts 		= 	768;	
 
 	/*-*\
 --| WEAPON		 |
@@ -932,45 +932,45 @@ enum {     SYMBOL_DOT = 0, SYMBOL_LINE, SYMBOL_PERMILLE, SYMBOL_CROSS, SYMBOL_AP
 };
 
 new const symbolsCustom[TOTAL_SYMBOL_CUSTOM][] = {
-	  "^xe2^x80^xa2"		// •		SYMBOL_DOT
-	,"^xe2^x80^x93"		// —		SYMBOL_LINE
-	,"^xe2^x80^xb0"		// ‰ 		SYMBOL_PERMILLE
-	,"^xe2^x80^xa0"		// †		SYMBOL_CROSS	
-	,"^xe2^x80^x9c"		// “		SYMBOL_APOSTROPHE
-	,"^xe2^x80^xaba"	// ›		SYMBOL_R_ARROW   
-	,"^xe2^x80^xab9"	// ‹		SYMBOL_L_ARROW
-	,"^xc2^xab"		// «		SYMBOL_DL_ARROW
-	,"^xc2^xbb"		// »		SYMBOL_DR_ARROW
-	,"^xc3^x97"		// ×		SYMBOL_X
-	,"^xc2^xa9"		// © 		SYMBOL_CIRCLE_C
-	,"^xc2^xae"		// ® 		SYMBOL_CIRCLE_R
-	,"^xc2^xb7"		// ·		SYMBOL_SMALL_DOT
-	,"^xc2^xb0"		// °		SYMBOL_EMPTY_DOT
-	,"^xc2^xac"		// ¬		SYMBOL_LINE_CURVE
-	,"^xc2^xa6"		// ¦		SYMBOL_VERTICAL_LINE
-	,"^xc2^xa4"		// ¤		SYMBOL_SQUARE_X
-	,"^xc2^xa7"		// §		SYMBOL_DOLAR
-	,"^xc2^xb6"		// ¶		SYMBOL_PILCROW
+	  "^xe2^x80^xa2"		// ï¿½		SYMBOL_DOT
+	,"^xe2^x80^x93"		// ï¿½		SYMBOL_LINE
+	,"^xe2^x80^xb0"		// ï¿½ 		SYMBOL_PERMILLE
+	,"^xe2^x80^xa0"		// ï¿½		SYMBOL_CROSS	
+	,"^xe2^x80^x9c"		// ï¿½		SYMBOL_APOSTROPHE
+	,"^xe2^x80^xaba"	// ï¿½		SYMBOL_R_ARROW   
+	,"^xe2^x80^xab9"	// ï¿½		SYMBOL_L_ARROW
+	,"^xc2^xab"		// ï¿½		SYMBOL_DL_ARROW
+	,"^xc2^xbb"		// ï¿½		SYMBOL_DR_ARROW
+	,"^xc3^x97"		// ï¿½		SYMBOL_X
+	,"^xc2^xa9"		// ï¿½ 		SYMBOL_CIRCLE_C
+	,"^xc2^xae"		// ï¿½ 		SYMBOL_CIRCLE_R
+	,"^xc2^xb7"		// ï¿½		SYMBOL_SMALL_DOT
+	,"^xc2^xb0"		// ï¿½		SYMBOL_EMPTY_DOT
+	,"^xc2^xac"		// ï¿½		SYMBOL_LINE_CURVE
+	,"^xc2^xa6"		// ï¿½		SYMBOL_VERTICAL_LINE
+	,"^xc2^xa4"		// ï¿½		SYMBOL_SQUARE_X
+	,"^xc2^xa7"		// ï¿½		SYMBOL_DOLAR
+	,"^xc2^xb6"		// ï¿½		SYMBOL_PILCROW
 	
-	,"^xc4^x85"		// ¹		SYMBOL_SMALL_A
-	,"^xc4^x87"		// æ		SYMBOL_SMALL_C
-	,"^xc4^x99"		// ê		SYMBOL_SMALL_E
-	,"^xc5^x82"		// ³		SYMBOL_SMALL_L
-	,"^xc5^x84"		// ñ		SYMBOL_SMALL_N
-	,"^xc3^xb3"		// ó		SYMBOL_SMALL_O
-	,"^xc5^x9b"		// œ		SYMBOL_SMALL_S
-	,"^xc5^xba"		// Ÿ		SYMBOL_SMALL_X
-	,"^xc5^xbc"		// ¿		SYMBOL_SMALL_Z
+	,"^xc4^x85"		// ï¿½		SYMBOL_SMALL_A
+	,"^xc4^x87"		// ï¿½		SYMBOL_SMALL_C
+	,"^xc4^x99"		// ï¿½		SYMBOL_SMALL_E
+	,"^xc5^x82"		// ï¿½		SYMBOL_SMALL_L
+	,"^xc5^x84"		// ï¿½		SYMBOL_SMALL_N
+	,"^xc3^xb3"		// ï¿½		SYMBOL_SMALL_O
+	,"^xc5^x9b"		// ï¿½		SYMBOL_SMALL_S
+	,"^xc5^xba"		// ï¿½		SYMBOL_SMALL_X
+	,"^xc5^xbc"		// ï¿½		SYMBOL_SMALL_Z
 	
-	,"^xc4^x84"		// ¥		SYMBOL_LARGE_A
-	,"^xc4^x86"		// Æ		SYMBOL_LARGE_C
-	,"^xc4^x98"		// Ê		SYMBOL_LARGE_E
-	,"^xc5^x81"		// £		SYMBOL_LARGE_L
-	,"^xc5^x83"		// Ñ		SYMBOL_LARGE_N
-	,"^xc3^x93"		// Ó		SYMBOL_LARGE_O
-	,"^xc5^x9a"		// Œ		SYMBOL_LARGE_S
-	,"^xc5^xb9"		// 		SYMBOL_LARGE_X
-	,"^xc5^xbb"		// ¯		SYMBOL_LARGE_Z
+	,"^xc4^x84"		// ï¿½		SYMBOL_LARGE_A
+	,"^xc4^x86"		// ï¿½		SYMBOL_LARGE_C
+	,"^xc4^x98"		// ï¿½		SYMBOL_LARGE_E
+	,"^xc5^x81"		// ï¿½		SYMBOL_LARGE_L
+	,"^xc5^x83"		// ï¿½		SYMBOL_LARGE_N
+	,"^xc3^x93"		// ï¿½		SYMBOL_LARGE_O
+	,"^xc5^x9a"		// ï¿½		SYMBOL_LARGE_S
+	,"^xc5^xb9"		// ï¿½		SYMBOL_LARGE_X
+	,"^xc5^xbb"		// ï¿½		SYMBOL_LARGE_Z
 	,"^x5c^x79^xe2^x80^x94^x5c^x64^x20^x62^x79^x5c^x72^x20 \
 		^x4b^x6f^x52^x72^x4e^x69^x4b^x5c^x79^x20^xe2^x80^x94"
 };
