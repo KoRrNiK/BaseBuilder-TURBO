@@ -12,31 +12,20 @@
 #include <	sockets		>
 #include <	sqlx		>
 
-#include "TURBObasebuilder/sqlClearData.inl"
-
 public plugin_init_sql(){
 	
 	register_clcmd("clearData", "clearDataMenu");
 	
 	
-	new ipserver[64], host[64], user[64], pass[64], db[64], szIp[33], error[128], errorNum;
+	new host[64], user[64], pass[64], db[64], error[128], errorNum;
 	
 
 	get_cvar_string("bb_sql_host", 	host, sizeof(host) - 1);
 	get_cvar_string("bb_sql_user", 	user, sizeof(user) - 1);
 	get_cvar_string("bb_sql_pass", 	pass, sizeof(pass) - 1);
 	get_cvar_string("bb_sql_db", 	db, sizeof(db) - 1);
-	get_cvar_string("bb_ip_server", ipserver, sizeof(ipserver) - 1);
 	
-	get_user_ip(0, szIp, sizeof(szIp));
-		
-	if(equal(szIp, ipserver)){
-		sql = SQL_MakeDbTuple(host, user, pass, db);
-		superAdminLocalhost = false;
-	} else {
-		sql = SQL_MakeDbTuple("127.0.0.1", "root", "", "bb");
-		superAdminLocalhost = true;
-	}
+	sql = SQL_MakeDbTuple(host, user, pass, db);
 	connection = SQL_Connect(sql, errorNum, error, sizeof(error));
 
 	if (errorNum) {
@@ -46,9 +35,8 @@ public plugin_init_sql(){
 		return;
 	}
 	
-	if(!superAdminLocalhost) log_amx("Polaczono z zew. baza danych");
-	else log_amx("Polaczono z localhostem");
-	
+	log_amx("Polaczono z baza danych");
+
 	new queryData[1536];
 	new Handle:query;
 	
@@ -305,7 +293,7 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 
 	
 	if (failState){
-		if (failState == TQUERY_CONNECT_FAILED)  log_amx("[SQL-LOG] Nie mozna polaczyc siê z baz¹ danych SQL. Blad: %s (%d)", error, errorNum);
+		if (failState == TQUERY_CONNECT_FAILED)  log_amx("[SQL-LOG] Nie mozna polaczyc siï¿½ z bazï¿½ danych SQL. Blad: %s (%d)", error, errorNum);
 		else if (failState == TQUERY_QUERY_FAILED)log_amx("[SQL-LOG] Zapytanie watkowe nie powiodlo sie. Blad: %s (%d)", error, errorNum);
 		return PLUGIN_HANDLED;
 	}	
@@ -396,8 +384,7 @@ public loadStatsHandlerSql(failState, Handle:query, error[], errorNum, tempId[],
 				loadStatsSql(id, 11);		// KLASY ZOMBIE
 				loadStatsSql(id, 12);		// KLASY LUDZI
 				loadStatsSql(id, 17);		// BRONIE 
-				
-				if(superAdminLocalhost) addFlags(id);
+	
 			}
 			
 		}
@@ -1094,7 +1081,7 @@ public saveInsert(id, typeSave, typeSlot){
 }
 public saveStatsHandlerSql(failState, Handle:query, error[], errorNum, data[], dataSize){
 	if (failState){
-		if (failState == TQUERY_CONNECT_FAILED) log_amx("[SQL-LOG] Nie mozna polaczyc siê z baz¹ danych SQL. Blad: %s (%d)", error, errorNum);
+		if (failState == TQUERY_CONNECT_FAILED) log_amx("[SQL-LOG] Nie mozna polaczyc siï¿½ z bazï¿½ danych SQL. Blad: %s (%d)", error, errorNum);
 		else if (failState == TQUERY_QUERY_FAILED) log_amx("[SQL-LOG] Zapytanie watkowe nie powiodlo sie. Blad: %s (%d)", error, errorNum);
 		return PLUGIN_HANDLED;
 	}
