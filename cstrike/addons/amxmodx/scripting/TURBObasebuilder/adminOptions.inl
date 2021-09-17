@@ -1396,6 +1396,65 @@ public adminHelpPush(id){
 	}
 	set_task(0.3, "adminHelpPush", id + TASK_PUSH);
 }
+
+public adminsPointHelp(id){	
+		
+	new gText[2048], iLen=0;
+	
+	new sizeText = sizeof(gText)-iLen-1;
+	
+	iLen += format(gText[iLen], sizeText, "\
+					<style>\
+							*{ font-size: 16px; font-family: Montserrat; color: white; text-align: center; padding: 0; margin: 0;}\
+							body{border: 1px solid %s; background: #111}\
+			 				b{color:%s; text-shadow: 0 0 5px %s;}\
+					</style>",accentMotdColor,accentMotdColor,accentMotdColor);		
+									
+	iLen += format(gText[iLen], sizeText, "<p>Pomoce Adminow ( Online )</p><hr size=1 color=%s>",accentMotdColor);
+	iLen += format(gText[iLen], sizeText, "<table style=^"margin: 20px;width:710%^">");	
+	iLen += format(gText[iLen], sizeText, "<tr><td><b>Admin</b></td><td><b>Pomocy</b></td></tr></br>");
+
+	for(new i = 1; i < maxPlayers; i++){
+		if(!is_user_connected(i) || is_user_hltv(i) || is_user_bot(i) || !isAdmin(i)) continue;
+		
+		iLen += format(gText[iLen], sizeText, "<tr><td>%s</td><td>%d</td></tr>",userName[i], userHelpPoint[i]);
+	}
+	iLen += format(gText[iLen], sizeText, "</table>");
+	show_motd(id, gText, "Lista Adminow");
+}
+
+public lastPlayerMenu(id){
+
+	new menu = menu_create("Rozlaczeni gracze:", "lastPlayerMenu_2");
+	
+	new szName[33];
+	new szDate[10];
+	
+	new i = 0;
+	while (ArraySize(lastPlayerName) > i){
+		
+		ArrayGetString(lastPlayerName, i, szName, sizeof(szName) -1 );
+		ArrayGetString(lastPlayerTime, i, szDate, sizeof(szDate) -1 );
+		
+		menu_additem(menu, fmt("%s\d -\r %s", szName, szDate));
+		
+		i ++;
+	}
+	
+	if(!i) chatPrint(id, PREFIX_LINE, "Brak rozlaczonych graczy!"); 
+	else menu_display(id, menu, 0);
+}	
+
+public lastPlayerMenu_2(id, menu, item){
+	
+	if(item != MENU_EXIT){
+		new getTime[10];
+		
+		ArrayGetString(lastPlayerTime, item, getTime, sizeof(getTime) -1 );
+		chatPrint(id, PREFIX_NORMAL, "%s", getTime); 
+		
+	} else menu_destroy(menu);
+}	
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
 */

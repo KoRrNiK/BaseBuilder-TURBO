@@ -10,7 +10,7 @@
 #include <	engine		>
 #include <	csx		>
 #include <	fvault		>
-#include <	http2		>
+#include <	http2		> 
 #include <	xs		>
 #include <	sockets		>
 #include <	sqlx		>
@@ -120,7 +120,7 @@ public plugin_precache(){
 		precache_sound("basebuildervt/thick.wav");
 		precache_sound("basebuildervt/thock.wav");
 		precache_sound("basebuildervt/correct.wav");
-		precache_sound("basebuildervt//fail.wav");
+		precache_sound("basebuildervt/fail.wav");
 
 	}
 
@@ -1106,6 +1106,7 @@ public client_connect(id){
 	}
 	
 	addMission(id, mission_CONNECT, 1);
+
 }
 
 public playedTime(id){
@@ -1965,21 +1966,6 @@ public respawnAll(){
 	}
 }
 
-public makeBarrierSolid(){
-	if (gBarrier){
-		set_pev(gBarrier,pev_solid,SOLID_BSP);
-		set_pev(gBarrier,pev_rendermode,kRenderTransColor);
-		set_pev(gBarrier,pev_rendercolor, Float:{255.0, 255.0, 64.0} );	
-		set_pev(gBarrier,pev_renderamt, Float:{100.0} );
-	}
-}
-public makeBarrierNoSolid(){
-	if (gBarrier){
-		set_pev(gBarrier,pev_solid,SOLID_NOT);
-		set_pev(gBarrier,pev_rendercolor, Float:{64.0, 255.0, 64.0} );
-		set_pev(gBarrier,pev_renderamt, Float:{20.0} );
-	}
-}
 public gameUserDeath(id){
 	if( !roundEnd ){
 		
@@ -2311,7 +2297,7 @@ public cmdSay(id){
 				return PLUGIN_HANDLED;
 			}
 			if (equal(szMessage, "/id")){
-				chatPrint(id, PREFIX_LINE, "Twoje^3 ID^1 konta:^3 %d", userSqlId[id]);
+				chatPrint(id, PREFIX_LINE, "Twoje^3 ID^1 konta:^3 %04d", userSqlId[id]);
 				return PLUGIN_HANDLED;
 			}
 			if (equal(szMessage, "/nagroda")){
@@ -2430,6 +2416,57 @@ public cmdSay(id){
 				return PLUGIN_HANDLED;
 			}
 			
+			if( equal(szMessage, "/w", 2) ){
+				
+				if(equal(szMessage, "/w")){
+					chatPrint(id, PREFIX_LINE, "Poprawne uzycie: /w #id tresc");
+					return PLUGIN_HANDLED;
+				
+				}
+				
+				new szCommand[2], szId[5], szMess[192];				
+				parse(szMessage, 
+					szCommand, sizeof(szCommand), 
+					szId, sizeof(szId)
+				);
+				
+				
+				new target = abs(str_to_num(szId));
+
+				format(szMess, sizeof(szMess) - 1, "%s", szMessage[4 + strlen(szId)]);
+				
+				
+				if(!target){
+					chatPrint(id, PREFIX_LINE, "Wpisz ID gracza!");
+					return PLUGIN_HANDLED;
+				}
+				
+				if(!strlen(szMess)) {
+					chatPrint(id, PREFIX_LINE, "Wpisz wiadomosc!");
+					return PLUGIN_HANDLED;
+				}
+				
+				
+
+				new send = false; 
+				for(new i = 1; i < maxPlayers; i ++){
+					
+					if(!is_user_connected(i)) continue;
+					
+					if(userSqlId[i] == target){
+						chatPrint(i, PREFIX_NONE, "^4[*PRIV*]^1 Od^3 [%s#^4%04d^3]^1 %s", userName[id], userSqlId[id], szMess );
+						chatPrint(id, PREFIX_NONE, "^4[*PRIV*]^1 Do^3 [%s#^4%04d^3]^1 %s", userName[i], target, szMess );
+						send = true;
+					}
+					
+					
+				}
+				
+				if(!send) chatPrint(id, PREFIX_LINE, "Nie znaleziono gracza!");
+				
+				return PLUGIN_HANDLED;
+			}
+			
 		}
 		
 		chatPrint(id, PREFIX_LINE, "Nie ma takiej komendy");
@@ -2480,33 +2517,6 @@ public cmdSay(id){
 		}
 	}
 	return PLUGIN_HANDLED;
-}
-	
-
-public adminsPointHelp(id){	
-		
-	new gText[2048], iLen=0;
-	
-	new sizeText = sizeof(gText)-iLen-1;
-	
-	iLen += format(gText[iLen], sizeText, "\
-					<style>\
-							*{ font-size: 16px; font-family: Montserrat; color: white; text-align: center; padding: 0; margin: 0;}\
-							body{border: 1px solid %s; background: #111}\
-			 				b{color:%s; text-shadow: 0 0 5px %s;}\
-					</style>",accentMotdColor,accentMotdColor,accentMotdColor);		
-									
-	iLen += format(gText[iLen], sizeText, "<p>Pomoce Adminow ( Online )</p><hr size=1 color=%s>",accentMotdColor);
-	iLen += format(gText[iLen], sizeText, "<table style=^"margin: 20px;width:710%^">");	
-	iLen += format(gText[iLen], sizeText, "<tr><td><b>Admin</b></td><td><b>Pomocy</b></td></tr></br>");
-
-	for(new i = 1; i < maxPlayers; i++){
-		if(!is_user_connected(i) || is_user_hltv(i) || is_user_bot(i) || !isAdmin(i)) continue;
-		
-		iLen += format(gText[iLen], sizeText, "<tr><td>%s</td><td>%d</td></tr>",userName[i], userHelpPoint[i]);
-	}
-	iLen += format(gText[iLen], sizeText, "</table>");
-	show_motd(id, gText, "Lista Adminow");
 }
 
 public regulamin(id){
@@ -2737,60 +2747,6 @@ public fw_EmitSound(id,channel,const sample[],Float:volume,Float:attn,flags,pitc
 	return FMRES_IGNORED;
 }
 
-
-public resetBlocks(){
-
-	new szClass[10], szTarget[10];
-	new Float:fOrigin[3];		
-	for(new ent=maxPlayers; ent < maxEnts;ent ++){
-		 
-		if( !pev_valid(ent) ) continue;
-		if( ent == gBarrier )  continue;
-			
-		entity_get_string(ent, EV_SZ_classname, szClass, sizeof(szClass) - 1);
-		entity_get_string(ent, EV_SZ_targetname, szTarget, sizeof(szTarget) - 1);
-		
-		if( !equal(szClass, "func_wall") || containi(szTarget, "ignore") !=-1 || equal(szTarget, "barrier")) continue;
-		
-		unSetBlock( ent );
-		
-		if( getLock(ent) == 3 ) remove_entity(ent);
-		else if(getLock(ent) ==  2){			
-			entity_get_vector(ent, EV_VEC_vuser3, fOrigin );
-			entity_set_vector(ent, EV_VEC_vuser4, fOrigin );
-			engfunc( EngFunc_SetOrigin, ent, fOrigin );
-		}else{	
-			engfunc( EngFunc_SetOrigin, ent, Float:{0.0,0.0,0.0} );			
-			set_pev(ent,pev_rendermode,kRenderNormal);
-			set_pev(ent,pev_rendercolor, Float:{ 0.0, 0.0, 0.0 });
-			set_pev(ent,pev_renderamt, 255.0 );
-		}
-		
-	}
-	return PLUGIN_CONTINUE;
-}
-
-
-public removeNotUsedBlock(){
-
-	new szClass[10], szTarget[10];
-	for(new ent=maxPlayers; ent<maxEnts;ent ++){
-		
-		if( !pev_valid(ent) ) continue;
-		if( ent == gBarrier )  continue;
-		
-		entity_get_string(ent, EV_SZ_classname, szClass, sizeof(szClass) - 1);
-		entity_get_string(ent, EV_SZ_targetname, szTarget, sizeof(szTarget) - 1);
-		
-		if(!equal(szClass, "func_wall") || containi(szTarget, "ignore")!=-1 || containi(szTarget, "JUMP")!=-1) continue;			
-		if(getOwner(ent) != 0 ) continue;
-		
-		if( getLock(ent) == 3 ) remove_entity(ent);
-		else engfunc( EngFunc_SetOrigin, ent, Float:{ -8192.0, -8192.0, -8192.0 } );
-	}
-	return PLUGIN_CONTINUE;
-}
-
 public globalMenu(id){
 	
 	if(!playerLogged(id)){
@@ -2837,7 +2793,7 @@ public globalMenu_2(id, item){
 			}	
 		}
 		
-		if(item == 0  || item == 1 || item == 5 || item == 4|| item == 6 || item == 8){	
+		if(item == 0 || item == 1 || item == 4|| item == 5 || item == 6 || item == 8){	
 			chatPrint(id, PREFIX_LINE, "Teraz jest OX");
 			globalMenu(id);
 			return PLUGIN_HANDLED;
@@ -3116,267 +3072,6 @@ public ChatOff(id){
 	if(!isSuperAdmin(id)) return;
 	serverOffChat =! serverOffChat;
 }
-
-public createNugget(id, id2){
-	static Float:fOrigin[3];
-	pev(id2, pev_origin, fOrigin);
-	
-	
-	for(new i = 0; i < random(5); i ++){
-	
-		switch(random(100)){
-			case 0: 		createNuggetOrigin(fOrigin, 1,1, BLACK_NUGGET, 	.owner=id);		
-			case 1..5: 	createNuggetOrigin(fOrigin, 1,1, PINK_NUGGET, 	.owner=id);		
-			case 6..16: 	createNuggetOrigin(fOrigin, 1,1, BLUE_NUGGET, 	.owner=id);		
-			case 17..32:	createNuggetOrigin(fOrigin, 1,1, YELLOW_NUGGET, 	.owner=id);		
-			case 33..53:	createNuggetOrigin(fOrigin, 1,1, GREEN_NUGGET, 	.owner=id);		
-			default:	createNuggetOrigin(fOrigin, 1,1, RED_NUGGET, 	.owner=id);
-		}
-	}
-}
-
-public nuggetThink(ent){
-	if( !pev_valid(ent) ) return;
-		
-	engfunc( EngFunc_SetSize, ent , Float:{-16.0, -16.0, -16.0}, Float:{16.0,16.0,16.0});
-	static Float:fAngles[3];
-	pev(ent, pev_angles, fAngles);
-	fAngles[1] += pev(ent, pev_fuser2);
-	
-	set_pev(ent, pev_angles, fAngles);
-	if( get_gametime() - pev(ent, pev_fuser3) > delayEffectNugget[pev(ent, pev_body)] ){
-		new Float:fOrigin[3];
-		pev(ent, pev_origin, fOrigin);
-		fOrigin[2] += 20.0;
-		
-		
-		if( get_gametime() - pev(ent, pev_fuser1) > 3.0 ){
-			if( pev(ent, pev_flags) & FL_ONGROUND ){
-				static Float:fVelocity[3];
-				pev(ent, pev_velocity, fVelocity);
-				fVelocity[2] = random_float(45.0, 65.0);			
-				set_pev(ent, pev_velocity, fVelocity);
-			}
-		}
-		set_pev(ent, pev_fuser3, get_gametime());
-	}
-	
-	if( get_gametime() - pev(ent, pev_fuser1) > 10.0 ){
-		
-		listNuggetOnFloor[pev(ent, pev_iuser1)] = 0;
-		if( ent!= 0 ) remove_entity(ent);
-		
-	}else set_pev(ent, pev_nextthink, get_gametime()+0.1);	
-}
-
-
-
-createNuggetOrigin(Float:fOrigin[3], minN, maxN, type, owner = 0){
-
-	static Float:fVelocity[3];
-			
-	new ent = -1;
-	for( new i = 0 ; i < random_num(minN,maxN); i ++ ){		
-		ent = addNuggetEnt();
-		if( ent == 0) return;
-	
-		set_pev(ent, pev_classname, "nugget");
-		
-		set_pev(ent, pev_solid, SOLID_TRIGGER);
-		set_pev(ent, pev_movetype, MOVETYPE_TOSS);
-		set_pev(ent, pev_fuser1, get_gametime() );
-		set_pev(ent, pev_fuser2, random_float(1.0, 50.0));
-		set_pev(ent, pev_fuser3, get_gametime());
-		
-		set_pev(ent, pev_iuser3, owner);
-		set_pev(ent, pev_skin, type);
-
-		set_pev(ent, pev_origin, fOrigin);
-		engfunc( EngFunc_SetSize, ent , Float:{-16.0, -16.0, -16.0}, Float:{16.0,16.0,16.0});
-		
-		fVelocity[0] = random_float(-150.0, 150.0);
-		fVelocity[1] = random_float(-150.0, 150.0);
-		fVelocity[2] = random_float(100.0, 300.0);
-		set_pev(ent, pev_velocity, fVelocity);
-
-
-		set_rendering(ent, kRenderFxGlowShell, 	colorNugget[type][0], colorNugget[type][1] ,     colorNugget[type][2], 	kRenderNormal, 5);
-
-		entity_set_model(ent, modelNuggetDrop);
-		set_pev(ent, pev_nextthink, get_gametime()+0.1);
-		
-		if(is_user_connected(owner)){
-			message_begin(MSG_ONE, SVC_TEMPENTITY, _ , owner);
-			write_byte(22) ;
-			write_short(ent) ;
-			write_short(thunder) ;
-			write_byte(5) ;
-			write_byte(8) ;
-			write_byte(colorNugget[type][0]) ;
-			write_byte(colorNugget[type][1]) ;
-			write_byte(colorNugget[type][2]) ;
-			write_byte(75);
-			message_end();
-		}
-	}
-}
-
-
-public findCoinArround(id){
-	
-	static Float:fOrigin[3];
-	static Float:fOriginCoin[3];
-	new pickUp = false;
-	
-	pev(id, pev_origin, fOrigin);
-	new ent = 0;
-	new value = 0;
-	
-	for( new i = 0 ; i < MAXNUGGETSFLOOR; i ++ ){
-		ent = listNuggetOnFloor[i];
-		if( !pev_valid(ent) ) continue;	
-		if( get_gametime() - pev(ent, pev_fuser1) < random_float(1.50,2.50) ) continue;
-		
-	
-		if(teamWorks(id)){
-			id = userTeam[id];
-			
-			if(pev(ent, pev_iuser3) != id) continue;
-		}
-		
-		if(pev(ent, pev_iuser3) != id)  continue;
-			
-		pev(ent, pev_origin, fOriginCoin);
-		
-		if(!pickUp){
-			if( get_distance_f(fOrigin, fOriginCoin) > 155.0){
-					
-				if( get_gametime() - pev(ent, pev_fuser1) < random_float(1.50,2.50) ) continue;
-				if( get_distance_f(fOrigin, fOriginCoin)  < 300.0 ){
-					new Float:fVeloc[3];
-					xs_vec_sub(fOrigin, fOriginCoin, fVeloc)	;			
-					xs_vec_normalize( fVeloc , fVeloc );				
-					xs_vec_mul_scalar( fVeloc , 300.0 , fVeloc );
-					set_pev(ent, pev_velocity, fVeloc);
-					
-					
-				} continue;
-			}
-		}
-		
-		switch(pev(ent, pev_skin)){
-			case RED_NUGGET:  {
-				value = random_num(1,3);
-			}
-			
-			case GREEN_NUGGET: {
-				value = 4;
-			}
-			case YELLOW_NUGGET: {
-				value = 5;
-				addSecretMission(id, mission_secret_GOLDNUGGET, value);
-				
-				#if defined CHRISTMAS_ADDON
-		
-					addChristmasMission(id, CH_PICKUPGOLD, 1);
-				
-				#endif	
-			}
-			case BLUE_NUGGET:{
-				if(userNugget[id] == 0 ) addSecretMission(id, mission_secret_BLUE, 1);
-				value = 6;
-			}
-			case PINK_NUGGET:  {
-				value = 9;
-			}
-			case BLACK_NUGGET:  {
-				value = random_num(12,28);
-				addSecretMission(id, mission_secret_LUCK, 1);
-				#if defined CHRISTMAS_ADDON
-		
-					addChristmasMission(id, CH_BLACKNUGGET, 1);
-				
-				#endif
-			}
-		}
-		
-		
-		if(foundedHat(id, HAT_AUREOLA)) {
-			new Float:valRound = 0.0;
-			valRound = float(value);
-			valRound *= 1.5;
-			value = floatround(valRound);
-			
-		}
-	
-		
-		addKillNugget(id, value);
-		
-		#if defined CHRISTMAS_ADDON
-		
-			addChristmasMission(id, CH_PICKUP, 1);
-		
-		#endif
-		
-		spkGameSound(id, sound_PICKUP);
-		listNuggetOnFloor[pev(ent, pev_iuser1)] = 0;
-		remove_entity(ent);
-	}
-}
-
-public addNuggetEnt(){
-	new slotCoin = freeNgugetSlot();
-	if( slotCoin!=-1){
-		new ent = create_entity("info_target");
-		if( !pev_valid(ent) ) return 0;
-		listNuggetOnFloor[slotCoin] = ent;
-		set_pev(ent, pev_iuser1, slotCoin);
-		return ent;
-	}
-	return 0;
-}
-public freeNgugetSlot(){
-	for( new i = 0 ; i < MAXNUGGETSFLOOR; i ++ ){
-		if( listNuggetOnFloor[i] == 0 )
-			return i;
-	}
-	return -1;
-}
-
-
-
-public lastPlayerMenu(id){
-
-	new menu = menu_create("Rozlaczeni gracze:", "lastPlayerMenu_2");
-	
-	new szName[33];
-	new szDate[10];
-	
-	new i = 0;
-	while (ArraySize(lastPlayerName) > i){
-		
-		ArrayGetString(lastPlayerName, i, szName, sizeof(szName) -1 );
-		ArrayGetString(lastPlayerTime, i, szDate, sizeof(szDate) -1 );
-		
-		menu_additem(menu, fmt("%s\d -\r %s", szName, szDate));
-		
-		i ++;
-	}
-	
-	if(!i) chatPrint(id, PREFIX_LINE, "Brak rozlaczonych graczy!"); 
-	else menu_display(id, menu, 0);
-}	
-
-public lastPlayerMenu_2(id, menu, item){
-	
-	if(item != MENU_EXIT){
-		new getTime[10];
-		
-		ArrayGetString(lastPlayerTime, item, getTime, sizeof(getTime) -1 );
-		chatPrint(id, PREFIX_NORMAL, "%s", getTime); 
-		
-	} else menu_destroy(menu);
-}	
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
 */

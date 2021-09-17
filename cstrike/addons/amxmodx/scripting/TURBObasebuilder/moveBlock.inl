@@ -87,7 +87,7 @@ public buildingInfo(id){
 					format(zombie, sizeof(zombie), "[ Klasa: %s ]", classesZombies[userClass[ent]][0]);
 					format(human, sizeof(human), "[ Klasa: %s ]", classesHuman[userClassHuman[ent]][0]);
 						
-					iLen += format(gText[iLen], sizeof(gText)-iLen-1, "[ %s: %s | Zycie: %d ]^n%s", isVip(ent) ? "Vip" : "Gracz", userName[ent], get_user_health(ent), get_user_team( ent) == 1 ? zombie : human);
+					iLen += format(gText[iLen], sizeof(gText)-iLen-1, "[ %s: %s#%04d | Zycie: %d ]^n%s", isVip(ent) ? "Vip" : "Gracz", userName[ent],userSqlId[ent],  get_user_health(ent), get_user_team( ent) == 1 ? zombie : human);
 					if(has_flag(id, "a")) iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n~ [AFK: %0.2f%%] ~^n", userAfkValue[ ent ]);
 					if(userDeathPrice[ent][PRICE_START] && !userDeathPrice[ent][PRICE_LOST]){
 						iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n[ Placi: %d Brylek | Godowanie: %s ]^n", userDeathPrice[ent][PRICE_DEATH], userDeathPrice[ent][PRICE_GOD] ? "Tak" : "Nie");
@@ -459,6 +459,75 @@ public checkRemove(ent){
 		
 	}
 	return PLUGIN_CONTINUE;
+}
+
+public resetBlocks(){
+
+	new szClass[10], szTarget[10];
+	new Float:fOrigin[3];		
+	for(new ent=maxPlayers; ent < maxEnts;ent ++){
+		 
+		if( !pev_valid(ent) ) continue;
+		if( ent == gBarrier )  continue;
+			
+		entity_get_string(ent, EV_SZ_classname, szClass, sizeof(szClass) - 1);
+		entity_get_string(ent, EV_SZ_targetname, szTarget, sizeof(szTarget) - 1);
+		
+		if( !equal(szClass, "func_wall") || containi(szTarget, "ignore") !=-1 || equal(szTarget, "barrier")) continue;
+		
+		unSetBlock( ent );
+		
+		if( getLock(ent) == 3 ) remove_entity(ent);
+		else if(getLock(ent) ==  2){			
+			entity_get_vector(ent, EV_VEC_vuser3, fOrigin );
+			entity_set_vector(ent, EV_VEC_vuser4, fOrigin );
+			engfunc( EngFunc_SetOrigin, ent, fOrigin );
+		}else{	
+			engfunc( EngFunc_SetOrigin, ent, Float:{0.0,0.0,0.0} );			
+			set_pev(ent,pev_rendermode,kRenderNormal);
+			set_pev(ent,pev_rendercolor, Float:{ 0.0, 0.0, 0.0 });
+			set_pev(ent,pev_renderamt, 255.0 );
+		}
+		
+	}
+	return PLUGIN_CONTINUE;
+}
+
+
+public removeNotUsedBlock(){
+
+	new szClass[10], szTarget[10];
+	for(new ent=maxPlayers; ent<maxEnts;ent ++){
+		
+		if( !pev_valid(ent) ) continue;
+		if( ent == gBarrier )  continue;
+		
+		entity_get_string(ent, EV_SZ_classname, szClass, sizeof(szClass) - 1);
+		entity_get_string(ent, EV_SZ_targetname, szTarget, sizeof(szTarget) - 1);
+		
+		if(!equal(szClass, "func_wall") || containi(szTarget, "ignore")!=-1 || containi(szTarget, "JUMP")!=-1) continue;			
+		if(getOwner(ent) != 0 ) continue;
+		
+		if( getLock(ent) == 3 ) remove_entity(ent);
+		else engfunc( EngFunc_SetOrigin, ent, Float:{ -8192.0, -8192.0, -8192.0 } );
+	}
+	return PLUGIN_CONTINUE;
+}
+
+public makeBarrierSolid(){
+	if (gBarrier){
+		set_pev(gBarrier,pev_solid,SOLID_BSP);
+		set_pev(gBarrier,pev_rendermode,kRenderTransColor);
+		set_pev(gBarrier,pev_rendercolor, Float:{255.0, 255.0, 64.0} );	
+		set_pev(gBarrier,pev_renderamt, Float:{100.0} );
+	}
+}
+public makeBarrierNoSolid(){
+	if (gBarrier){
+		set_pev(gBarrier,pev_solid,SOLID_NOT);
+		set_pev(gBarrier,pev_rendercolor, Float:{64.0, 255.0, 64.0} );
+		set_pev(gBarrier,pev_renderamt, Float:{20.0} );
+	}
 }
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
