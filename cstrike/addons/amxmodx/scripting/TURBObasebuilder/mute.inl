@@ -87,8 +87,6 @@ public muteMenuType_2(id, menu, item){
 
 public fw_SetClientListening(iReceiver, iSender, bool:bListen){
 	
-	// new method mute.
-	
 	if (iReceiver == iSender || !is_user_connected(iSender)) return FMRES_IGNORED;
 	
 	if(TrieKeyExists(userMutes[iReceiver], userName[iSender])){
@@ -97,7 +95,7 @@ public fw_SetClientListening(iReceiver, iSender, bool:bListen){
 		return FMRES_SUPERCEDE;
 	}
 	
-	if (get_systime() < userMute[iSender]/*|| userMutePlayer[iReceiver][iSender]*/){
+	if (get_systime() < userMute[iSender]){
 		engfunc(EngFunc_SetClientListening, iReceiver, iSender, false);
 		forward_return(FMV_CELL, false);
 		return FMRES_SUPERCEDE;

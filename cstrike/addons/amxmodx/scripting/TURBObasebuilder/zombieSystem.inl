@@ -220,7 +220,7 @@ public calcZombieUpgradeCost(id, class, type) return (userZombie[id][class][type
 public setZombieClass(id){
 	
 	switch(get_user_team(id)){
-		case 1:{			
+		case USER_ZOMBIE:{			
 			if( userNewClass[id] != userClass[id] )
 				userClass[id] = userNewClass[id];
 			new class = userClass[id];
@@ -254,12 +254,12 @@ public refreshModel(id){
 	new class = userClass[id];
 
 	switch(get_user_team(id) ){
-		case 1:{		
+		case USER_ZOMBIE:{		
 			cs_set_user_model(id, classesZombies[class][5]);	
 			entity_set_string( id , EV_SZ_viewmodel , classesZombies[class][6]);  
 			entity_set_string( id , EV_SZ_weaponmodel , "" );
 		}
-		case 2:{
+		case USER_HUMAN:{
 			setModelsKnifeHuman(id);
 			cs_set_user_model(id, "sas") ;
 		}

@@ -70,8 +70,7 @@ public buildingInfo(id){
 				}
 				if( userClone[id] ) iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n[ Kopiujesz ]", userName[getMover(ent)]);
 				
-				new speed[32]; format(speed, sizeof(speed), "%d razy wolniej", floatround(userPushBlock[id]));
-				if(userPushBlock[id]) iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n[ %s ]", userPushBlock[id] > 0 ? speed : "");
+				if(userPushBlock[id]) iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n[ %s ]", userPushBlock[id] > 0 ? formatm("%d razy wolniej", floatround(userPushBlock[id])) : "");
 				if( userBlocksUsed[id] > 0 && buildTime) iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^n[ %d/%d ]", userBlocksUsed[id], (isSVip(id) ? bbCvar[cvarMoveMaxBlockSVip] : isVip(id) ? bbCvar[cvarMoveMaxBlockVip] : bbCvar[cvarMoveMaxBlock]));
 		
 				set_hudmessage(userHud[id][PLAYER_HUD_RED], userHud[id][PLAYER_HUD_GREEN], userHud[id][PLAYER_HUD_BLUE], cordx, cordy, 0, 0.1, 0.1, 0.1, 0.1);
@@ -80,14 +79,14 @@ public buildingInfo(id){
 			if(isPlayer(ent)){
 				if( is_user_connected( ent) && is_user_alive( ent)){
 			
-					if(get_user_team( ent) == 2) set_hudmessage(25, 125, 255, cordx, cordy, 0, 0.1, 0.1, 0.1, 0.1)	;
+					if(get_user_team( ent) == USER_HUMAN) set_hudmessage(25, 125, 255, cordx, cordy, 0, 0.1, 0.1, 0.1, 0.1)	;
 					else set_hudmessage(255, 125, 25, cordx, cordy, 0, 0.1, 0.1, 0.1, 0.1);
 						
 					new zombie[33], human[33];
 					format(zombie, sizeof(zombie), "[ Klasa: %s ]", classesZombies[userClass[ent]][0]);
 					format(human, sizeof(human), "[ Klasa: %s ]", classesHuman[userClassHuman[ent]][0]);
 						
-					iLen += format(gText[iLen], sizeof(gText)-iLen-1, "[ %s: %s#%04d | Zycie: %d ]^n%s", isVip(ent) ? "Vip" : "Gracz", userName[ent],userSqlId[ent],  get_user_health(ent), get_user_team( ent) == 1 ? zombie : human);
+					iLen += format(gText[iLen], sizeof(gText)-iLen-1, "[ %s: %s#%04d | Zycie: %d ]^n%s", isVip(ent) ? "Vip" : "Gracz", userName[ent],userSqlId[ent],  get_user_health(ent), get_user_team( ent) == USER_ZOMBIE ? zombie : human);
 					if(has_flag(id, "a")) iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n~ [AFK: %0.2f%%] ~^n", userAfkValue[ ent ]);
 					if(userDeathPrice[ent][PRICE_START] && !userDeathPrice[ent][PRICE_LOST]){
 						iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n[ Placi: %d Brylek | Godowanie: %s ]^n", userDeathPrice[ent][PRICE_DEATH], userDeathPrice[ent][PRICE_GOD] ? "Tak" : "Nie");
@@ -294,7 +293,7 @@ public prev(ent){
 public buildingBuild(id){	
 	
 	if( !userAllowBuild[id] ){
-		if( ( get_user_team(id) != 2 || ( !buildTime && roundGood )) ) return PLUGIN_CONTINUE;
+		if( ( get_user_team(id) != USER_HUMAN || ( !buildTime && roundGood )) ) return PLUGIN_CONTINUE;
 	}
 	if( pev(id, pev_button) & IN_USE ) {	
 		

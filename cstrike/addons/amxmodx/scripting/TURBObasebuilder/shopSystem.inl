@@ -13,8 +13,8 @@ public shopGlobalMenu(id){
 	userTeamOpen[id] = get_user_team(id);
 			
 	switch(get_user_team(id)){
-		case 1:shopZombie(id);
-		case 2:shopBuilder(id);	
+		case USER_ZOMBIE:shopZombie(id);
+		case USER_HUMAN:shopBuilder(id);	
 	}
 }
 public shopBuilder(id){
@@ -46,7 +46,7 @@ public shopBuilder_2(id, menu, item){
 		shopGlobalMenu(id);
 		return PLUGIN_CONTINUE;
 	}
-	if( get_user_team(id) != 2 ){
+	if( get_user_team(id) != USER_HUMAN ){
 		chatPrint(id, PREFIX_LINE, "Twoja druzyna sie zmienila! ");
 		shopGlobalMenu(id);
 		return PLUGIN_CONTINUE;	

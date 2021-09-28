@@ -118,8 +118,8 @@ public gameStart(){
 		
 	}
 	
-	new ct = numPlayers(2, false);
-	new tt = numPlayers(1, false);
+	new tt = numPlayers(USER_ZOMBIE, false);
+	new ct = numPlayers(USER_HUMAN, false);
 	
 	if( ct > 0 && tt > 0 ){
 		roundGood=true;		
@@ -137,8 +137,8 @@ public startNewRound(){
 
 	resetBlocks();
 
-	new ct = numPlayers(2, false);
-	new tt = numPlayers(1, false);
+	new tt = numPlayers(USER_ZOMBIE, false);
+	new ct = numPlayers(USER_HUMAN, false);
 	
 	if( ct <= 0 || tt <= 0 || (ct + tt ) <= 1 ) return 0;
 	
@@ -208,7 +208,7 @@ public startPrep(){
 	spkGameSound(0, sound_PREP);
 	
 	for(new i = 1; i < maxPlayers; i ++){
-		if( get_user_team(i) == 2) menuWeapon(i);
+		if( get_user_team(i) == USER_HUMAN) menuWeapon(i);
 		userBlocksUsed[i] = 0;	
 	}
 	
@@ -236,9 +236,10 @@ public gameEnd(){
 	roundEnd = true;
 	gTime = 0;
 	
-	new ct 		= 	numPlayers(2, false);
-	new ctAlive 	= 	numPlayers(2, true);
-	new tt 		= 	numPlayers(1, false);
+
+	new tt 			= 	numPlayers(USER_ZOMBIE, false);
+	new ct 			= 	numPlayers(USER_HUMAN, false);
+	new ctAlive 	= 	numPlayers(USER_HUMAN, true);
 
 	for(new i = 1; i < maxPlayers; i ++){
 		if( !is_user_connected(i) || is_user_hltv(i) || is_user_bot(i)) continue;
@@ -264,7 +265,7 @@ public gameEnd(){
 		
 			
 			for(new i = i; i < maxPlayers; i ++){
-				if(get_user_team(i) == 2){
+				if(get_user_team(i) == USER_HUMAN){
 					
 					addMission(i, mission_SURVIVOR, 1);
 						
@@ -312,10 +313,10 @@ public gameEnd(){
 			}
 			for( new i = 1; i < maxPlayers; i++ ){
 				if( !is_user_connected(i) || is_user_hltv(i)) continue;
-				cs_set_user_team(i, userRoundTeam[i] == 1 ? 2 : 1 );
+				cs_set_user_team(i, userRoundTeam[i] == USER_ZOMBIE ? USER_HUMAN : USER_ZOMBIE );
 			}
-			tt = numPlayers(1, false);
-			ct = numPlayers(2, false);
+			new tt	= 	numPlayers(USER_ZOMBIE, false);
+			new ct	= 	numPlayers(USER_HUMAN, false);
 			new dif = abs(ct-tt);
 			if( dif > 1 ){			
 				new lookFor = ct>tt ? 2 : 1;
@@ -399,8 +400,8 @@ public happyColorBarrier(){
 public changeTeamIfSuggested(id){
 	if( userSuggestTeam[id] == 0 || gameTime) return;
 	
-	new ct=numPlayers(2, false)-(get_user_team(id)==2?1:0);
-	new tt=numPlayers(1, false)-(get_user_team(id)==1?1:0);
+	new ct=numPlayers(USER_HUMAN, false)-(get_user_team(id)== USER_HUMAN ? USER_ZOMBIE : USER_NONE);
+	new tt=numPlayers(USER_ZOMBIE, false)-(get_user_team(id)== USER_ZOMBIE ? USER_ZOMBIE : USER_NONE);
 	new dif = abs(ct-tt);
 	
 	if( tt == 0 || ct == 0 ) return;
@@ -444,8 +445,8 @@ public joinTeam(menu_msgid[], id) {
 	static msg_block, joinclass[] = "joinclass";
 	msg_block = get_msg_block(menu_msgid[0]);
 	set_msg_block(menu_msgid[0], BLOCK_SET);
-	new ct=numPlayers(2,false);
-	new tt=numPlayers(1,false);
+	new tt	= 	numPlayers(USER_ZOMBIE, false);
+	new ct	= 	numPlayers(USER_HUMAN, false);
 	if( ct == 0 && tt == 0 )
 		engclient_cmd(id, "jointeam", "2");
 	else engclient_cmd(id, "jointeam", "5");

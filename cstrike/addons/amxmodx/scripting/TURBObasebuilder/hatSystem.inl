@@ -260,19 +260,19 @@ public setHat(id){
 	if( userSelectNewHat[id] != userSelectHat[id] )
 		userSelectHat[id] = userSelectNewHat[id];
 			
-	if(get_user_team(id) == 2 && userSelectHat[id] !=  -1){
+	if(get_user_team(id) == USER_HUMAN && userSelectHat[id] !=  -1){
 		chechHat(id, userSelectHat[id]);
 	} else removeHat(id);
 }
 public chechHat(id, &hat){
-	if(get_user_team(id) == 2 && userSelectHat[id] !=  -1){
+	if(get_user_team(id) == USER_HUMAN && userSelectHat[id] !=  -1){
 		removeHat(id);	
 		createHat(id, hat);
 	} else removeHat(id);
 }
 
 public bool:foundedHat(id, hat){
-	if(get_user_team(id) == 2 && userSelectHat[id] == hat)
+	if(get_user_team(id) == USER_HUMAN && userSelectHat[id] == hat)
 		return true;
 	return false;
 }

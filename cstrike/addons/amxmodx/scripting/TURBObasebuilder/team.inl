@@ -48,7 +48,7 @@ public menuTeamOption_2(id, menu, item){
 	switch(item){
 		case 0:{
 			if (buildTime || prepTime){
-				if (userTeam[id] && get_user_team(id) == 2){
+				if (userTeam[id] && get_user_team(id) == USER_HUMAN){
 					if (is_user_alive(userTeam[id]) && is_user_connected(userTeam[id]) && get_user_team(userTeam[id]) == get_user_team(id)){
 						if (pev(id, pev_button) & IN_DUCK){
 							new Float:fOrigin[3] = 0.0;
@@ -224,7 +224,7 @@ public leaveParty(id){
 }
 public teamLineOrSprite(id){
 	if (userTeam[id] && !gameTime && !hasOption(userSaveOption[id], save_INVIS) ){
-		if (teamWorks(id) && get_user_team(id) == 2){
+		if (teamWorks(id) && get_user_team(id) == USER_HUMAN){
 			new Float:fOriginId[3] = 0.0;
 			new Float:fOriginTeam[3] = 0.0;
 			pev(id, pev_origin, fOriginId);

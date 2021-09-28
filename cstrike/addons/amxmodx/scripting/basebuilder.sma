@@ -465,8 +465,8 @@ public ham_UseButtonEnt(this, id, idactivator, use_type, Float:value){
 				chatPrint(id, PREFIX_LINE, "Teraz nie wolno strzelac do grzybkow");
 				return PLUGIN_CONTINUE;
 			}
-			new tt = numPlayers(1, false);
-			new ct = numPlayers(2, false);
+			new tt	= 	numPlayers(USER_ZOMBIE, false);
+			new ct	= 	numPlayers(USER_HUMAN, false);
 			if( ct + tt < bbCvar[cvarSchroomPlayers] ){        
 				chatPrint(id, PREFIX_LINE, "Za malo graczy na grzybki");
 				return PLUGIN_CONTINUE;
@@ -500,15 +500,15 @@ public touchPlayerWall(id, ent){
 	
 	if(isOX()) checkOxTouch(id,ent);
 	
-	new szTarget[7];
-	entity_get_string(ent, EV_SZ_targetname, szTarget, sizeof(szTarget));
+	new szTarget[5];
+	entity_get_string(ent, EV_SZ_targetname, szTarget, sizeof(szTarget) - 1);
 	
 	if(equal(szTarget, "JUMP")) jumpFuncBlock(id, 2);
 	
 }
 public teamCampTouching(id){
 	
-	if( get_user_team(id) != 2) return;
+	if( get_user_team(id) != USER_HUMAN) return;
 	if(!prepTime && !gameTime) return;
 	if(isAdmin(id)) return;
 		
@@ -598,15 +598,15 @@ public menuColor(id, item){
 	menu_display(id, menu, userPageColor[id]/7);
 }
 public menuColor_2(id, menu, item){
-	if(item == MENU_EXIT){
-		menu_destroy(menu);
-		return PLUGIN_CONTINUE;
-	}	
-	userPageColor[id] = item;
-	
-	coloredBlock(id, item);
-	menuColor(id, item);
-	return PLUGIN_CONTINUE;
+	if(item != MENU_EXIT){
+		
+		userPageColor[id] = item;
+		
+		coloredBlock(id, item);
+		menuColor(id, item);
+		
+	} else menu_destroy(menu);
+
 }
 public coloredBlock(id, color){
 	
@@ -619,7 +619,7 @@ public coloredBlock(id, color){
 	
 	get_user_aiming(id, ent, body);
 	
-	if(get_user_team(id) == 1 && !isAdmin(id)){
+	if(get_user_team(id) == USER_ZOMBIE && !isAdmin(id)){
 		chatPrint(id, PREFIX_NORMAL, "Nie mozesz kolorowac bedac Zombi");
 		return;
 	}
@@ -683,7 +683,7 @@ public fw_TraceHull(Float:start[3], Float:end[3], conditions, hull, id, trace){
 public ham_ItemC4Deploy(wpn){
 	static id;
 	id = pev(wpn, 18);
-	if (!is_user_alive(id) || !is_user_connected(id) || get_user_team(id) == 1){
+	if (!is_user_alive(id) || !is_user_connected(id) || get_user_team(id) == USER_ZOMBIE){
 		return PLUGIN_CONTINUE;
 	}
 	new wpnID = cs_get_weapon_id(wpn);
@@ -735,7 +735,7 @@ public CurWeapon(id){
 	static weapon;
 	weapon = get_user_weapon(id);
 	
-	if( get_user_team(id) == 2 ){
+	if( get_user_team(id) == USER_HUMAN ){
 	
 		if( checkWeapon(weapon) ) cs_set_user_bpammo(id, weapon, 200 );
 		if(weapon == CSW_KNIFE) setModelsKnifeHuman(id);
@@ -839,7 +839,7 @@ public fw_PlayerPreThink(id){
 
 	new Float:speedMulti=1.0;
 
-	if(get_user_team(id) == 1){
+	if(get_user_team(id) == USER_ZOMBIE){
 		if( userClass[id] == class_TERMINATOR){
 			speedMulti -= 0.05;
 		}
@@ -852,7 +852,7 @@ public fw_PlayerPreThink(id){
 	}
 	if( speedMulti < 1.0 ){
 		new weapon = get_user_weapon(id);
-		if( (checkWeapon(weapon) && get_user_team(id) == 2) || (get_user_team(id) == 1 && weapon == CSW_KNIFE) ){
+		if( (checkWeapon(weapon) && get_user_team(id) == USER_HUMAN) || (get_user_team(id) == USER_ZOMBIE && weapon == CSW_KNIFE) ){
 			new nameWeapon[33];
 			get_weaponname(get_user_weapon(id), nameWeapon, sizeof(nameWeapon));
 			new weapon = fm_find_ent_by_owner(-1, nameWeapon, id);					
@@ -918,7 +918,7 @@ public client_disconnected(id){
 	fVaultSave(id);	
 	mysqlSave(id);
 
-	if (get_user_team(id) == 2) removeCamp(id);
+	if (get_user_team(id) == USER_HUMAN) removeCamp(id);
 	
 	leaveParty(id);
 		
@@ -1133,7 +1133,7 @@ public DeathMsg(){
 		if(clan[attacker]) set_clan_info(clan[attacker], CLAN_KILLS, get_clan_info(clan[attacker], CLAN_KILLS) + 1);
 		if(userHelp[victim]) userHelp[victim] = false;
 		
-		if(get_user_team(attacker) == 1 || get_user_team(victim) == 1){
+		if(get_user_team(attacker) == USER_ZOMBIE || get_user_team(victim) == USER_ZOMBIE){
 			
 			deathPlayerPrice(attacker, victim);
 			
@@ -1204,8 +1204,8 @@ public globalHud(id){
 	
 	if(userLogged[id] && !(userExtraFps[id] || userFPS[id] >= bbCvar[cvarLimitFPS] + 49) && !userWarningHudStart[id]){
 		
-		if( get_user_team(id) == 1) iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n|^t%s Zombie^t|^n", classesZombies[userClass[id]][0]) ;
-		else if(get_user_team(id) == 2 && hasClassHuman(id, userClassHuman[id])) iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n|^t%s - Lv: %d - XP: %0.2f%%^t|^n", classesHuman[userClassHuman[id]][0],  userHumanLevel[id][userClassHuman[id]], (userExpClass[id][userClassHuman[id]]*100.0/needXpClass(userHumanLevel[id][userClassHuman[id]])));
+		if( get_user_team(id) == USER_ZOMBIE) iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n|^t%s Zombie^t|^n", classesZombies[userClass[id]][0]) ;
+		else if(get_user_team(id) == USER_HUMAN && hasClassHuman(id, userClassHuman[id])) iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n|^t%s - Lv: %d - XP: %0.2f%%^t|^n", classesHuman[userClassHuman[id]][0],  userHumanLevel[id][userClassHuman[id]], (userExpClass[id][userClassHuman[id]]*100.0/needXpClass(userHumanLevel[id][userClassHuman[id]])));
 		
 		iLen += format(gText[iLen], sizeof(gText)-iLen-1, "|^tPostac - Lv: %d - XP: %0.2f%%^t|^n", userLevel[id], (userExp[id]*100.0/needXp(id, userLevel[id])));
 		iLen += format(gText[iLen], sizeof(gText)-iLen-1, "|^tTwoje Zycie: %s^t|^n", formatNumber(get_user_health(id)));
@@ -1548,15 +1548,15 @@ public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 	| VIP			 |
 	\*----------------------*/
 	
-	if(isSVip(attacker) && get_user_team(attacker) == 2) damage *= 1.10;
-	else if(isVip(attacker) && get_user_team(attacker) == 2) damage *= 1.05;
+	if(isSVip(attacker) && get_user_team(attacker) == USER_HUMAN) damage *= 1.10;
+	else if(isVip(attacker) && get_user_team(attacker) == USER_HUMAN) damage *= 1.05;
 	
 	/*---------------------*\
 	| LV. WEAPON		|
 	\*---------------------*/
 
 	
-	if( get_user_team(attacker) == 2){
+	if( get_user_team(attacker) == USER_HUMAN){
 		if( (damagebits & DMG_BULLET) ){	
 			if(equal(allGuns[userWeaponSelect[attacker]][0], weapons[get_user_weapon(attacker)])){
 				damage += damage *(userWeaponDamage[attacker][userWeaponSelect[attacker]]* 0.01);
@@ -1564,7 +1564,7 @@ public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 		}
 	}
 	
-	if( get_user_team(attacker) == 2){
+	if( get_user_team(attacker) == USER_HUMAN){
 		if(foundedHat(attacker, HAT_NIEDZWIEDZ)) damage *= 1.05;
 		if(foundedHat(attacker, HAT_SWIATECZNASKARPETA)){
 			if(userClass[victim] != class_SNOWMAN){
@@ -1599,14 +1599,14 @@ public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 		addShotExp(attacker, damage);	
 	}
 		
-	if( damage + 1.0 >= float(get_user_health(victim)) && get_user_team(victim) == 1 ){
+	if( damage + 1.0 >= float(get_user_health(victim)) && get_user_team(victim) == USER_ZOMBIE ){
 		if(random(100) <= 15){
-			if(get_user_team(victim) == 1){
+			if(get_user_team(victim) == USER_ZOMBIE){
 				if( userClass[victim] == class_HEALTH ){
 					static Float:fOrigin[3], Float:fOriginTarget[3];
 					for( new i = 1 ; i < maxPlayers;i ++ ){
 						
-						if( !is_user_connected(i) || !is_user_alive(i) || get_user_team(i) != 1  || get_user_godmode(i) ||  i == attacker || i == victim) continue;
+						if( !is_user_connected(i) || !is_user_alive(i) || get_user_team(i) != USER_ZOMBIE  || get_user_godmode(i) ||  i == attacker || i == victim) continue;
 						
 						pev(victim, pev_origin, fOrigin);
 						pev(i, pev_origin, fOriginTarget);
@@ -1650,9 +1650,9 @@ public killPlayerRespawn(attacker, victim, headShot){
 	cs_set_user_deaths(victim, cs_get_user_deaths(victim)+1);
 	set_pev(attacker, pev_frags, pev(attacker, pev_frags)+1.0);
 	userDeathNum[victim] ++;
-	userKills[attacker] += 1;
+	userKills[attacker] ++;
 	userPoints[attacker] += bbCvar[cvarPointToKills];
-	userDeaths[victim] += 1;
+	userDeaths[victim] ++;
 	userPoints[victim] += bbCvar[cvarPointToDeaths];
 	
 	if(foundedHat(attacker, HAT_BALWAN)){
@@ -1688,11 +1688,11 @@ public killPlayerRespawn(attacker, victim, headShot){
 		addPro(attacker, pro_TRUPOSZ, 1);
 	}
 
-	new ct = numPlayers(2, false);
-	new tt = numPlayers(1, false);
+	new tt	= 	numPlayers(USER_ZOMBIE, false);
+	new ct	= 	numPlayers(USER_HUMAN, false);
 	new all = ct + tt;
 			
-	if(get_user_team(victim) == 1) addNuggetToFinal(victim, ( (all - ct) * 2 ) + userDeathNum[victim] );
+	if(get_user_team(victim) == USER_ZOMBIE) addNuggetToFinal(victim, ( (all - ct) * 2 ) + userDeathNum[victim] );
 	
 	createNugget(attacker, victim);
 	if(random_float(0.0, 100.0) <= dropChest(attacker)) createCase(attacker, victim);
@@ -1707,7 +1707,7 @@ public killPlayerRespawn(attacker, victim, headShot){
 public classTakeDamage(victim, inflictor, attacker, &Float:damage, damagebits){
 	
 	
-	if( get_user_team(victim) == 1 && !userDraculaUsed[victim] ){
+	if( get_user_team(victim) == USER_ZOMBIE && !userDraculaUsed[victim] ){
 		if( userClass[victim] == class_DRACULA ){
 			if( damage>=float(get_user_health(victim))){
 				if(random(100) < 25){
@@ -1735,7 +1735,7 @@ public classTakeDamage(victim, inflictor, attacker, &Float:damage, damagebits){
 		reduceDamage = damage;
 		addPro(victim, pro_PAKER, floatround(reduceDamage));
 	}
-	if(get_user_team(attacker) == 1){
+	if(get_user_team(attacker) == USER_ZOMBIE){
 		new bool:isProPercent = didPro(attacker,  pro_DEATH);
 		if(random(100) <= 5 + ( isProPercent ? 3 : 0 )){
 			if( userClass[attacker] == class_DEATH ){
@@ -1750,7 +1750,7 @@ public classTakeDamage(victim, inflictor, attacker, &Float:damage, damagebits){
 	}
 	
 	
-	if(get_user_team(attacker) == 2 && attacker != victim ){
+	if(get_user_team(attacker) == USER_HUMAN && attacker != victim ){
 		if(random_float(0.0, 100.0) <= 0.5 ){
 			if( userClass[victim] == class_POISON){
 				if(get_user_health(victim) <= 4)
@@ -1804,7 +1804,7 @@ public dracula_Off(id){
 }
 public class_humanTakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 
-	if(get_user_team(attacker) == 2){
+	if(get_user_team(attacker) == USER_HUMAN){
 		
 		if(userClassHuman[attacker] == human_HEALER) {
 			damage += str_to_num(paramClassesHuman[human_HEALER][3])*userHumanLevel[attacker][human_HEALER];
@@ -1959,7 +1959,7 @@ public class_humanTakeDamage(victim, inflictor, attacker, Float:damage, damagebi
 
 public respawnAll(){
 	for( new i = 1; i<maxPlayers; i++ ){
-		if( !is_user_connected(i) || get_user_team(i) != 2) continue;
+		if( !is_user_connected(i) || get_user_team(i) != USER_HUMAN) continue;
 		stopEnt(i);
 		ExecuteHamB(Ham_CS_RoundRespawn, i);
 		set_pev(i, pev_velocity, Float:{0.0,0.0,0.0});
@@ -1971,12 +1971,12 @@ public gameUserDeath(id){
 		
 		if( task_exists(id+TASK_RESPAWN) ) remove_task(id+TASK_RESPAWN);
 			
-		if( get_user_team( id ) == 2 ){		
+		if( get_user_team( id ) == USER_HUMAN ){		
 			if( buildTime || prepTime )
 				set_task(1.5, "respawnPlayer", id+TASK_RESPAWN);
 			else{
 				removeCamp(id);
-				new ct = numPlayers(2, true);
+				new ct = numPlayers(USER_HUMAN, true);
 				if( ct>0 ){
 					if( task_exists(id+TASK_RESPAWN) )
 						remove_task(id+TASK_RESPAWN);
@@ -2003,16 +2003,16 @@ public fw_ClientKill(id){
 }
 public respawnPlayerAsTT(id){
 	id -= TASK_RESPAWN;
-	if( is_user_hltv(id) ||  get_user_team(id) > 2  || !is_user_connected(id)) return;
+	if( is_user_hltv(id) ||  get_user_team(id) > USER_HUMAN  || !is_user_connected(id)) return;
 
 	if( !is_user_alive(id)){		
-		cs_set_user_team(id, 1);
+		cs_set_user_team(id, USER_ZOMBIE);
 		ExecuteHamB(Ham_CS_RoundRespawn, id);
 	}
 }
 public respawnPlayer(id){	
 	id -= TASK_RESPAWN;
-	if( get_user_team(id) > 2 || !is_user_connected(id)) return;
+	if( get_user_team(id) > USER_HUMAN || !is_user_connected(id)) return;
 	if( !is_user_alive(id)){		
 		ExecuteHamB(Ham_CS_RoundRespawn, id);	
 	}
@@ -2034,7 +2034,7 @@ public removeCamp(id){
 	if( target == 0 ){
 		adminResetBlock(2, id, id);	
 	}else{
-		if( get_user_team(target) == 2 && is_user_alive(target) ){
+		if( get_user_team(target) == USER_HUMAN && is_user_alive(target) ){
 			reWriteBlocksParty(id, target);
 		}else {
 			adminResetBlock(2, id, id);			
@@ -2099,21 +2099,21 @@ public checkTeam(id){
 	if( !is_user_connected(id) || is_user_hltv(id) ) return PLUGIN_CONTINUE;
 
 	if( gameTime ){
-		if( get_user_team(id) == 2){				
+		if( get_user_team(id) == USER_HUMAN){				
 			if( !is_user_alive(id ) ){				
-				cs_set_user_team(id, 1);
+				cs_set_user_team(id, USER_ZOMBIE);
 				respawnPlayer(id+TASK_RESPAWN);
 			}
-		}else if( get_user_team(id) == 1){			
+		}else if( get_user_team(id) == USER_ZOMBIE){			
 			if( !is_user_alive(id ) )
 				respawnPlayer(id+TASK_RESPAWN);
 		}
 	}else if( buildTime || prepTime ){
-		if( get_user_team(id) == 2){				
+		if( get_user_team(id) == USER_HUMAN){				
 			if( !is_user_alive(id ) ){	
 				respawnPlayer(id+TASK_RESPAWN);
 			}
-		}else if( get_user_team(id) == 1){			
+		}else if( get_user_team(id) == USER_ZOMBIE){			
 			if( !is_user_alive(id ) )
 				respawnPlayer(id+TASK_RESPAWN);
 		}
@@ -2218,7 +2218,7 @@ public cmdSay(id){
 			}
 
 			if(equal(szMessage, "/klasa")){
-				if(get_user_team(id) != 2) classZombie(id);
+				if(get_user_team(id) != USER_HUMAN) classZombie(id);
 				else classHuman(id);
 				return PLUGIN_HANDLED;
 			}
@@ -2239,11 +2239,11 @@ public cmdSay(id){
 				return PLUGIN_HANDLED;
 			}
 			if ( equal(szMessage, "/respawn") || equal(szMessage, "/odrodz") || equal(szMessage, "/r")){
-				if((get_user_team(id) == 2) && ( buildTime || prepTime)){
+				if((get_user_team(id) == USER_HUMAN) && ( buildTime || prepTime)){
 					respawnPlayerAdmin(id);
 					return PLUGIN_HANDLED;
 				
-				} else if (( get_user_team(id) == 1) && get_user_health(id) == userMaxHealth[id]){
+				} else if (( get_user_team(id) == USER_ZOMBIE) && get_user_health(id) == userMaxHealth[id]){
 					respawnPlayerAdmin(id);
 					return PLUGIN_HANDLED;
 				} else {
@@ -2519,33 +2519,33 @@ public cmdSay(id){
 	return PLUGIN_HANDLED;
 }
 
+new const regArray[][][] = {
+	 { "Ogolny", 		"reg_global",	"d" }
+	,{ "Budowniczych", 	"reg_human",	"y" }
+	,{ "Zombi", 		"reg_zombie",	"y" }
+	,{ "Admina", 		"reg_admin",	"r" }
+};
+
 public regulamin(id){
 	
 	if(!is_user_connected(id)) return;
 
 	new menu = menu_create("\r[BaseBuilder]\y Regulamin!", "regulamin_2");	
-	
-	menu_additem(menu, "Regulamin\d Ogolny");
-	menu_additem(menu, "Regulamin\y Budowniczych");
-	menu_additem(menu, "Regulamin\y Zombi");
-	menu_additem(menu, "Regulamin\r Admina");
+
+	for(new i = 0; i < sizeof(regArray); i ++){
+		menu_additem(menu, formatm("Regulamin \%c%s", regArray[i][2], regArray[i][0]));
+	}
 	
 	menu_display(id, menu, 0);
 }
 
 public regulamin_2(id, menu, item){
-	if(item == MENU_EXIT){
-		menu_destroy(menu);
-		return PLUGIN_CONTINUE;
-	}
-	switch(item){
-		case 0:show_motd(id, "motd/reg_global.txt", "Regulamin Ogolny");
-		case 1:show_motd(id, "motd/reg_human.txt", "Regulamin Budowniczych");
-		case 2:show_motd(id, "motd/reg_zombie.txt", "Regulamin Zombi");
-		case 3:show_motd(id, "motd/reg_admin.txt", "Regulamin Admina");
-	}
-	regulamin(id);
-	return PLUGIN_CONTINUE;
+	if(item != MENU_EXIT){
+	
+		show_motd(id, formatm("motd/%s.txt", regArray[item][1]), formatm("Regulamin %s", regArray[item][0]));
+		regulamin(id);
+	
+	} else menu_destroy(menu);
 }
 
 public cmdSayClan(id){
@@ -2610,7 +2610,7 @@ public Release_Zombies(){
 		
 		if(userGrab[i]) stopEnt(i);
 			
-		if(get_user_team(i) == 2){
+		if(get_user_team(i) == USER_HUMAN){
 			if(userWeaponBool[i]){
 				giveWeapons(i, userWeaponSelect[i]);
 				userWeaponBool[i] = false;
@@ -2626,7 +2626,7 @@ public Release_Zombies(){
 }
 public cmdUnstuck(id){
 	
-	if(get_user_team(id) == 1) return PLUGIN_CONTINUE;
+	if(get_user_team(id) == USER_ZOMBIE) return PLUGIN_CONTINUE;
 	if(gameTime) return PLUGIN_CONTINUE;
 	
 	static Float:origin[3];
@@ -2652,7 +2652,7 @@ public cmdUnstuck(id){
 						show_dhudmessage(id, "!! Odblokowano !!");
 					}
 					set_pev(id,pev_velocity,{0.0,0.0,0.0});
-					o = sizeof size;
+					o = sizeof(size);
 				}	
 			}
 		}
@@ -2723,9 +2723,8 @@ public jumpFuncBlock(id, type){
 				jumpBlock[id] = false;
 			} 
 		}
-		case 2:{
-			jumpBlock[id] = true;
-		}
+		case 2: jumpBlock[id] = true;
+		
 	}
 }
 public fw_EmitSound(id,channel,const sample[],Float:volume,Float:attn,flags,pitch){
@@ -2733,7 +2732,7 @@ public fw_EmitSound(id,channel,const sample[],Float:volume,Float:attn,flags,pitc
 	if(!is_user_alive(id)) return FMRES_IGNORED;
 	if(OX[OX_START]) return FMRES_IGNORED;
 	
-	if (!is_user_connected(id) || get_user_team(id) != 1 || buildTime || prepTime || roundEnd) return FMRES_IGNORED;
+	if (!is_user_connected(id) || get_user_team(id) != USER_ZOMBIE || buildTime || prepTime || roundEnd) return FMRES_IGNORED;
 		
 	if(equal(sample[7], "die", 3) || equal(sample[7], "dea", 3)){
 		emit_sound(id,channel,zombieSound[random_num(3,5)],volume,attn,flags,pitch);
@@ -2807,7 +2806,7 @@ public globalMenu_2(id, item){
 		case 2:classZombie(id);
 		case 3:classHuman(id);
 		case 4:{
-			if(get_user_team(id) == 1 && get_user_health(id) == userMaxHealth[id]){
+			if(get_user_team(id) == USER_ZOMBIE && get_user_health(id) == userMaxHealth[id]){
 				respawnPlayerAdmin(id);
 				return PLUGIN_CONTINUE;
 			}
@@ -2894,16 +2893,16 @@ public menuGlobalVip(id){
 	menu_display(id, menu, 0);
 }
 public menuGlobalVip_2(id, menu, item){
-	if(item == MENU_EXIT){
-		menu_destroy(menu);
-		return;
-	}
-	switch(item){
-		case 0:showInfoVip(id, 0);
-		case 1:showInfoVip(id, 1);
-		case 2:showVipsOnline(id, 0);
-		case 3:showVipsOnline(id, 1);	
-	}	
+	if(item != MENU_EXIT){
+	
+		switch(item){
+			case 0:showInfoVip(id, 0);
+			case 1:showInfoVip(id, 1);
+			case 2:showVipsOnline(id, 0);
+			case 3:showVipsOnline(id, 1);	
+		}
+		
+	} else menu_destroy(menu);
 }
 public showVipsOnline(id, type) {
 
@@ -2927,12 +2926,11 @@ public showVipsOnline(id, type) {
 }
 
 public showVipsOnline_2(id, menu, item){
-	if(item == MENU_EXIT){
-		menu_destroy(menu);
-		return PLUGIN_CONTINUE;
-	}
-	menuGlobalVip(id);
-	return PLUGIN_CONTINUE;
+	if(item != MENU_EXIT){
+		
+		menuGlobalVip(id);
+		
+	} else menu_destroy(menu);
 }
 
 public vipStatus(){
@@ -3072,6 +3070,3 @@ public ChatOff(id){
 	if(!isSuperAdmin(id)) return;
 	serverOffChat =! serverOffChat;
 }
-/* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
-*{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
-*/

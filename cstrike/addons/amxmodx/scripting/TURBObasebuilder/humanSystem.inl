@@ -328,7 +328,7 @@ public buyClass_2(id, item){
 public setHumanClass(id){
 	
 	switch(get_user_team(id)){
-		case 2:{
+		case USER_HUMAN:{
 			new class = userClassHuman[id];
 			
 			userMaxSpeed[id] 	= 250.0;
@@ -397,7 +397,7 @@ public atributeMenu(id){
 	
 	if(!is_user_connected(id)) return PLUGIN_CONTINUE;
 	
-	if(get_user_team(id) != 2){
+	if(get_user_team(id) != USER_HUMAN){
 		chatPrint(id, PREFIX_NORMAL, "Moce sa przeznaczone tylko dla klas Budowniczych!");
 		return PLUGIN_CONTINUE;
 	}
@@ -440,7 +440,7 @@ public atributeMenu_2(id, menu, item){
 	
 	new bonus = str_to_num(classesHuman[userClassHuman[id]][4]);
 	
-	if(get_user_team(id) != 2){
+	if(get_user_team(id) != USER_HUMAN){
 		chatPrint(id, PREFIX_NORMAL, "Moce sa przeznaczone tylko dla klas Budowniczych!");
 		return PLUGIN_CONTINUE;
 	}
@@ -459,7 +459,7 @@ public atributeMenu_2(id, menu, item){
 public bindPower(id){
 	new bonus = str_to_num(classesHuman[userClassHuman[id]][4]);
 	
-	if(get_user_team(id) != 2) return PLUGIN_HANDLED;
+	if(get_user_team(id) != USER_HUMAN) return PLUGIN_HANDLED;
 	if(bonus == -1) return PLUGIN_HANDLED;
 	
 	usePower(id, bonus);
@@ -475,7 +475,7 @@ public bool:usePower(id, bonus){
 		return false;
 	}
 	
-	if(get_user_team(id) != 2){
+	if(get_user_team(id) != USER_HUMAN){
 		chatPrint(id, PREFIX_NORMAL, "Moce sa przeznaczone tylko dla klas Budowniczych!");
 		return false;
 	}
@@ -498,7 +498,7 @@ public bool:usePower(id, bonus){
 }
 public Float:useBonus(id, idBonus, bool:staticTime){
 	
-	if(get_user_team(id) != 2){
+	if(get_user_team(id) != USER_HUMAN){
 		chatPrint(id, PREFIX_NORMAL, "Moce sa przeznaczone tylko dla klas Budowniczych!");
 		return -1.0;
 	}
@@ -660,7 +660,7 @@ public poisonTouch(ent, toucher){
 	fOrigin[2] += 3.5;
 	for( new i = 1 ; i < maxPlayers;i ++ ){
 					
-		if( !is_user_connected(i) || !is_user_alive(i)|| get_user_godmode(i) || i == owner || get_user_team(i) != 1) continue;			
+		if( !is_user_connected(i) || !is_user_alive(i)|| get_user_godmode(i) || i == owner || get_user_team(i) != USER_ZOMBIE) continue;			
 		entity_get_vector(i, EV_VEC_origin, fOriginTarget);
 
 		if( get_distance_f(fOrigin, fOriginTarget) < 150.0){
@@ -739,7 +739,7 @@ public trapThink(ent){
 
 		for(new i = 1; i < maxPlayers; i++){
 			
-			if(get_user_team(i) != 1) continue;
+			if(get_user_team(i) != USER_ZOMBIE) continue;
 			entity_get_vector(i, EV_VEC_origin, fOriginTarget);
 			
 			if (get_distance_f(fOrigin, fOriginTarget) < 40.0) closeTrap = true;
@@ -750,7 +750,7 @@ public trapThink(ent){
 			
 			for(new i = 1; i < maxPlayers; i ++){
 						
-				if(!is_user_alive(i) || !is_user_connected(i) || get_user_team(i) != 1 || i == owner) continue;
+				if(!is_user_alive(i) || !is_user_connected(i) || get_user_team(i) != USER_ZOMBIE || i == owner) continue;
 					
 				entity_get_vector(i, EV_VEC_origin, fOriginTarget);
 				
@@ -844,7 +844,7 @@ public electroDamage(id, ent){
 	new dmg = str_to_num( bonusClass[bonus_FIELD][4]) *  userHumanLevel[owner][human_ELEKTRYK] + ( isProDamage ? 40 : 0 ) + floatround(damageClassClan(owner));
 				
 	for( new i = 1; i < maxPlayers; i ++ ){
-		if( !is_user_alive(i) || i == owner || get_user_team(i) != 1) continue;
+		if( !is_user_alive(i) || i == owner || get_user_team(i) != USER_ZOMBIE) continue;
 			
 		entity_get_vector(i, EV_VEC_origin, fOriginTarget);
 		
@@ -887,7 +887,7 @@ public healerBonus(id){
 		
 	
 	for( new i = 1; i < maxPlayers; i ++ ){
-		if( !is_user_alive(i) || get_user_team(i) != 2) continue;
+		if( !is_user_alive(i) || get_user_team(i) != USER_HUMAN) continue;
 			
 		entity_get_vector(i, EV_VEC_origin, fOriginTarget);
 		
@@ -931,7 +931,7 @@ public ammoThinkBonus(ent){
 	entity_get_vector(ent, EV_VEC_origin, fOrigin);
 	
 	for( new i = 1; i <= maxPlayers; i ++ ){
-		if( !is_user_alive(i) || get_user_team(i) != 2) continue;
+		if( !is_user_alive(i) || get_user_team(i) != USER_HUMAN) continue;
 				
 		entity_get_vector(i, EV_VEC_origin, fOriginTarget);
 			
@@ -965,7 +965,7 @@ public pushBonus(id){
 	new powerPush =  str_to_num( bonusClass[bonus_PUSH][4]) *  userHumanLevel[id][human_BULLDOZER] + ( isProPush ? 50 :0 );
 		
 	for( new i = 1; i < maxPlayers; i ++ ){
-		if( !is_user_alive(i) || get_user_team(i) != 1) 
+		if( !is_user_alive(i) || get_user_team(i) != USER_ZOMBIE) 
 			continue;
 			
 		entity_get_vector(i, EV_VEC_origin, fOriginTarget);
@@ -1081,7 +1081,7 @@ public fireBallTouch(ent, toucher){
 			
 	for( new i = 1 ; i < maxPlayers;i ++ ){			
 		
-		if( !is_user_connected(i) || !is_user_alive(i)|| get_user_godmode(i) || i == owner || get_user_team(i) != 1) continue;			
+		if( !is_user_connected(i) || !is_user_alive(i)|| get_user_godmode(i) || i == owner || get_user_team(i) != USER_ZOMBIE) continue;			
 		
 		entity_get_vector(i, EV_VEC_origin, fOriginTarget);
 		
@@ -1204,7 +1204,7 @@ public iceBoltTouch(ent, toucher){
 			
 	for( new i = 1 ; i < maxPlayers;i ++ ){
 					
-		if( !is_user_connected(i) || !is_user_alive(i)|| get_user_godmode(i) || i == owner || get_user_team(i) != 1) continue;			
+		if( !is_user_connected(i) || !is_user_alive(i)|| get_user_godmode(i) || i == owner || get_user_team(i) != USER_ZOMBIE) continue;			
 		
 		entity_get_vector(i, EV_VEC_origin, fOriginTarget);
 		
@@ -1345,7 +1345,7 @@ public bombExplode(ent){
 	new dmg = (str_to_num( bonusClass[bonus_BOMB][4]) *  userHumanLevel[owner][human_BOOMBERMA]) + floatround(damageClassClan(owner));
 	for( new i = 1 ; i < maxPlayers;i ++ ){
 					
-		if( !is_user_connected(i) || !is_user_alive(i)|| get_user_godmode(i) || i == owner || get_user_team(i) != 1) continue;		
+		if( !is_user_connected(i) || !is_user_alive(i)|| get_user_godmode(i) || i == owner || get_user_team(i) != USER_ZOMBIE) continue;		
 		
 		entity_get_vector(i, EV_VEC_origin, fOriginTarget);
 		
@@ -1387,7 +1387,7 @@ public bombTouch(ent, toucher){
 	new szClass[18];
 	entity_get_string(ent, EV_SZ_classname, szClass, sizeof(szClass));
 	
-	if(equal(szClass, classBomb) && !(get_user_team(toucher) == 1))
+	if(equal(szClass, classBomb) && !(get_user_team(toucher) == USER_ZOMBIE))
 		return PLUGIN_CONTINUE;
 	
 	new owner = entity_get_int(ent, EV_INT_iuser1);
@@ -1463,7 +1463,7 @@ public bombTrapThink(ent){
 
 		for(new i = 1; i < maxPlayers; i++){
 			
-			if(!is_user_alive(i) || !is_user_connected(i) || get_user_team(i) != 1 || i == owner) continue;
+			if(!is_user_alive(i) || !is_user_connected(i) || get_user_team(i) != USER_ZOMBIE || i == owner) continue;
 					
 			entity_get_vector(i, EV_VEC_origin, fOriginTarget);
 			if (get_distance_f(fOrigin, fOriginTarget) < 40.0){
@@ -1491,7 +1491,7 @@ public trapBomberExplode(ent){
 	new dmg =(str_to_num(paramClassesHuman[human_BOOMBERMA][1]) *  userHumanLevel[owner][human_BOOMBERMA]) + floatround(damageClassClan(owner));
 	for( new i = 1 ; i < maxPlayers;i ++ ){
 					
-		if( !is_user_connected(i) || !is_user_alive(i)|| get_user_godmode(i) || i == owner || get_user_team(i) != 1) continue;			
+		if( !is_user_connected(i) || !is_user_alive(i)|| get_user_godmode(i) || i == owner || get_user_team(i) != USER_ZOMBIE) continue;			
 		
 		entity_get_vector(i, EV_VEC_origin, fOriginTarget);
 	
@@ -1630,7 +1630,7 @@ public explodeRocket(id){
 			
 	for( new i = 1 ; i < maxPlayers;i ++ ){
 					
-		if( !is_user_connected(i) || !is_user_alive(i)|| get_user_godmode(i) || i == id || get_user_team(i) != 1) continue;	
+		if( !is_user_connected(i) || !is_user_alive(i)|| get_user_godmode(i) || i == id || get_user_team(i) != USER_ZOMBIE) continue;	
 		
 		entity_get_vector(i, EV_VEC_origin, fOriginTarget);
 		

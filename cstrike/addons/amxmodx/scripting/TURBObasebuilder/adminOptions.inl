@@ -488,7 +488,7 @@ public choosePlayer(id, item){
 				format(gText, sizeof(gText), "\w%s\d [%s\d]", userName[i], teamNames[get_user_team(i)][1]);
 			}
 			case MENU_CHANGE_TEAM:{
-				format(gText, sizeof(gText), "\w%s\d [%s%s\d]", userName[i], (get_user_team(i) == 1) ? "\y" : (get_user_team(i) == 2 ) ? "\r" : "\d", teamNames[get_user_team(i)][1]);
+				format(gText, sizeof(gText), "\w%s\d [%s%s\d]", userName[i], (get_user_team(i) == USER_ZOMBIE) ? "\y" : (get_user_team(i) == USER_HUMAN ) ? "\r" : "\d", teamNames[get_user_team(i)][1]);
 			}
 			case MENU_PASSWORD:{ 
 				format(gText, sizeof(gText), "\y%s -\d [\r%s\d]", userName[i], strlen(userPassword[i])>1?userPassword[i]:"_");
@@ -607,7 +607,7 @@ public choosePlayer_2(id, menu, item){
 		}
 		case MENU_CHANGE_TEAM:{
 			
-			cs_set_user_team(target, get_user_team(target) == 1 ? 2 : 1 );
+			cs_set_user_team(target, get_user_team(target) == USER_ZOMBIE ? USER_HUMAN : USER_ZOMBIE );
 			respawnPlayerAdmin(target);
 			userRoundTeam[target] = get_user_team(target);			
 			chatPrint(0, PREFIX_NORMAL, "^4 %s^1 przeniesiony do^4 %s^1 przez^4 %s ", userName[target], teamNames[get_user_team(target)][1], userName[id]);
@@ -893,7 +893,7 @@ public adminCommands(id, szMessage[]){
 				for(new i = 1; i < maxPlayers; i++){
 					if(!is_user_connected(i) || !is_user_alive(i)) continue; 
 					
-					if(get_user_team(i) != 1) continue; 
+					if(get_user_team(i) != USER_ZOMBIE) continue; 
 						
 					new Float:fOrigin[3] = 0.0;
 					pev(id, pev_origin, fOrigin);
@@ -906,7 +906,7 @@ public adminCommands(id, szMessage[]){
 				for(new i = 1; i < maxPlayers; i++){
 					
 					if(!is_user_connected(i) || !is_user_alive(i)) continue; 
-					if(get_user_team(i) != 2) continue; 
+					if(get_user_team(i) != USER_HUMAN) continue; 
 							
 					new Float:fOrigin[3] = 0.0;
 					pev(id, pev_origin, fOrigin);
@@ -981,7 +981,7 @@ public adminCommands(id, szMessage[]){
 			return PLUGIN_HANDLED;
 		}
 		
-		cs_set_user_team(target, get_user_team(target) == 1 ? 2 : 1 );
+		cs_set_user_team(target, get_user_team(target) == USER_ZOMBIE ? USER_HUMAN : USER_ZOMBIE );
 		respawnPlayerAdmin(target);
 		userRoundTeam[target] = get_user_team(target);				
 		chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 zostal przeniesiony do^4 %s^1 przez^3 %s", userName[target], teamNames[get_user_team(target)][1], userName[id]);
@@ -1120,7 +1120,7 @@ public adminHelp(id){
 		chatPrint(id, PREFIX_NORMAL, "Juz minal czas na pomoc!");
 		return 1;
 	}
-	if (get_user_team(id) != 2){
+	if (get_user_team(id) != USER_HUMAN){
 		chatPrint(id, PREFIX_NORMAL, "Musisz byc w budowniczych");
 		return 1;
 	}
@@ -1377,7 +1377,7 @@ public adminHelpPush(id){
 		if( i == id ) continue;
 		if(isAdmin(i)) continue;
 		if(buildTime || prepTime) continue;
-		if(!is_user_alive(i) || get_user_team(i) != 1)  continue;
+		if(!is_user_alive(i) || get_user_team(i) != USER_ZOMBIE)  continue;
 			
 		entity_get_vector(i, EV_VEC_origin, fOriginTarget);
 

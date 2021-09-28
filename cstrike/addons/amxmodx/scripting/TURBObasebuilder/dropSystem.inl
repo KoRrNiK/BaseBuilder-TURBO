@@ -117,7 +117,7 @@ public addKillNugget(id, value){
 
 	if((userScrollNugget[id] - playedTime(id)) > 0 ) value *= 2;
 	
-	if(userClassHuman[id] == human_FREE && didPro(id,  pro_LAPCZYWIEC) && get_user_team(id) == 2) value += random_num(5,10);
+	if(userClassHuman[id] == human_FREE && didPro(id,  pro_LAPCZYWIEC) && get_user_team(id) == USER_HUMAN) value += random_num(5,10);
 	
 	if(isSVip(id)) value += random(6);
 	else if(isVip(id)) value += random(2);

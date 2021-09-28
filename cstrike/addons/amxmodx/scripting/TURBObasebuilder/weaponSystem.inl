@@ -9,6 +9,7 @@
 
 new const costReset = 15000;
 new const costResetMulti = 5000;
+enum { damage_MIN = 0, damage_MAX };
 
 public menuWeapon(id){	
 	
@@ -116,7 +117,7 @@ public selectWeapon_2(id, item){
 				chatPrint(id, PREFIX_NORMAL, "Wykozystales swoj limit na ta runde zmian Broni!");
 				return PLUGIN_CONTINUE;
 			}
-			if(get_user_team(id) != 2){
+			if(get_user_team(id) != USER_HUMAN){
 				menuWeapon(id);
 				chatPrint(id, PREFIX_NORMAL, "Musisz byc budowniczym!");
 				return PLUGIN_CONTINUE;
@@ -145,7 +146,7 @@ public selectWeapon_2(id, item){
 	}
 	return PLUGIN_CONTINUE;
 }
-enum { damage_MIN = 0, damage_MAX };
+
 public upgradeWeapon(id){
 	
 	new gun = userVarMenu[id];
@@ -218,7 +219,7 @@ public giveWeapons(id, item){
 		userWeaponBool[id] = true;
 		return PLUGIN_CONTINUE;
 	}
-	if (get_user_team(id) != 2){
+	if (get_user_team(id) != USER_HUMAN){
 		chatPrint(id, PREFIX_NORMAL, "To jest tylko dla^4 Budowniczych");
 		return PLUGIN_CONTINUE;
 	}
@@ -244,7 +245,7 @@ public giveWeapons(id, item){
 }
 
 public giveGranade(id){
-	if (get_user_team(id) != 2){
+	if (get_user_team(id) != USER_HUMAN){
 		chatPrint(id, PREFIX_NORMAL, "To jest tylko dla^4 Budowniczych");
 		return PLUGIN_CONTINUE;
 	}
@@ -292,7 +293,7 @@ public MSG_HideWeapon(MsgDEST,MsgID,id){
 	if(!(get_msg_arg_int(1) & HUD_HIDE_TIMER ))
 		set_msg_arg_int(1,ARG_BYTE,get_msg_arg_int(1) | HUD_HIDE_TIMER );	
 	
-	/*if(get_user_team(id) != 2){
+	/*if(get_user_team(id) != USER_HUMAN){
 		if(!(get_msg_arg_int(1) & HUD_HIDE_RHA))
 			set_msg_arg_int(1,ARG_BYTE,get_msg_arg_int(1) | HUD_HIDE_RHA);	
 	}*/

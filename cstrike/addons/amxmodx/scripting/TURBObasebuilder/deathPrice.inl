@@ -21,7 +21,7 @@ public deathPriceMenu(id){
 	
 	if(!is_user_connected(id)) return;
 	
-	if(get_user_team(id) != 2){
+	if(get_user_team(id) != USER_HUMAN){
 		chatPrint(id, PREFIX_LINE, "Musisz byc budowniczym aby placic za swoja smierc!");
 		return;
 	}	
@@ -124,7 +124,7 @@ public deathPriceMenu_2(id, menu, item){
 }
 
 public deathPlayerPrice(attacker, victim){
-	if(get_user_team(attacker) == 1 && get_user_team(victim) == 2){
+	if(get_user_team(attacker) == USER_ZOMBIE && get_user_team(victim) == USER_HUMAN){
 		if(userDeathPrice[victim][PRICE_START]){
 			if((!userDeathPrice[victim][PRICE_GOD]) || (!userDeathPrice[attacker][PRICE_BUYGOD] && userDeathPrice[victim][PRICE_GOD])){
 				if((userDeathPrice[victim][PRICE_CLASS] == userClass[attacker]) || (userDeathPrice[victim][PRICE_CLASS] == class_TOTAL)){
