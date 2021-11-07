@@ -407,6 +407,7 @@ stock bool:isOX(){
 	get_mapname(szMap, sizeof(szMap) );
 	if(containi(szMap, "ox") != -1) return true;
 	return false;
+	
 }
 
 

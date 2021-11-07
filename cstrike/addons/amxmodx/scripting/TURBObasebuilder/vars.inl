@@ -224,6 +224,8 @@ new userDarkScreen[33];
 new userPageColor[33];
 new bool:jumpBlock[33];
 
+new bool:userViewCamera[33];
+
 new userStaminaDayRefresh[33];
 new userLastStaminaTime[33];
 new bool:userMinePayGoblin[33];
@@ -416,6 +418,8 @@ new bool:userWeaponBool[33];
 --| SOUND / SPRITE	 |
 	\*-*/
 
+new const BARHP[]		=	"sprites/basebuildervt/barhp.spr";
+	
 new const TEAMSPRITE[]		=	"sprites/basebuildervt/teams3.spr";	
 new const BLUEZSPRITE[]		=	"sprites/basebuildervt/bluez.spr";
 new const LASERSPRITE[]		=	"sprites/basebuildervt/laserbeam.spr";
@@ -447,7 +451,6 @@ new const classIceBolt[]		=	"iceBoldClass";
 new const classBomb[]		=	"bombClass";
 new const classbombTrap[]	=	"bombTrapClass";
 new const rocketClass[] 		= 	"rocketClass";
-
 
 new spriteBeam;
 new sprite_explode;
@@ -1025,7 +1028,7 @@ new userHat[33][4];
 
 	#if defined CHRISTMAS_ADDON
 
-		new firstDayDecember  =  1606777200;//1606780800;
+		new firstDayDecember  =  1634943626;//1606777200;//1606780800;
 		new const timePlayChristmas[] = {  15,14,12,17,14,18,9,16,14,17,18,17,17,16,16,16,16,15,18,19,16,15};
 		new randomSoundChristmas;
 		new configFile[128];
@@ -1442,6 +1445,9 @@ new Trie:userMutes[33];
 
 new Array:lastPlayerName;
 new Array:lastPlayerTime;
+
+
+new userBarHp[33];
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
 */
