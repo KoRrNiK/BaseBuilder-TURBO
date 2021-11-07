@@ -123,8 +123,6 @@ public readPassword(id){
 	if (!userLogged[id] && strlen(userPassword[id]) > 1){
 		if( equal(szArg, userPassword[id]) ){
 			userLogged[id]=true;			
-			set_user_info(id, "_pw", szArg );
-			cmd_execute(id, "setinfo _pw %s",szArg);
 			
 			logType[id] = LOG_LOGIN;
 			if(logType[id] == LOG_LOGIN){
@@ -145,8 +143,7 @@ public readPassword(id){
 	} else {
 		userLogged[id]=true;	
 		chatPrint(id, PREFIX_NORMAL, "Ustawiles haslo:^4 %s", szArg );		
-		cmd_execute(id, "setinfo _pw %s",szArg);
-		
+
 		logType[id] = LOG_LOGIN;
 		if(logType[id] == LOG_LOGIN){
 			format(gText, sizeof(gText), "ustawil [Haslo: %s]", szArg);
@@ -158,7 +155,7 @@ public readPassword(id){
 	
 	return PLUGIN_CONTINUE;
 }
-new bool:userViewCamera[33];
+
 public settingAccount(id){
 	
 	if(!is_user_connected(id)) return;
