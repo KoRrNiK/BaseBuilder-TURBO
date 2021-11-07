@@ -186,6 +186,9 @@ public startRelease(){
 		if(!is_user_connected(i) || is_user_hltv(i) || is_user_bot(i)) continue;
 			
 		Display_Fade(i,1024,1024,1024,0, 0, 0, 180);
+		
+		if( get_user_team(i) == 1 ) createBarHp(i);
+		
 	}
 	
 
@@ -246,6 +249,7 @@ public gameEnd(){
 			
 		deathPlayerWin(i);
 		resetPriceDefault(i);
+		removeBarHp(i);
 	}
 	
 	if( roundGood ){
@@ -352,33 +356,23 @@ public restartRound(){
 }
 
 public removeSkill(){
-	new ent = -1;
 
-	while ((ent = find_ent_by_class(ent, classPoison))){
-		if (pev_valid(ent)) remove_entity(ent);
-	}
-	while ((ent = find_ent_by_class(ent, classField))){
-		if (pev_valid(ent)) remove_entity(ent);	
-	}
-	while ((ent = find_ent_by_class(ent, classTrap))){
-		if (pev_valid(ent)) remove_entity(ent);	
-	}
-	while ((ent = find_ent_by_class(ent, classAmmo))){
-		if (pev_valid(ent)) remove_entity(ent);
-	}
-	while ((ent = find_ent_by_class(ent, classFireBall))){
-		if (pev_valid(ent)) remove_entity(ent);
-	}
-	while ((ent = find_ent_by_class(ent, classIceBolt))){
-		if (pev_valid(ent)) remove_entity(ent);
-	}
-	while ((ent = find_ent_by_class(ent, classbombTrap))){
-		if (pev_valid(ent)) remove_entity(ent);
-	}
-	while ((ent = find_ent_by_class(ent, classBomb))){
-		if (pev_valid(ent)) remove_entity(ent);
-	}
-	while ((ent = find_ent_by_class(ent, rocketClass))){
+	removeEntity__All(classPoison);
+	removeEntity__All(classField);
+	removeEntity__All(classTrap);
+	removeEntity__All(classAmmo);
+	removeEntity__All(classFireBall);
+	removeEntity__All(classIceBolt);
+	removeEntity__All(classbombTrap);
+	removeEntity__All(classBomb);
+	removeEntity__All(rocketClass);
+
+}
+
+public removeEntity__All(const nameClass[]){
+	new ent = -1;
+	
+	while ((ent = find_ent_by_class(ent, nameClass))){
 		if (pev_valid(ent)) remove_entity(ent);
 	}
 }
