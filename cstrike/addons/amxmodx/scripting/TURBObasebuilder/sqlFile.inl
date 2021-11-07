@@ -40,6 +40,8 @@ public plugin_init_sql(){
 	new queryData[1536];
 	new Handle:query;
 	
+	static const endLine[] = "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;";
+	
 	format(queryData, sizeof(queryData),
 	"CREATE TABLE IF NOT EXISTS `players`( \
 		`idplayer` INT NOT NULL AUTO_INCREMENT, \
@@ -62,7 +64,7 @@ public plugin_init_sql(){
 		`level` INT NOT NULL DEFAULT 1, \
 		`xp` FLOAT NOT NULL DEFAULT '0.00', \
 		`reset` INT NOT NULL DEFAULT 0, \
-		PRIMARY KEY (`idplayer`)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;"
+		PRIMARY KEY (`idplayer`)) %s", endLine
 	);
 
 	query = SQL_PrepareQuery(connection, queryData);
@@ -88,7 +90,7 @@ public plugin_init_sql(){
 		`cooldown` INT NOT NULL DEFAULT 0, \
 		`idmotd` varchar(20) NOT NULL DEFAULT '_', \
 		`upgradetime` INT NOT NULL DEFAULT 0, \
-		PRIMARY KEY (`idclans`));"
+		PRIMARY KEY (`idclans`)) %s", endLine
 	);
 	
 	query = SQL_PrepareQuery(connection, queryData);
@@ -102,7 +104,7 @@ public plugin_init_sql(){
 		`idadmin` INT NOT NULL, \
 		`time` varchar(33) NOT NULL,\
 		`map` varchar(33) NOT NULL, \
-		PRIMARY KEY (`idwarning`));" 
+		PRIMARY KEY (`idwarning`)) %s", endLine
 	);
 	
 	query = SQL_PrepareQuery(connection, queryData);
@@ -115,7 +117,7 @@ public plugin_init_sql(){
 		`heatlh` INT UNSIGNED NOT NULL DEFAULT 0, \
 		`speed` INT UNSIGNED NOT NULL DEFAULT 0, \
 		`reduction` INT UNSIGNED NOT NULL DEFAULT 0, \
-		PRIMARY KEY (`idplayer`, `idclass`));" 
+		PRIMARY KEY (`idplayer`, `idclass`)) %s", endLine 
 	);
 	
 	query = SQL_PrepareQuery(connection, queryData);
@@ -127,7 +129,7 @@ public plugin_init_sql(){
 		`idclass` INT NOT NULL, \
 		`level` INT NOT NULL DEFAULT 1, \
 		`xp` FLOAT NOT NULL, \
-		PRIMARY KEY (`idplayer`, `idclass`));" 
+		PRIMARY KEY (`idplayer`, `idclass`)) %s", endLine
 	);
 	
 	query = SQL_PrepareQuery(connection, queryData);
@@ -143,7 +145,7 @@ public plugin_init_sql(){
 		`hs` INT NOT NULL DEFAULT 0, \
 		`level` INT NOT NULL DEFAULT 0, \
 		`damage` FLOAT NOT NULL DEFAULT '0.00', \
-		PRIMARY KEY (`idplayer`, `idweapon`));" 
+		PRIMARY KEY (`idplayer`, `idweapon`)) %s", endLine
 	);
 	
 	query = SQL_PrepareQuery(connection, queryData);
@@ -154,7 +156,7 @@ public plugin_init_sql(){
 		`idmute` INT(11) AUTO_INCREMENT, \
 		`nameplayer` VARCHAR(33) NOT NULL, \
 		`mutedplayer` VARCHAR(33) NOT NULL, \
-		PRIMARY KEY (`idmute`));" 
+		PRIMARY KEY (`idmute`)) %s", endLine
 	);
 	
 	query = SQL_PrepareQuery(connection, queryData);
