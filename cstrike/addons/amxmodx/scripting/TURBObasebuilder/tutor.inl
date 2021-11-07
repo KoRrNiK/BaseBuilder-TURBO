@@ -39,7 +39,7 @@ stock tutorMake(id, TutorColor:ColorSelect, Float:fTime = 0.0, const szText[], a
 
 	if(fTime != 0.0){
 		if(!id){
-			for(new i = 1; i < 33; i++){
+			for(new i = 1; i < maxPlayers; i++){
 				if(!is_user_connected(i) || is_user_bot(i) || is_user_hltv(i)) continue; 
 				
 				remove_task(i+TASK_TUTOR);
