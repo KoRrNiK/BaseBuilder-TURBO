@@ -698,7 +698,7 @@ public poisonTouch(ent, toucher){
 
 public trapCreate(id){
 	
-	new Float:fOrigin[3];
+	new Float:fOrigin[3], Float:fAngles[3];
 
 	new ent = create_entity("info_target");
 	
@@ -708,8 +708,12 @@ public trapCreate(id){
 	entity_set_int(		ent, 	EV_INT_solid, 		SOLID_BBOX);
 	entity_set_model(	ent, 	modelTrap);
 	entity_get_vector(	id, 	EV_VEC_origin,		fOrigin);
+	entity_get_vector(	id, 	EV_VEC_angles,		fAngles);
 	fOrigin[2] += -20;
 	entity_set_vector(	ent, 	EV_VEC_origin,		fOrigin);
+	fAngles[0] = 0.0;
+	fAngles[2] = 0.0;
+	entity_set_vector(	ent, 	EV_VEC_angles,		fAngles);
 	set_rendering(		ent, 	kRenderFxGlowShell, 	153, 153, 102, 	kRenderNormal, 	1);
 	entity_set_int(		ent, 	EV_INT_iuser1,		id );
 	
@@ -780,7 +784,7 @@ public Float:removeSlow(id){
 }
 
 public electricPower(id){	
-	new Float:fOrigin[3];
+	new Float:fOrigin[3], Float:fAngles[3];
 	
 	new ent = create_entity("info_target");
 	entity_set_string(	ent, 	EV_SZ_classname, 	classField);
@@ -789,8 +793,12 @@ public electricPower(id){
 	entity_set_int(		ent, 	EV_INT_solid, 		SOLID_NOT);
 	entity_set_model(	ent, 	modelField);
 	entity_get_vector(	id, 	EV_VEC_origin,		fOrigin);
+	entity_get_vector(	id, 	EV_VEC_angles,		fAngles);
 	fOrigin[2] 	-= 	distanceToFloor(fOrigin)-6;
 	entity_set_vector(	ent, 	EV_VEC_origin,		fOrigin);
+	fAngles[0] = 0.0;
+	fAngles[2] = 0.0;
+	entity_set_vector(	ent, 	EV_VEC_angles,		fAngles);
 	entity_set_float(	ent,	EV_FL_fuser1,		get_gametime() );
 	entity_set_float(	ent, 	EV_FL_fuser3,		get_gametime() );
 	
@@ -899,7 +907,7 @@ public healerBonus(id){
 	}
 }
 public ammoCreateBonus(id){
-	new Float:fOrigin[3];
+	new Float:fOrigin[3], Float:fAngles[3];
 	
 	new ent = create_entity("info_target");
 	entity_set_string(	ent, 	EV_SZ_classname, 	classAmmo);
@@ -908,8 +916,14 @@ public ammoCreateBonus(id){
 	entity_set_int(		ent, 	EV_INT_solid, 		SOLID_NOT);
 	entity_set_model(	ent, 	modelAmmo);
 	entity_get_vector(	id, 	EV_VEC_origin,		fOrigin);
+	entity_get_vector(	id, 	EV_VEC_angles,		fAngles);
 	fOrigin[2] 	-= 	distanceToFloor(fOrigin)-3;
 	entity_set_vector(	ent, 	EV_VEC_origin,		fOrigin);
+	
+	fAngles[0] = 0.0;
+	fAngles[2] = 0.0;
+	
+	entity_set_vector(	ent, 	EV_VEC_angles,		fAngles);
 	entity_set_float(	ent,	 EV_FL_fuser1,		get_gametime() );
 	entity_set_float(	ent, 	EV_FL_fuser3,		get_gametime() );
 	
