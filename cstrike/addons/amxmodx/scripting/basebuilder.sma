@@ -1,5 +1,4 @@
-
-#define maxPlayers 4
+#define maxPlayers 33
 
 #include <	amxmodx		>
 #include <	amxmisc		>
@@ -59,6 +58,7 @@
 #include "TURBObasebuilder/roundSystem.inl"
 #include "TURBObasebuilder/logSystem.inl"
 #include "TURBObasebuilder/mute.inl"
+#include "TURBObasebuilder/zombieBar.inl"
 
 
 public plugin_precache(){
@@ -76,6 +76,8 @@ public plugin_precache(){
 	sprite_expIceBolt	=	precache_model(EXPLODICEBOLT);
 	sprite_pouIce		=	precache_model(POUICEBOLT);
 	sprite_sleepshroom	=	precache_model(SHROOMSLEEP);
+	
+	precache_model(BARHP);
 	
 	precache_model(MODELHANDS);
 	precache_model(modelRocketDefault);
@@ -203,7 +205,7 @@ public plugin_init(){
 	register_clcmd("chat", 			"ChatOff");
 	register_clcmd("bb_offset", 		"cloneOffset");
 	register_clcmd("moc", 			"bindPower");
-	register_clcmd("moc2", 			"resetTime");	
+	register_clcmd("moc2", 			"resetTime");
 	register_clcmd("PodajNazweKlanu", 	"createClanHandle");
 	register_clcmd("IloscBrylekKlan", 	"depositNuggetHandle");
 	register_clcmd("Ogloszenie_Klanu", 	"updateInfo");
@@ -275,6 +277,8 @@ public plugin_init(){
 	register_message(get_user_msgid("HideWeapon"), 		"MSG_HideWeapon");
 	register_message(get_user_msgid("ScoreAttrib"), 		"vipStatus");
 	register_message(get_user_msgid("Health"), 		"messageHealth");
+	
+	register_message(SVC_TEMPENTITY, 			"messageBlood");
 	
 	new const wpCPost[][]=	{ "weapon_shield", "weaponbox", "armoury_entity" };
 	new const entFire[][] = 	{ "worldspawn", "player" };
@@ -917,6 +921,7 @@ public client_disconnected(id){
 
 	fVaultSave(id);	
 	mysqlSave(id);
+	removeBarHp(id);
 
 	if (get_user_team(id) == USER_HUMAN) removeCamp(id);
 	
@@ -936,11 +941,10 @@ public client_disconnected(id){
 	ArrayPushString(lastPlayerName, userName[id]);
 	ArrayPushString(lastPlayerTime, szData);
 	
-	
 }
 
 public client_connect(id){
-	get_user_name(id, userName[id], sizeof(userName[]));
+	get_user_name(id, userName[id], sizeof(userName[]) -1 );
 		
 	new bool:kick = false;
 	
@@ -972,7 +976,6 @@ public client_connect(id){
 	copy(userPassword[id], sizeof(userPassword[]), "_");
 	
 	userLoadVault[id]		= 	false;
-	
 	userNugget[id] 			= 	0;
 	userLevel[id]			=	1;
 	userExp[id]			=	0.0;
@@ -1035,7 +1038,6 @@ public client_connect(id){
 	unlockCave[id]			=	0;
 	startUpgrade[id]		=	0;	
 	userLastAwardTime[id]		=	playedTime(id);
-	
 	userLastStaminaTime[id]		=	playedTime(id);
 	userStaminaDayRefresh[id]	= 	day;
 	userMinePayGoblin[id]		=	true;
@@ -1084,15 +1086,16 @@ public client_connect(id){
 	for(new i = 0 ; i < 4; i ++) userHat[id][i] 	= 	0;
 
 	
-	userSelectHat[id] 	= -1;
-	userSelectNewHat[id] = -1;
+	userSelectHat[id] 		= 	-1;
+	userSelectNewHat[id] 		= 	-1;
+	userCheckCamp[id] 		= 	false;
 	
-	userCheckCamp[id] = false;
+	userBarHp[id]			=	0;
 	
 	resetPriceDefault(id);
 	
 	#if defined CHRISTMAS_ADDON
-		userMenuChristmas[id] = false;
+		userMenuChristmas[id] 	= 	false;
 	#endif
 	
 	loadInt(id);
@@ -1164,7 +1167,7 @@ public DeathMsg(){
 			}
 			
 			#if defined CHRISTMAS_ADDON
-				countDeath ++
+				countDeath ++;
 				if(countDeath == 2) addChristmasMission(victim, CH_SECOND, 1);
 				if(countDeath == 3) addChristmasMission(victim, CH_THREE, 1);
 			#endif
@@ -1182,12 +1185,6 @@ public globalHud(id){
 		return PLUGIN_CONTINUE;
 	}
 	
-	static gText[512], iLen, bonus, newAwardLeft, newLeftExp, newLeftNugget;
-
-	bonus 		= 	str_to_num(classesHuman[userClassHuman[id]][4]);
-	newAwardLeft 	= 	userLastAwardTime[id] + userAwardTime - playedTime(id);
-	newLeftExp  	=  	userScrollExp[id] - playedTime(id);
-	newLeftNugget  	=  	userScrollNugget[id] - playedTime(id);
 	
 	if(sql == Empty_Handle){
 		set_hudmessage(215, 15, 15, -1.0, 0.35, 0, 0.5, 1.0, 0.0, 1.0);
@@ -1203,6 +1200,13 @@ public globalHud(id){
 
 	
 	if(userLogged[id] && !(userExtraFps[id] || userFPS[id] >= bbCvar[cvarLimitFPS] + 49) && !userWarningHudStart[id]){
+		
+		static gText[512], iLen, bonus, newAwardLeft, newLeftExp, newLeftNugget;
+		
+		bonus 		= 	str_to_num(classesHuman[userClassHuman[id]][4]);
+		newAwardLeft 	= 	userLastAwardTime[id] + userAwardTime - playedTime(id);
+		newLeftExp  	=  	userScrollExp[id] - playedTime(id);
+		newLeftNugget  	=  	userScrollNugget[id] - playedTime(id);
 		
 		if( get_user_team(id) == USER_ZOMBIE) iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n|^t%s Zombie^t|^n", classesZombies[userClass[id]][0]) ;
 		else if(get_user_team(id) == USER_HUMAN && hasClassHuman(id, userClassHuman[id])) iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n|^t%s - Lv: %d - XP: %0.2f%%^t|^n", classesHuman[userClassHuman[id]][0],  userHumanLevel[id][userClassHuman[id]], (userExpClass[id][userClassHuman[id]]*100.0/needXpClass(userHumanLevel[id][userClassHuman[id]])));
@@ -1255,66 +1259,67 @@ public globalHud(id){
 			set_hudmessage(userHud[id][PLAYER_HUD_RED], userHud[id][PLAYER_HUD_GREEN], userHud[id][PLAYER_HUD_BLUE], 0.0, 0.0, 0, 0.0, 0.2, 0.01, 0.02);
 			show_hudmessage(id, "%s", gText);
 		}
+	
+	
+		iLen=0;
+		if(userExpShow[id] > 0.0 || userNuggetShow[id] > 0 || userBoneShow[id] > 0){  
+			
+			if(userExpShow[id]) 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n[ +%0.2f EXP'a %s ]",userExpShow[id], (typeExpClass[userGiveClassExp[id]][1]));
+			if(userNuggetShow[id]) 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n[ +%d Brylek ]",userNuggetShow[id]);
+			if(userBoneShow[id]) 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n[ +%d Kosci ]",userBoneShow[id]);
+			
+			if( iLen > 0  ){
+				set_hudmessage(userHud[id][PLAYER_HUD_RED], userHud[id][PLAYER_HUD_GREEN], userHud[id][PLAYER_HUD_BLUE],-1.0, -1.0, 0, 0.0, 0.2, 0.0, 0.05);
+				show_hudmessage(id, "^n^n^n^n^n^n^n^n^n%s", gText);
+			}
+		}
+		
+		iLen = 0;
+		if(userNoClip[id] || userGodMod[id] || userAllowBuild[id] || userPush[id]){
+			new Float:got = floatsub(userTimeAdmin[id], get_gametime());
+			
+			if( userNoClip[id] ) 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "[NoClip]^n");
+			if( userGodMod[id] ) 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "[GodMod]^n");
+			if( userAllowBuild[id] ) iLen += format(gText[iLen], sizeof(gText)-1-iLen, "[Budowanie]^n");
+			if( userPush[id]) 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "[Odpychanie]^n");
+		
+			if( got >= 0.0 ) 		iLen += format(gText[iLen], sizeof(gText)-1-iLen, "[God + Odpychanie - %0.1f]^n",  got);
+			
+			if( iLen > 0  ){
+				set_dhudmessage(userHud[id][PLAYER_HUD_RED], userHud[id][PLAYER_HUD_GREEN], userHud[id][PLAYER_HUD_BLUE], -1.0, 0.70, 0, 0.1, 0.1, 0.1, 0.1);
+				show_dhudmessage(id, "%s", gText);
+			}
+		}
+	
+		iLen = 0;
+		if( userHudMoving[id] != 0 ){
+			iLen += format(gText[iLen], sizeof(gText)-1-iLen, "Porusza Toba admin %s", userName[userHudMoving[id]]);
+			
+			if(iLen > 0 ){
+				set_dhudmessage(85, 255, 170, -1.0, -1.0, 0, 0.0, 0.20, 0.01, 0.02);
+				show_dhudmessage(id, "%s", gText);	
+			}
+		} 
+	
+		iLen = 0;
+		if(isAdmin(id) && ( prepTime || ( gameTime && gTime > gGameTime - 10 ))){
+			for(new i = 0, count = 0; i < sizeof(needHelp); i ++){
+			
+					
+				if( needHelp[i] == 0 ) break;
+				if( needHelp[i] == -1 ) continue;
+		
+				count ++;
+				if(count == 1) iLen += format(gText[iLen], sizeof(gText)-1-iLen, "Potrzebuje pomocy:^n");
+				iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^t%d. %s^n", (count), userName[needHelp[i]]);
+			
+			}
+			if(iLen > 0 ){
+				set_hudmessage(255, 32, 32, 0.70, 0.15, 0, 0.0, 0.2, 0.0, 0.05);
+				show_hudmessage(id, "%s", gText);
+			}
+		}	
 	}
-	
-	iLen=0;
-	if(userExpShow[id] > 0.0 || userNuggetShow[id] > 0 || userBoneShow[id] > 0){  
-		
-		if(userExpShow[id]) 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n[ +%0.2f EXP'a %s ]",userExpShow[id], (typeExpClass[userGiveClassExp[id]][1]));
-		if(userNuggetShow[id]) 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n[ +%d Brylek ]",userNuggetShow[id]);
-		if(userBoneShow[id]) 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "^n[ +%d Kosci ]",userBoneShow[id]);
-		
-		if( iLen > 0  ){
-			set_hudmessage(userHud[id][PLAYER_HUD_RED], userHud[id][PLAYER_HUD_GREEN], userHud[id][PLAYER_HUD_BLUE],-1.0, -1.0, 0, 0.0, 0.2, 0.0, 0.05);
-			show_hudmessage(id, "^n^n^n^n^n^n^n^n^n%s", gText);
-		}
-	}
-	
-	iLen = 0;
-	if(userNoClip[id] || userGodMod[id] || userAllowBuild[id] || userPush[id]){
-		new Float:got = floatsub(userTimeAdmin[id], get_gametime());
-		
-		if( userNoClip[id] ) 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "[NoClip]^n");
-		if( userGodMod[id] ) 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "[GodMod]^n");
-		if( userAllowBuild[id] ) 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "[Budowanie]^n");
-		if( userPush[id]) 	iLen += format(gText[iLen], sizeof(gText)-1-iLen, "[Odpychanie]^n");
-	
-		if( got >= 0.0 ) 		iLen += format(gText[iLen], sizeof(gText)-1-iLen, "[God + Odpychanie - %0.1f]^n",  got);
-		
-		if( iLen > 0  ){
-			set_dhudmessage(userHud[id][PLAYER_HUD_RED], userHud[id][PLAYER_HUD_GREEN], userHud[id][PLAYER_HUD_BLUE], -1.0, 0.70, 0, 0.1, 0.1, 0.1, 0.1);
-			show_dhudmessage(id, "%s", gText);
-		}
-	}
-
-	iLen = 0;
-	if( userHudMoving[id] != 0 ){
-		iLen += format(gText[iLen], sizeof(gText)-1-iLen, "Porusza Toba admin %s", userName[userHudMoving[id]]);
-		
-		if(iLen > 0 ){
-			set_dhudmessage(85, 255, 170, -1.0, -1.0, 0, 0.0, 0.20, 0.01, 0.02);
-			show_dhudmessage(id, "%s", gText);	
-		}
-	} 
-
-	iLen = 0;
-	if(isAdmin(id) && ( prepTime || ( gameTime && gTime > gGameTime - 10 ))){
-		for(new i = 0, count = 0; i < sizeof(needHelp); i ++){
-		
-				
-			if( needHelp[i] == 0 ) break;
-			if( needHelp[i] == -1 ) continue;
-	
-			count ++;
-			if(count == 1) iLen += format(gText[iLen], sizeof(gText)-1-iLen, "Potrzebuje pomocy:^n");
-			iLen += format(gText[iLen], sizeof(gText)-1-iLen, "^t%d. %s^n", (count), userName[needHelp[i]]);
-		
-		}
-		if(iLen > 0 ){
-			set_hudmessage(255, 32, 32, 0.70, 0.15, 0, 0.0, 0.2, 0.0, 0.05);
-			show_hudmessage(id, "%s", gText);
-		}
-	}	
 	set_task(0.2, "globalHud" ,id+ TASK_GLOBAL);
 	return PLUGIN_CONTINUE;
 }
@@ -1350,7 +1355,7 @@ public hudGetDmg(id, Float:dmg, szText[]){
 public messageStatusIcon(const iMsgId, const iMsgDest, const iPlayer){
 	if(is_user_alive(iPlayer) && userConnected[iPlayer]) {
 		static szMsg[8];
-		get_msg_arg_string(2, szMsg, 7);
+		get_msg_arg_string(2, szMsg, sizeof(szMsg) - 1);
 		
 		new const blockIcon[][] = {
 			"c4",
@@ -1467,7 +1472,6 @@ public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 	#endif 
 	
 	if(OX[OX_START]) return HAM_IGNORED;
-	
 	if(!isPlayer(attacker) || !isPlayer(victim) ) return HAM_IGNORED;
 	if(!is_user_alive(attacker) || !is_user_alive(victim) ) return HAM_IGNORED;
 	if(!pev_valid(victim) || !is_user_alive(victim) || !is_user_connected(attacker)) return HAM_IGNORED;	
@@ -1510,15 +1514,15 @@ public ham_TakeDamage(victim, inflictor, attacker, Float:damage, damagebits){
 	if(userCritical[attacker]) damage *= 2.0;
 	if( userDracula[victim] > get_gametime()) damage *= -1.0;
 	
-	/*-*\
+	/*----------------------*\
 	| SHOP			 |
-	\*-*/
+	\*----------------------*/
 	
 	if( userExtraDmg[attacker] ) damage +=25.0;
 	
-	/*-*\
+	/*----------------------*\
 	| HAPPY HOUR TIME	 |
-	\*-*/
+	\*----------------------*/
 	
 	
 	if(hourTime){
@@ -2070,8 +2074,10 @@ public ham_Spawn(id){
 		
 
 	}
-
-	remove_task( id+TASK_SKILL_BLOOD);
+	
+	if( get_user_team(id) == 1 && !buildTime && !prepTime && gameTime)  createBarHp(id);
+	
+	remove_task(id+TASK_SKILL_BLOOD);
 	gameUserSpawn(id);
 	setZombieClass(id);
 	setHumanClass(id);
@@ -2128,10 +2134,21 @@ public blockCommand(id){
 public blockJumpOnHead(id, target){
 	if(get_user_team(id) != get_user_team(target)){
 		new Float:fOrigin[3], Float:fOriginTarget[3];
+		
 		pev(id, pev_origin, fOrigin);
 		pev(target, pev_origin, fOriginTarget);
+		
+		/*
+		new Float:fMin[3], Float:fMinEnt[3];
+		pev(id, pev_mins, fMin);
+		pev(target, pev_mins, fMinEnt);
+		
+		if(fMin[2]==-18.0) fOriginTarget[2] -= 18.0;
+		else fOriginTarget[2] -= 36.0;
+		*/
+		
 		if( fOrigin[2] - fOriginTarget[2] > 68 ){
-			set_pev(id, pev_gravity, 3.0);
+			set_pev(id, pev_gravity, 4.5);
 			if( task_exists(id+TASK_GRAVITY) )
 				remove_task(id+TASK_GRAVITY);
 			set_task(0.1, "removeGravity", id+TASK_GRAVITY);
@@ -2147,7 +2164,7 @@ public cmdSay(id){
 	if( !isPlayer(id) ) return PLUGIN_HANDLED;
 	
 	new szMessage[124];
-	read_args(szMessage, sizeof( szMessage )); 
+	read_args(szMessage, sizeof( szMessage ) - 1); 
 	remove_quotes(szMessage);
 	
 	if( !isSuperAdmin(id) && (OX[OX_START] && OX[OX_TIME] > 0) ){
@@ -2241,15 +2258,12 @@ public cmdSay(id){
 			if ( equal(szMessage, "/respawn") || equal(szMessage, "/odrodz") || equal(szMessage, "/r")){
 				if((get_user_team(id) == USER_HUMAN) && ( buildTime || prepTime)){
 					respawnPlayerAdmin(id);
-					return PLUGIN_HANDLED;
-				
 				} else if (( get_user_team(id) == USER_ZOMBIE) && get_user_health(id) == userMaxHealth[id]){
 					respawnPlayerAdmin(id);
-					return PLUGIN_HANDLED;
 				} else {
 					chatPrint(id, PREFIX_LINE, "Komenda jest nie dostepna w tym momencie!");
-					return PLUGIN_HANDLED;
 				}
+				return PLUGIN_HANDLED;
 			}
 			if(equal(szMessage, "/sms", 4)){
 				smsMainMenu(id);
@@ -2343,8 +2357,46 @@ public cmdSay(id){
 				return PLUGIN_HANDLED;
 			}
 			if (equal(szMessage, "/exp")){
-				chatPrint(id, PREFIX_LINE, "Postac:^3 Lv: %d - XP: %0.1f / %0.1f",userLevel[id], userExp[id],needXp(id, userLevel[id]));
-				chatPrint(id, PREFIX_LINE, "Klasa %s:^3 Lv: %d - XP: %0.1f / %0.1f",classesHuman[userClassHuman[id]][0],  userHumanLevel[id][userClassHuman[id]], userExpClass[id][userClassHuman[id]],needXpClass(userHumanLevel[id][userClassHuman[id]]));
+					
+				static gText[2048], iLen;
+		
+
+				iLen = format(gText[iLen], sizeof(gText)-iLen-1, "<head><link href=^"https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700^" rel=^"stylesheet^"></head>");
+				
+				iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<style type=^"text/css^">\
+										*{ font-size: 15px; font-family: Montserrat; color: white; text-align: center; padding: 0; margin: 0;}\
+										body{border: 1px solid %s; background: #111}\
+										b{color:%s; text-shadow: 0 0 5px %s;}\
+										table{margin-top: 20px;margin-left: auto;margin-right: auto;width:710%}\
+									</style>",accentMotdColor,accentMotdColor,accentMotdColor);
+				
+				iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<p>Twoj EXP w klasach!</p><hr size=1 color=%s>",accentMotdColor);
+					
+				iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<table>");	
+				iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<tr><td><b>Klasa</b></td><td><b>Lv</b></td><td><b>XP</b></td></tr>");
+				
+				for( new i = 0;  i < sizeof(classesHuman); i ++ ){
+
+					if(!(hasClassHuman(id, i))) continue;
+					if(userHumanLevel[id][i] <= 1 ) continue; 
+					
+					if( userNewClassHuman[id] == i && userNewClassHuman[id] != userClassHuman[id])	
+						iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<tr><td>*%s</td><td>%d</td><td>%0.2f</td></tr>", classesHuman[i][0], userHumanLevel[id][i], (userExpClass[id][i]*100.0/needXpClass(userHumanLevel[id][i])));	
+					else 	iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<tr><td>%s%s</td><td>%d</td><td>%0.2f%%%s</td></tr>",  userClassHuman[id] == i ? "<b>" :"", classesHuman[i][0], userHumanLevel[id][i], (userExpClass[id][i]*100.0/needXpClass(userHumanLevel[id][i])), userClassHuman[id] == i ? "<b>" :"" );  
+				
+				}
+				
+				iLen += format(gText[iLen], sizeof(gText)-iLen-1, "</table>");
+				
+				iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<table>");
+				iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<tr><td><b>Postac</b></td><td><b>Lv</b></td><td><b>XP</b></td></tr>");
+				iLen += format(gText[iLen], sizeof(gText)-iLen-1, "<tr><td>%s</td><td>%d</td><td>%0.2f%%</td></tr></br>", userName[id], userLevel[id], needXp(id, userLevel[id]));
+				iLen += format(gText[iLen], sizeof(gText)-iLen-1, "</table>");
+				
+				show_motd(id, gText, "Twoj Exp!");
+				
+				//chatPrint(id, PREFIX_LINE, "Postac:^3 Lv: %d - XP: %0.1f / %0.1f",userLevel[id], userExp[id],needXp(id, userLevel[id]));
+				//chatPrint(id, PREFIX_LINE, "Klasa %s:^3 Lv: %d - XP: %0.1f / %0.1f",classesHuman[userClassHuman[id]][0],  userHumanLevel[id][userClassHuman[id]], userExpClass[id][userClassHuman[id]],needXpClass(userHumanLevel[id][userClassHuman[id]]));
 				return PLUGIN_HANDLED;
 			}
 			if( equal(szMessage, "/daj", 4) ){
@@ -2430,11 +2482,9 @@ public cmdSay(id){
 					szId, sizeof(szId)
 				);
 				
-				
 				new target = abs(str_to_num(szId));
 
 				format(szMess, sizeof(szMess) - 1, "%s", szMessage[4 + strlen(szId)]);
-				
 				
 				if(!target){
 					chatPrint(id, PREFIX_LINE, "Wpisz ID gracza!");
@@ -2445,8 +2495,6 @@ public cmdSay(id){
 					chatPrint(id, PREFIX_LINE, "Wpisz wiadomosc!");
 					return PLUGIN_HANDLED;
 				}
-				
-				
 
 				new send = false; 
 				for(new i = 1; i < maxPlayers; i ++){
@@ -2568,7 +2616,7 @@ public cmdSayClan(id){
 	}
 		
 	new szMessage[124];
-	read_args(szMessage, sizeof( szMessage )); 
+	read_args(szMessage, sizeof( szMessage ) - 1); 
 	remove_quotes(szMessage);
 
 	szMessage[sizeof(szMessage)-1] = 0;
@@ -2576,7 +2624,7 @@ public cmdSayClan(id){
 	if( strlen(szMessage) > 0 ){
 		
 		new clanName[14];
-		get_clan_info(clan[id], CLAN_NAME, clanName, sizeof(clanName));	
+		get_clan_info(clan[id], CLAN_NAME, clanName, sizeof(clanName) -1 );	
 		
 		for(new i = 1; i < maxPlayers; i ++)
 			if(is_user_connected(i) && clan[id] == clan[i])
@@ -2636,7 +2684,7 @@ public cmdUnstuck(id){
 	if (is_user_connected(id) && is_user_alive(id)){
 		pev(id, pev_origin, origin);
 		hull = pev(id, pev_flags) & FL_DUCKING ? HULL_HEAD : HULL_HUMAN;
-		if (!is_hull_vacant(origin, hull,id) && !get_user_noclip(id) && !(pev(id,pev_solid) & SOLID_NOT)) {
+		if (!is_hull_vacant(origin, hull,id) && (!get_user_noclip(id) || !userNoClip[id] ) && !(pev(id,pev_solid) & SOLID_NOT)) {
 			++stuck[id];
 			pev(id, pev_mins, mins);
 			vec[2] = origin[2];
@@ -2688,6 +2736,12 @@ public fw_CmdStart( id, uc_handle, randseed ){
 	jumpFuncBlock(id, 1);
 	
 	moveRocket(id);
+	
+	if( userBarHp[id] != 0 && is_user_alive(id) ){
+		if( get_user_team(id) == 1 )
+			moveBarHp(id);
+		else removeBarHp(id);
+	}
 	
 	if(userFPS[id] >= bbCvar[cvarLimitFPS] + 24 || !playerLogged(id)){
 		if(entity_get_int(id, EV_INT_button) & IN_JUMP || entity_get_int(id, EV_INT_button) & IN_DUCK ){
@@ -3070,3 +3124,20 @@ public ChatOff(id){
 	if(!isSuperAdmin(id)) return;
 	serverOffChat =! serverOffChat;
 }
+
+public messageBlood() {
+
+	static __blood;
+	__blood = get_msg_arg_int(1);
+
+	if(
+		__blood == TE_BLOODSPRITE ||
+		__blood == TE_BLOODSTREAM ||
+		__blood == TE_BLOOD
+		
+	) return PLUGIN_HANDLED;
+
+	return PLUGIN_CONTINUE;
+}
+
+
