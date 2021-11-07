@@ -26,7 +26,7 @@ new const szChristmasTreeSprite[]=	"christmasTreeSpr";
 
 new userMenuChristmas[33];
 
-new Float:distanceOpen = 75.5
+new Float:distanceOpen = 75.5;
 new entChristmas[1024];
 new bool:christmas;
 new Float:userUnstuckTree[33];
@@ -168,7 +168,7 @@ public openMenuTree(id, ent, Float:cordx,  Float:cordy){
 
 	if( !pev_valid(ent) || userMenuChristmas[id] || !isTree(ent)) return;		
 	new button =  pev(id, pev_button);
-	new Float:fOrigin[3], Float:fOriginEnt[3]
+	new Float:fOrigin[3], Float:fOriginEnt[3];
 	entity_get_vector(id,	EV_VEC_origin, 	fOrigin);
 	entity_get_vector(ent,	EV_VEC_origin, 	fOriginEnt);
 
@@ -236,7 +236,7 @@ public menuChristmas(id){
 		} else {
 			if(userChristmasMission[id] == -1)
 				menu_additem(menu, "\dDzis juz losowales!");
-			else if(userChristmasMission[id] < str_to_num(christmasMission[userChristmasType[id]][1]));
+			else if(userChristmasMission[id] < str_to_num(christmasMission[userChristmasType[id]][1]))
 				menu_additem(menu, "\rWykonaj najpierw wyzwanie");
 			else menu_additem(menu, "\yZacznij Losowac\d |\r POWODZENIA!");
 		}
