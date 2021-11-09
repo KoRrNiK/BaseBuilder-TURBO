@@ -52,7 +52,7 @@ public moveBarHp(id){
 	new Float:fSize[3];
 	pev(id, pev_origin, fOrigin);
 	pev(id, pev_maxs, fSize);
-	fOrigin[2]+=floatabs(fSize[2])+10.0;
+	fOrigin[2]+=floatabs(fSize[2])+5.0;
 	set_pev(ent, pev_origin, fOrigin);
 	
 	new Float:percent=float(get_user_health(id))/float(userMaxHealth[id]);
