@@ -650,30 +650,26 @@ public choosePlayer_2(id, menu, item){
 			cmd_execute(id, "messagemode Ilosc_Brylek");
 		}
 		case MENU_PLAYER_AWARD:{
-			new gText[128];
-			logType[id] = LOG_ADD;
-			if(logType[id] == LOG_ADD){
-				userLastAwardTime[target]		=	playedTime(target);
-				chatPrint(id, PREFIX_NORMAL, "Zresetowales nagrode gracza^4 %s!", userName[target] ) ;
-				chatPrint(target, PREFIX_NORMAL, "Twoja nagroda zostala zresetowana przez Admina^4 %s!", userName[id] ) ;
-				format(gText, sizeof(gText), "zresetowal nagrode [%s]", userName[target]);
-				logBB(id, gText);
-			}
+		
+			userLastAwardTime[target]		=	playedTime(target);
+			chatPrint(id, PREFIX_NORMAL, "Zresetowales nagrode gracza^4 %s!", userName[target] ) ;
+			chatPrint(target, PREFIX_NORMAL, "Twoja nagroda zostala zresetowana przez Admina^4 %s!", userName[id] ) ;
+			logBB(id, LOG_SMS, "add", "zresetowal nagrode [%s]", userName[target]);
+	
+			
 		}
 		case MENU_PLAYER_STAMINA:{
 			if(!unlockCave[target]) {
 				choosePlayer(id, target);
 				return PLUGIN_CONTINUE;
 			}
-			new gText[128];
-			logType[id] = LOG_ADD;
-			if(logType[id] == LOG_ADD){
-				userLastStaminaTime[target] 	= playedTime(target);
-				chatPrint(id, PREFIX_NORMAL, "Zresetowales wyczerpanie gracza^4 %s!", userName[target] ) ;
-				chatPrint(target, PREFIX_NORMAL, "Twoje wyczerpanie zostala zresetowana przez Admina^4 %s!", userName[id] ) ;
-				format(gText, sizeof(gText), "zresetowal wyczerpanie [%s]", userName[target]);
-				logBB(id, gText);
-			}
+			
+			userLastStaminaTime[target] 	= playedTime(target);
+			chatPrint(id, PREFIX_NORMAL, "Zresetowales wyczerpanie gracza^4 %s!", userName[target] ) ;
+			chatPrint(target, PREFIX_NORMAL, "Twoje wyczerpanie zostala zresetowana przez Admina^4 %s!", userName[id] ) ;
+			logBB(id, LOG_SMS, "add", "zresetowal wyczerpanie [%s]", userName[target]);
+	
+			
 		}
 		case MENU_PLAYER_MUTE:{
 			
@@ -1002,14 +998,8 @@ public adminCommands(id, szMessage[]){
 			return PLUGIN_CONTINUE;
 		}
 		if(gValue){
-			
-			new gText[128];
-			logType[id] = LOG_MUTE;
-			if(logType[id] == LOG_MUTE){
-				format(gText, sizeof(gText), "zostal zmutowany na [%d min] przez [%s]", gValue, userName[target]);
-				logBB(id, gText);
-			}
-
+		
+			logBB(id, LOG_MUTE, "mute", "zostal zmutowany na [%d min] przez [%s]", gValue, userName[target]);
 			
 			userMute[target]	= 	max( userMute[target] + (MINUTE*gValue), get_systime() + (MINUTE*gValue) );
 			
@@ -1017,13 +1007,8 @@ public adminCommands(id, szMessage[]){
 			chatPrint(id, PREFIX_NORMAL, "Gracz^4 %s^1 zostal^4 wyciszony^1 na^4 %d^1 minut", userName[target], gValue);
 		} else {
 			
-			new gText[128];
-			logType[id] = LOG_MUTE;
-			if(logType[id] == LOG_MUTE){
-				format(gText, sizeof(gText), "zostal odciszony przez [%s]", userName[target]);
-				logBB(id, gText);
-			}
-				
+			logBB(id, LOG_MUTE, "unmute", "zostal odciszony przez [%s]", userName[target]);
+	
 			chatPrint(target, PREFIX_NORMAL, "Zostales^4 odciszony^1! [Admin:^4 %s^1]", userName[id]);
 			chatPrint(id, PREFIX_NORMAL, "Gracz^4 %s^1 zostal^4 odciszony", userName[target]);
 			userMute[target] = 0;

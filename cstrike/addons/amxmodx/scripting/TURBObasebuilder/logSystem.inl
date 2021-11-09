@@ -14,21 +14,6 @@ public logCreate(){
 	}
 
 	new logFolder[90];
-	new foldersLogs[][] = {
-		  "shopSmsLog"
-		,"transferLog"
-		,"awardLog"
-		,"accountLog"
-		,"missionLog"
-		,"classLog"
-		,"muteLog"
-		,"afkLog"
-		,"caveLog"
-		,"conLog"
-		,"chatLog"
-		,"costume"
-		,"warnings"
-	};
 	
 	for(new i = 0; i < sizeof(foldersLogs); i++){
 		
@@ -44,61 +29,71 @@ public logCreate(){
 	
 }
 
-public logBB(id, szText[]){
+public logBB(id, type, const secondFile[], szText[], any:...){
 	
-	new szMessage[256];
-	new szName[32];
-	new szIP[32];
-	new szCurrentTime[9];
-	new szData[9];
-	new szDir[128];
+	new logMessage[512];
 	
-	get_time("%H:%M:%S",szCurrentTime,sizeof(szCurrentTime));
-	get_time("%Y%m%d",szData,sizeof(szData));
+	if (numargs() == 4) copy(logMessage, sizeof(logMessage) - 1, szText);
+	else vformat(logMessage, sizeof(logMessage) - 1, szText, 5);
 	
-	get_user_name(id,szName,sizeof(szName));
-	get_user_ip(id,szIP,sizeof(szIP));
+	new bool:error = false;
+	if(type > enumLogs  || type <= LOG_ERROR) error = true;
+	
+	new szCurrentTime[9], szData[12];
+	new szDir[128], firstFolder[64];
+	
+	get_time("%H:%M:%S",szCurrentTime,sizeof(szCurrentTime) - 1);
+	get_time("%Y-%m-%d",szData,sizeof(szData) - 1);
+	get_basedir(szDir,sizeof(szDir) - 1);
+	
+	format(firstFolder, sizeof(firstFolder) - 1, "%s/%s", szDir, folderLogs);
+	format(szDir,sizeof(szDir) - 1,"%s/%s/%s_%s.html",firstFolder, foldersLogs[error ? LOG_ERROR : type], secondFile, szData);
+	
+	if(!file_exists(szDir)){
+		
+		new iLen = 0, gStyle[2048]; 
+		iLen = format(gStyle[iLen], sizeof(gStyle)-iLen-1, "<head><link href=^"https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700^" rel=^"stylesheet^"></head>");
+				
+		iLen += format(gStyle[iLen], sizeof(gStyle)-iLen-1, "<style type=^"text/css^">\
+									*{ font-size: 15px; font-family: Montserrat; color: white; text-align: center; margin: 0;}\
+									body{border: 1px solid %s; box-shadow: 0 0 5px %s inset; background: #111}\
+									b{color:%s; text-shadow: 0 0 5px %s;}\
+									td{color: #808080;}\
+									table{border-collapse: collapse; margin-top: 20px;margin-left: auto;margin-right: auto;width:750%}\
+									tr.tdh{border-bottom: 1px solid #292929;}\
+									.tdh:hover{background: #0e0e0e; padding: 6px; color: #fff;}\
+								</style>",accentMotdColor,accentMotdColor,accentMotdColor, accentMotdColor);
+								
+		iLen += format(gStyle[iLen], sizeof(gStyle)-iLen-1, "<p>Logi '%s' z dnia<b> %s</b></p><hr size=1 color=%s>",secondFile, szData, accentMotdColor);
+		iLen += format(gStyle[iLen], sizeof(gStyle)-iLen-1, "<table>");	
+		
+		if(!error) iLen += format(gStyle[iLen], sizeof(gStyle)-iLen-1, "<tr><td><b>Godzina</b></td><td><b>Nazwa</b></td><td><b>IP</b></td><td><b>Tresc</b></td></tr>");
+		else iLen += format(gStyle[iLen], sizeof(gStyle)-iLen-1, "<tr><td><b>Godzina</b></td><td><b>Plik</b></td><td><b>Typ</b></td></tr>"); 
+		
+		write_file(szDir, gStyle, 0);
 
-	get_basedir(szDir,sizeof(szDir));	
-	
-	switch(logType[id]){
-		case LOG_BUY: 		format(szDir,sizeof(szDir),"%s/%s/shopSmsLog/sklep_%s.log",szDir, folderLogs, szData);	
-		case LOG_ADD: 		format(szDir,sizeof(szDir),"%s/%s/shopSmsLog/dodawanie_%s.log",szDir, folderLogs, szData);	
-		case LOG_LOGIN: 		format(szDir,sizeof(szDir),"%s/%s/accountLog/login_%s.log",szDir, folderLogs, szData);	
-		case LOG_REGISTER: 	format(szDir,sizeof(szDir),"%s/%s/accountLog/register_%s.log",szDir, folderLogs, szData);	
-		case LOG_LOGOUT:		format(szDir,sizeof(szDir),"%s/%s/accountLog/logout_%s.log",szDir, folderLogs, szData);	
-		case LOG_ERROR: 		format(szDir,sizeof(szDir),"%s/%s/accountLog/error_%s.log",szDir, folderLogs, szData);	
-		case LOG_DELETEACCOUNT: 	format(szDir,sizeof(szDir),"%s/%s/accountLog/delete_%s.log",szDir, folderLogs, szData);	
-		case LOG_TRANSFER: 	format(szDir,sizeof(szDir),"%s/%s/transferLog/transfer_%s.log",szDir, folderLogs, szData);	
-		
-		case LOG_AWARD: 		format(szDir,sizeof(szDir),"%s/%s/awardLog/award_%s.log",szDir, folderLogs, szData);
-		
-		case LOG_MISSION: 	format(szDir,sizeof(szDir),"%s/%s/missionLog/mission_%s.log",szDir, folderLogs, szData);
-		case LOG_CLASS: 		format(szDir,sizeof(szDir),"%s/%s/classLog/class_%s.log",szDir, folderLogs, szData);
-		case LOG_MUTE: 		format(szDir,sizeof(szDir),"%s/%s/muteLog/mute_%s.log",szDir, folderLogs, szData);
-		case LOG_AFK: 		format(szDir,sizeof(szDir),"%s/%s/afkLog/afk_%s.log",szDir, folderLogs, szData);
-		case LOG_CAVE: 		format(szDir,sizeof(szDir),"%s/%s/caveLog/cave_%s.log",szDir, folderLogs, szData);
-		case LOG_CONNECT: 	format(szDir,sizeof(szDir),"%s/%s/conLog/con_%s.log",szDir, folderLogs, szData);
-		case LOG_CHAT: 		format(szDir,sizeof(szDir),"%s/%s/chatLog/chat_%s.log",szDir, folderLogs, szData);
-		
-		case LOG_CLAN_ADD: 	format(szDir,sizeof(szDir),"%s/%s/clanLog/add_%s.log",szDir, folderLogs, szData);
-		case LOG_CLAN_CREATE:	format(szDir,sizeof(szDir),"%s/%s/clanLog/create_%s.log",szDir, folderLogs, szData);
-		case LOG_CLAN_PROMOTION:	format(szDir,sizeof(szDir),"%s/%s/clanLog/promotion_%s.log",szDir, folderLogs, szData);
-		case LOG_CLAN_DELETE: 	format(szDir,sizeof(szDir),"%s/%s/clanLog/delete_%s.log",szDir, folderLogs, szData);
-		case LOG_CLAN_UPGRADE: 	format(szDir,sizeof(szDir),"%s/%s/clanLog/upgrade_%s.log",szDir, folderLogs, szData);
-		case LOG_CLAN_DEPOSIT: 	format(szDir,sizeof(szDir),"%s/%s/clanLog/deposit_%s.log",szDir, folderLogs, szData);
-		case LOG_CLAN_RESET: 	format(szDir,sizeof(szDir),"%s/%s/clanLog/reset_%s.log",szDir, folderLogs, szData);
-		case LOG_CLAN_LEAVE: 	format(szDir,sizeof(szDir),"%s/%s/clanLog/leave_%s.log",szDir, folderLogs, szData);
-		case LOG_CLAN_MANAGE: 	format(szDir,sizeof(szDir),"%s/%s/clanLog/manage_%s.log",szDir, folderLogs, szData);
-		
-		case LOG_HAT_REMOVE:	format(szDir,sizeof(szDir),"%s/%s/costume/remove_%s.log",szDir, folderLogs, szData);
-		case LOG_HAT_ADD: 	format(szDir,sizeof(szDir),"%s/%s/costume/add_%s.log",szDir, folderLogs, szData);
-		
-		case LOG_WARNING_ADD: 	format(szDir,sizeof(szDir),"%s/%s/warnings/add_%s.log",szDir, folderLogs, szData);
-		case LOG_WARNING_REMOVE: format(szDir,sizeof(szDir),"%s/%s/warnings/remove_%s.log",szDir, folderLogs, szData);
-		case LOG_WARNING_CHANGE: format(szDir,sizeof(szDir),"%s/%s/warnings/change_%s.log",szDir, folderLogs, szData);
 	}
-	format(szMessage,sizeof(szMessage),"[%s] %s {%d} - (%s) : %s",szCurrentTime,szName, userSqlId[id], szIP,szText);
+	
+	new szMessage[1024];
+	if(error){
+		format(szMessage,sizeof(szMessage) - 1,"<tr class=^"tdh^">\
+								<td>%s</td>\
+								<td>%s</td>\
+								<td>%d</td>\
+							</tr>",szCurrentTime,secondFile, type);
+	} else {
+		
+		new szIp[MAXBITIP];
+		get_user_ip(id, szIp, sizeof(szIp)-1, 1);
+
+		format(szMessage,sizeof(szMessage) - 1,"<tr class=^"tdh^">\
+								<td>%s</td>\
+								<td>%s</td>\
+								<td>%s</td>\
+								<td>%s</td>\
+							</tr>",szCurrentTime, userName[id], szIp, logMessage);
+	}
+	
 	write_file(szDir, szMessage);
 }
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE

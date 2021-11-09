@@ -94,12 +94,8 @@ public menuFreeAward_2(id, menu, item){
 		}
 		case 9: addExpToFinal(id, 300.0);
 	}
-	new logText[128];
-	logType[id] = LOG_AWARD;
-	if(logType[id] == LOG_AWARD){		
-		format(logText, sizeof(logText), "odebral darmowa nagrode: %s | Dzien: %d",  freeAwards[item], userLastAwardRow[id]+1 );
-		logBB(id, logText);
-	}	
+
+	logBB(id, LOG_AWARD, "free", "odebral darmowa nagrode: %s | Dzien: %d",  freeAwards[item], userLastAwardRow[id]+1);
 	
 	userLastAwardGot[id]	=	playedTime(id);
 	userLastAwardFree[id]	=	get_systime();
@@ -127,178 +123,179 @@ public checkForAward(id){
 	
 	new bool:empty	=	true;
 	
-	new gText[128], iLen;
-	logType[id] = LOG_AWARD;
-	if(logType[id] == LOG_AWARD){
-		if(isSVip(id)){
-			switch(random_num(1,6)){
-				case 1:{
-					
-					new vipRandom = random_num(1000,2500);
-					addNuggetToFinal(id, vipRandom);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %d Brylek^1 z nagrody.", userName[id],vipRandom);
-					iLen += format(gText[iLen], sizeof(gText)-1-iLen,"dostal %d brylek z Nagrody!",vipRandom);
-					empty	=	false;
-				}
-				case 2:{
-					new Float:expVipRandom = random_float(300.0, 700.0);
-					addExpToFinal(id, expVipRandom);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %0.1f EXP'a^1 z nagrody.", userName[id],expVipRandom);
-					iLen += format(gText[iLen], sizeof(gText)-1-iLen, "dostal %0.1f EXP'a z Nagrody!",expVipRandom);
-					empty	=	false;
-				}
-				case 3:{
-					new svipRandomVip = random_num(1,3);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 SVIP'a^1 na^4 %d %s^1 z nagrody!", userName[id], svipRandomVip, svipRandomVip == 1 ? "dzien" : "dni" );
-					timeSVip[id]	= 	max( timeSVip[id] + (DAY*svipRandomVip), get_systime() + (DAY*svipRandomVip) );
-					empty	=	false;
-				}
-				case 4:{
-					new Float:fOrigin[3];
-					pev(id, pev_origin, fOrigin);
-					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Skrzynke^1 z nagrody.", userName[id]);
-					createCases(fOrigin, .disappear = 1, .owner = id);
-					empty	=	false;
-				}
-				case 5:{
-					new svipTimeScrool = (HOUR*random_num(2,6));
-					new newLeftExp  =  userScrollExp[id] - playedTime(id);
-					if(newLeftExp <= 0){
-						userScrollExp[id] = playedTime(id);
-						userScrollExp[id] += svipTimeScrool;
-					} else userScrollExp[id] += svipTimeScrool;	
-					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Doswiadczenia^1 na^4 %d %s^1 z nagrody!", userName[id], (svipTimeScrool/HOUR), (svipTimeScrool/HOUR) == 1  ? "godzine" : (svipTimeScrool/HOUR) ==  5 ? "godzin" : "godziny" );
-					empty	=	false;
-				}
-				case 6:{
-					new svipTimeScrool = (HOUR*random_num(2,6));
-					new newLeftNugget  =  userScrollNugget[id] - playedTime(id);
-					if(newLeftNugget <= 0){
-						userScrollNugget[id] = playedTime(id);
-						userScrollNugget[id] += svipTimeScrool;	
-					} else userScrollNugget[id] += svipTimeScrool;
-					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Szczescia^1 na^4 %d %s^1 z nagrody!", userName[id], (svipTimeScrool/HOUR), (svipTimeScrool/HOUR) == 1  ? "godzine" : (svipTimeScrool/HOUR) ==  5 ? "godzin" : "godziny" );
-					empty	=	false;
-				}	
+	new gText[128], iLen = 0;
+	
+	if(isSVip(id)){
+		switch(random_num(1,6)){
+			case 1:{
+				
+				new vipRandom = random_num(1000,2500);
+				addNuggetToFinal(id, vipRandom);
+				chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %d Brylek^1 z nagrody.", userName[id],vipRandom);
+				iLen += format(gText[iLen], sizeof(gText)-1-iLen,"dostal %d brylek z Nagrody!",vipRandom);
+				empty	=	false;
 			}
-		} else if( isVip(id)){
-			switch(random_num(1,6)){
-				case 1:{
-					
-					new vipRandom = random_num(750,2000);
-					addNuggetToFinal(id, vipRandom);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %d Brylek^1 z nagrody.", userName[id],vipRandom);
-					iLen += format(gText[iLen], sizeof(gText)-1-iLen,"dostal %d brylek z Nagrody!",vipRandom);
-					empty	=	false;
-				}
-				case 2:{
-					new Float:expVipRandom = random_float(200.0, 500.0);
-					addExpToFinal(id, expVipRandom);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %0.1f EXP'a^1 z nagrody.", userName[id],expVipRandom);
-					iLen += format(gText[iLen], sizeof(gText)-1-iLen, "dostal %0.1f EXP'a z Nagrody!",expVipRandom);
-					empty	=	false;
-				}
-				case 3:{
-					new vipRandomVip = random_num(1,10);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 VIP'a^1 na^4 %d %s^1 z nagrody!", userName[id], vipRandomVip, vipRandomVip == 1 ? "dzien" : "dni" );
-					timeVip[id]	= 	max( timeVip[id] + (DAY*vipRandomVip), get_systime() + (DAY*vipRandomVip) );
-					empty	=	false;
-				}
-				case 4:{
-					new Float:fOrigin[3];
-					pev(id, pev_origin, fOrigin);
-					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Skrzynke^1 z nagrody.", userName[id]);
-					createCases(fOrigin, .disappear = 1, .owner = id);
-					empty	=	false;
-				}
-				case 5:{
-					new vipTimeScrool = (HOUR*random_num(1,5));
-					new newLeftExp  =  userScrollExp[id] - playedTime(id);
-					if(newLeftExp <= 0){
-						userScrollExp[id] = playedTime(id);
-						userScrollExp[id] += vipTimeScrool;
-					} else userScrollExp[id] += vipTimeScrool;	
-					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Doswiadczenia^1 na^4 %d %s^1 z nagrody!", userName[id], (vipTimeScrool/HOUR), (vipTimeScrool/HOUR) == 1  ? "godzine" : (vipTimeScrool/HOUR) ==  5 ? "godzin" : "godziny" );
-					empty	=	false;
-				}
-				case 6:{
-					new vipTimeScrool = (HOUR*random_num(1,5));
-					new newLeftNugget  =  userScrollNugget[id] - playedTime(id);
-					if(newLeftNugget <= 0){
-						userScrollNugget[id] = playedTime(id);
-						userScrollNugget[id] += vipTimeScrool;	
-					} else userScrollNugget[id] += vipTimeScrool;
-					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Szczescia^1 na^4 %d %s^1 z nagrody!", userName[id], (vipTimeScrool/HOUR), (vipTimeScrool/HOUR) == 1  ? "godzine" : (vipTimeScrool/HOUR) ==  5 ? "godzin" : "godziny" );
-					empty	=	false;
-				}	
+			case 2:{
+				new Float:expVipRandom = random_float(300.0, 700.0);
+				addExpToFinal(id, expVipRandom);
+				chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %0.1f EXP'a^1 z nagrody.", userName[id],expVipRandom);
+				iLen += format(gText[iLen], sizeof(gText)-1-iLen, "dostal %0.1f EXP'a z Nagrody!",expVipRandom);
+				empty	=	false;
 			}
-		}else{	
-			switch(random_num(1,7)){
-				case 1:{
-					new userRandom = random_num(500,1000);
-					addNuggetToFinal(id, userRandom);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %d Brylek^1 z nagrody.", userName[id],userRandom);
-					iLen += format(gText[iLen], sizeof(gText)-1-iLen, "dostal %d brylek z Nagrody!",userRandom);
-					empty	=	false;
-				}
-				case 2:{
-					new Float:expRandom = random_float(100.0, 300.0);
-					addExpToFinal(id, expRandom);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %0.1f EXP'a^1 z nagrody.", userName[id],expRandom);
-					iLen += format(gText[iLen], sizeof(gText)-1-iLen, "dostal %0.1f EXP'a z Nagrody!",expRandom);
-					empty	=	false;
-				} 
-				case 3:{
-					new userRandomVip = random_num(1,5);
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 VIP'a^1 na^4 %d %s^1 z nagrody!", userName[id], userRandomVip, userRandomVip == 1 ? "dzien" : "dni" );
-					timeVip[id]	= 	max( timeVip[id] + (DAY*userRandomVip), get_systime() + (DAY*userRandomVip) );
-					empty	=	false;
-				}
-				case 4:{
-					new Float:fOrigin[3];
-					pev(id, pev_origin, fOrigin);
-					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Skrzynke^1 z nagrody.", userName[id]);
-					createCases(fOrigin, .disappear = 1, .owner = id);
-					empty	=	false;
-				}
-				case 5:{
-					new userTimeScrool = (HOUR*random_num(1,3));
-					new newLeftExp  =  userScrollExp[id] - playedTime(id);
-					if(newLeftExp <= 0){
-						userScrollExp[id] = playedTime(id);
-						userScrollExp[id] += userTimeScrool;	
-					} else userScrollExp[id] += userTimeScrool;
-					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Doswiadczenia^1 na^4 %d %s^1 z nagrody!", userName[id], (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
-					empty	=	false;
-				}
-				case 6:{
+			case 3:{
+				new svipRandomVip = random_num(1,3);
+				chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 SVIP'a^1 na^4 %d %s^1 z nagrody!", userName[id], svipRandomVip, svipRandomVip == 1 ? "dzien" : "dni" );
+				timeSVip[id]	= 	max( timeSVip[id] + (DAY*svipRandomVip), get_systime() + (DAY*svipRandomVip) );
+				empty	=	false;
+			}
+			case 4:{
+				new Float:fOrigin[3];
+				pev(id, pev_origin, fOrigin);
+				
+				chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Skrzynke^1 z nagrody.", userName[id]);
+				createCases(fOrigin, .disappear = 1, .owner = id);
+				empty	=	false;
+			}
+			case 5:{
+				new svipTimeScrool = (HOUR*random_num(2,6));
+				new newLeftExp  =  userScrollExp[id] - playedTime(id);
+				if(newLeftExp <= 0){
+					userScrollExp[id] = playedTime(id);
+					userScrollExp[id] += svipTimeScrool;
+				} else userScrollExp[id] += svipTimeScrool;	
+				
+				chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Doswiadczenia^1 na^4 %d %s^1 z nagrody!", userName[id], (svipTimeScrool/HOUR), (svipTimeScrool/HOUR) == 1  ? "godzine" : (svipTimeScrool/HOUR) ==  5 ? "godzin" : "godziny" );
+				empty	=	false;
+			}
+			case 6:{
+				new svipTimeScrool = (HOUR*random_num(2,6));
+				new newLeftNugget  =  userScrollNugget[id] - playedTime(id);
+				if(newLeftNugget <= 0){
+					userScrollNugget[id] = playedTime(id);
+					userScrollNugget[id] += svipTimeScrool;	
+				} else userScrollNugget[id] += svipTimeScrool;
+				
+				chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Szczescia^1 na^4 %d %s^1 z nagrody!", userName[id], (svipTimeScrool/HOUR), (svipTimeScrool/HOUR) == 1  ? "godzine" : (svipTimeScrool/HOUR) ==  5 ? "godzin" : "godziny" );
+				empty	=	false;
+			}	
+		}
+	} else if( isVip(id)){
+		switch(random_num(1,6)){
+			case 1:{
+				
+				new vipRandom = random_num(750,2000);
+				addNuggetToFinal(id, vipRandom);
+				chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %d Brylek^1 z nagrody.", userName[id],vipRandom);
+				iLen += format(gText[iLen], sizeof(gText)-1-iLen,"dostal %d brylek z Nagrody!",vipRandom);
+				empty	=	false;
+			}
+			case 2:{
+				new Float:expVipRandom = random_float(200.0, 500.0);
+				addExpToFinal(id, expVipRandom);
+				chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %0.1f EXP'a^1 z nagrody.", userName[id],expVipRandom);
+				iLen += format(gText[iLen], sizeof(gText)-1-iLen, "dostal %0.1f EXP'a z Nagrody!",expVipRandom);
+				empty	=	false;
+			}
+			case 3:{
+				new vipRandomVip = random_num(1,10);
+				chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 VIP'a^1 na^4 %d %s^1 z nagrody!", userName[id], vipRandomVip, vipRandomVip == 1 ? "dzien" : "dni" );
+				timeVip[id]	= 	max( timeVip[id] + (DAY*vipRandomVip), get_systime() + (DAY*vipRandomVip) );
+				empty	=	false;
+			}
+			case 4:{
+				new Float:fOrigin[3];
+				pev(id, pev_origin, fOrigin);
+				
+				chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Skrzynke^1 z nagrody.", userName[id]);
+				createCases(fOrigin, .disappear = 1, .owner = id);
+				empty	=	false;
+			}
+			case 5:{
+				new vipTimeScrool = (HOUR*random_num(1,5));
+				new newLeftExp  =  userScrollExp[id] - playedTime(id);
+				if(newLeftExp <= 0){
+					userScrollExp[id] = playedTime(id);
+					userScrollExp[id] += vipTimeScrool;
+				} else userScrollExp[id] += vipTimeScrool;	
+				
+				chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Doswiadczenia^1 na^4 %d %s^1 z nagrody!", userName[id], (vipTimeScrool/HOUR), (vipTimeScrool/HOUR) == 1  ? "godzine" : (vipTimeScrool/HOUR) ==  5 ? "godzin" : "godziny" );
+				empty	=	false;
+			}
+			case 6:{
+				new vipTimeScrool = (HOUR*random_num(1,5));
+				new newLeftNugget  =  userScrollNugget[id] - playedTime(id);
+				if(newLeftNugget <= 0){
+					userScrollNugget[id] = playedTime(id);
+					userScrollNugget[id] += vipTimeScrool;	
+				} else userScrollNugget[id] += vipTimeScrool;
+				
+				chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Szczescia^1 na^4 %d %s^1 z nagrody!", userName[id], (vipTimeScrool/HOUR), (vipTimeScrool/HOUR) == 1  ? "godzine" : (vipTimeScrool/HOUR) ==  5 ? "godzin" : "godziny" );
+				empty	=	false;
+			}	
+		}
+	}else{	
+		switch(random_num(1,7)){
+			case 1:{
+				new userRandom = random_num(500,1000);
+				addNuggetToFinal(id, userRandom);
+				chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %d Brylek^1 z nagrody.", userName[id],userRandom);
+				iLen += format(gText[iLen], sizeof(gText)-1-iLen, "dostal %d brylek z Nagrody!",userRandom);
+				empty	=	false;
+			}
+			case 2:{
+				new Float:expRandom = random_float(100.0, 300.0);
+				addExpToFinal(id, expRandom);
+				chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 %0.1f EXP'a^1 z nagrody.", userName[id],expRandom);
+				iLen += format(gText[iLen], sizeof(gText)-1-iLen, "dostal %0.1f EXP'a z Nagrody!",expRandom);
+				empty	=	false;
+			} 
+			case 3:{
+				new userRandomVip = random_num(1,5);
+				chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 VIP'a^1 na^4 %d %s^1 z nagrody!", userName[id], userRandomVip, userRandomVip == 1 ? "dzien" : "dni" );
+				timeVip[id]	= 	max( timeVip[id] + (DAY*userRandomVip), get_systime() + (DAY*userRandomVip) );
+				empty	=	false;
+			}
+			case 4:{
+				new Float:fOrigin[3];
+				pev(id, pev_origin, fOrigin);
+				
+				chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Skrzynke^1 z nagrody.", userName[id]);
+				createCases(fOrigin, .disappear = 1, .owner = id);
+				empty	=	false;
+			}
+			case 5:{
+				new userTimeScrool = (HOUR*random_num(1,3));
+				new newLeftExp  =  userScrollExp[id] - playedTime(id);
+				if(newLeftExp <= 0){
+					userScrollExp[id] = playedTime(id);
+					userScrollExp[id] += userTimeScrool;	
+				} else userScrollExp[id] += userTimeScrool;
+				
+				chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Doswiadczenia^1 na^4 %d %s^1 z nagrody!", userName[id], (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
+				empty	=	false;
+			}
+			case 6:{
 		
-					new userTimeScrool = (HOUR*random_num(1,3));
-					new newLeftNugget  =  userScrollNugget[id] - playedTime(id);
-					if(newLeftNugget <= 0){
-						userScrollNugget[id] = playedTime(id);
-						userScrollNugget[id] += userTimeScrool;
-					} else userScrollNugget[id] += userTimeScrool;
+				new userTimeScrool = (HOUR*random_num(1,3));
+				new newLeftNugget  =  userScrollNugget[id] - playedTime(id);
+				if(newLeftNugget <= 0){
+					userScrollNugget[id] = playedTime(id);
+					userScrollNugget[id] += userTimeScrool;
+				} else userScrollNugget[id] += userTimeScrool;
 					
-					chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Szczescia^1 na^4 %d %s^1 z nagrody!", userName[id], (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
-					empty	=	false;
-				}
+				chatPrint(0, PREFIX_NORMAL, "Gracz^3 %s^1 otrzymal^4 Zwoj Szczescia^1 na^4 %d %s^1 z nagrody!", userName[id], (userTimeScrool/HOUR), (userTimeScrool/HOUR) == 1  ? "godzine" : "godziny" );
+				empty	=	false;
 			}
 		}
-		if( empty ){
-			chatPrint(id, PREFIX_NORMAL, "Ojejku :( Nic nie dostales.");
-			iLen += format(gText[iLen], sizeof(gText)-1-iLen, "nic nie dostal z Nagrody!");
-		}
-		logBB(id, gText);
 	}
+	if( empty ){
+		chatPrint(id, PREFIX_NORMAL, "Ojejku :( Nic nie dostales.");
+		iLen += format(gText[iLen], sizeof(gText)-1-iLen, "nic nie dostal z Nagrody!");
+	}
+	
+	logBB(id, LOG_AWARD, "award", gText);
+	
+	
 	userAllAward[id] ++;
 	userLastAwardTime[id]=playedTime(id);
 	return PLUGIN_CONTINUE;

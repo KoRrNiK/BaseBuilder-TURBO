@@ -289,12 +289,8 @@ public  updateWarning(id){
 	format(queryData, sizeof(queryData), "UPDATE `warnings` SET `desc`='%s' WHERE `idplayer`='%d' AND `idwarning`='%d'", szArg, userSqlId[tempId[1]], tempId[2]);
 	SQL_ThreadQuery(sql, "saveStatsHandlerSql", queryData, tempId, sizeof(tempId));
 	
-	new gText[128];
-	logType[id] = LOG_WARNING_CHANGE;
-	if(logType[id] == LOG_WARNING_CHANGE){
-		format(gText, sizeof(gText), "zaktualizowal ostrzezenia gracza [%s] nowy opis [%s]", userName[tempId[1]], szArg);
-		logBB(id,gText);
-	}
+	logBB(id, LOG_WARNING, "update", "zaktualizowal ostrzezenia gracza [%s] nowy opis [%s]", userName[tempId[1]], szArg);
+			
 
 			
 	loadDescWarning(id);
@@ -320,12 +316,9 @@ public  removeWarning(id){
 	format(queryData, sizeof(queryData), "DELETE FROM `warnings` WHERE `idplayer`='%d' AND `idwarning`='%d'", userSqlId[tempId[1]], tempId[2]);
 	SQL_ThreadQuery(sql, "saveStatsHandlerSql", queryData, tempId, sizeof(tempId));
 	
-	new gText[128];
-	logType[id] = LOG_WARNING_REMOVE;
-	if(logType[id] == LOG_WARNING_REMOVE){
-		format(gText, sizeof(gText), "usunal ostrzezenie graczowi [%s] ID [%d]", userName[tempId[1]], tempId[2]);
-		logBB(id,gText);	
-	}
+
+	logBB(id, LOG_WARNING, "delete", "usunal ostrzezenie graczowi [%s] ID [%d]", userName[tempId[1]], tempId[2]);
+	
 	
 	userWarningAccept[id] = false;
 	warningInfo(id);
@@ -342,12 +335,7 @@ public saveWarning(id, target){
 	
 	SQL_ThreadQuery(sql, "saveStatsHandlerSql", queryData, tempId, sizeof(tempId));
 
-	new gText[128];
-	logType[id] = LOG_WARNING_ADD;
-	if(logType[id] == LOG_WARNING_ADD){
-		format(gText, sizeof(gText), "dodal ostrzezenie graczowi [%s] opis [%s] godzina [%s] mapa [%s]", userName[tempId[1]], userWarningName[target], userWarningTime[target], userWarningMap[target]);
-		logBB(id,gText);
-	}
+	logBB(id, LOG_WARNING, "add", "dodal ostrzezenie graczowi [%s] opis [%s] godzina [%s] mapa [%s]", userName[tempId[1]], userWarningName[target], userWarningTime[target], userWarningMap[target]);
 	
 	userWarningAccept[id] = false;
 	warningInfo(id);

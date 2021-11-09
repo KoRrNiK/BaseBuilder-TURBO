@@ -962,7 +962,7 @@ public client_connect(id){
 	
 	replace_all_string("_", userName[id], sizeof(userName[]));
 		
-	new gText[128], steam[35], ip[32], pw[33];
+	new steam[35], ip[32], pw[33];
 	
 	get_user_ip(id, ip, sizeof(ip) - 1, 1);
 	get_user_authid(id, steam, sizeof(steam) - 1);
@@ -1100,13 +1100,15 @@ public client_connect(id){
 	
 	loadInt(id);
 	
-	logType[id] = LOG_CONNECT;
-	if(logType[id] == LOG_CONNECT){
-		if(is_user_connected(id) || !is_user_hltv(id)){
-			format(gText, sizeof(gText), "wchodzi [steam: %s][ip: %s][pw: %s]", steam, ip, pw);
-			logBB(id,gText);
-		}
+
+	if(is_user_connected(id) || !is_user_hltv(id)){
+			
+		logBB(id, LOG_CONNECT, "connect", "wchodzi [steam: %s][ip: %s][pw: %s]", steam, ip, pw);
+			
 	}
+	
+	
+	
 	
 	addMission(id, mission_CONNECT, 1);
 
@@ -1434,12 +1436,9 @@ public checkCamping(id){
 	if(userAfkValue[id] >= 100.00 ){
 		chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 zostal wyrzucony z powodu^3 AFK", userName[id]);
 		server_cmd("kick #%d ^"Zostales wyrzucony z powodu AFK!!^"", get_user_userid(id));
-		new gText[128];
-		logType[id] = LOG_AFK;
-		if(logType[id] == LOG_AFK){
-			format(gText, sizeof(gText), "zostal wyrzucony za AFK'a");
-			logBB(id, gText);
-		}
+		
+		logBB(id, LOG_AFK, "kick", "zostal wyrzucony za AFK'a");
+		
 		return PLUGIN_CONTINUE;
 	}
 	static Float:fVelocity[3];
@@ -2426,12 +2425,9 @@ public cmdSay(id){
 					chatPrint(id, PREFIX_NORMAL, "Nie masz tyle Brylek!");
 					return PLUGIN_CONTINUE;
 				}
-				new gText[128];
-				logType[id] = LOG_TRANSFER;
-				if(logType[id] == LOG_TRANSFER){
-					format(gText, sizeof(gText), "wyslal [%d] brylek graczowi [%s]", gValue, userName[target]);
-					logBB(id, gText);
-				}
+				
+				logBB(id, LOG_TRANSFER, "send", "wyslal [%d] brylek graczowi [%s]", gValue, userName[target]);
+				
 				userNugget[id]		-=	gValue;
 				userNugget[target]	+=	gValue;
 				chatPrint(id, PREFIX_NORMAL, "Wyslales^3 %s^1 Brylek do gracza^4 %s!", formatNumber(gValue), userName[target] );
@@ -2557,12 +2553,10 @@ public cmdSay(id){
 		chatPrint(0, PREFIX_NONE, "%s%s^3 %s%s^1:^1 %s",clan[id] ? chatPrefix : "",isSVip(id) ? "^4[SVip]" : isVip(id) ? "^4[Vip]" : "",  userName[id], isSuperAdmin(id) ? "^4*" : "", szMessage);
 		
 		if(userFPS[id] < 30) addSecretMission(id, mission_secret_CHEATER, 1);
-		new gText[192];
-		logType[id] = LOG_CHAT;
-		if(logType[id] == LOG_CHAT){
-			format(gText, sizeof(gText), "global chat: [%s]", szMessage);
-			logBB(id,gText);
-		}
+		
+		logBB(id, LOG_CHAT, "global", "%s", szMessage);
+				
+		
 	}
 	return PLUGIN_HANDLED;
 }
@@ -2630,12 +2624,8 @@ public cmdSayClan(id){
 			if(is_user_connected(i) && clan[id] == clan[i])
 				chatPrint(i, PREFIX_NONE, "^4[[-^3 %s^4 -]]^1 %s:^4 %s", clanName, userName[id], szMessage);
 		
-		new gText[192];
-		logType[id] = LOG_CHAT;
-		if(logType[id] == LOG_CHAT){
-			format(gText, sizeof(gText), "clan chat: [%s]", szMessage);
-			logBB(id,gText);
-		}		
+		logBB(id, LOG_CHAT, "clan", "%s", szMessage);	
+		
 		return PLUGIN_HANDLED_MAIN;
 	}
 	return PLUGIN_HANDLED;

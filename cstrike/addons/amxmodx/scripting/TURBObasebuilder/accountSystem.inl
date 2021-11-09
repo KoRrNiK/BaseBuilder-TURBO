@@ -53,7 +53,7 @@ public mainMenuAccount(id){
 	menu_display(id,menu,0);
 }
 public mainMenuAccount_2(id, menu, item){
-	new gText[128];
+
 	if( item == MENU_EXIT ){
 		menu_destroy(menu);
 		return PLUGIN_HANDLED;
@@ -68,11 +68,8 @@ public mainMenuAccount_2(id, menu, item){
 			}
 			userLogged[id] = false;
 			
-			logType[id] = LOG_LOGOUT;
-			if(logType[id] == LOG_LOGOUT){
-				format(gText, sizeof(gText), "wylogowal sie !!");
-				logBB(id, gText);
-			} 
+			logBB(id, LOG_ACCOUNT, "logout", "wylogowal sie !!");
+			
 			chatPrint(id, PREFIX_NORMAL, "Wylogowales sie!" );
 		}
 		case 2:{
@@ -88,6 +85,9 @@ public mainMenuAccount_2(id, menu, item){
 					mainMenuAccount(id);
 					return PLUGIN_CONTINUE; 
 				}
+				
+				logBB(id, LOG_ACCOUNT, "update", "wlaczyl automatyczne logowanie! (IP: %s | SID: %s)", userIp[id], userSid[id]);
+			
 				
 				chatPrint(id, PREFIX_LINE, "Zaktualizowales swoje^3 Automatyczne^1 Logowanie!");
 				new ip[MAXBITIP], sid[MAXBITAUTHID];
@@ -105,7 +105,7 @@ public mainMenuAccount_2(id, menu, item){
 public readPassword(id){		
 	
 	new szArg[12];
-	new gText[128];
+
 	read_argv(1, szArg, sizeof(szArg));
 	replace_all(szArg, sizeof(szArg), "^"", "");
 	replace_all(szArg, sizeof(szArg), " ", "");
@@ -124,31 +124,22 @@ public readPassword(id){
 		if( equal(szArg, userPassword[id]) ){
 			userLogged[id]=true;			
 			
-			logType[id] = LOG_LOGIN;
-			if(logType[id] == LOG_LOGIN){
-				format(gText, sizeof(gText), "zalogowal sie, uzyl - [Aktualne haslo: %s]", szArg);
-				logBB(id, gText);
-			}
+			logBB(id, LOG_ACCOUNT, "succes", "zalogowal sie, uzyl - [Aktualne haslo: %s]", szArg);
 			
 			chatPrint(id, PREFIX_NORMAL, "Zalogowano pomyslnie" );
 			mainMenuAccount(id);
 		}else{
-			logType[id] = LOG_ERROR;
-			if(logType[id] == LOG_ERROR){
-				format(gText, sizeof(gText), "bledne haslo !! [Wpisal: %s][Aktualne haslo: %s]",szArg, userPassword[id]);
-				logBB(id, gText);
-			}
+			
+			logBB(id, LOG_ACCOUNT, "fail", "bledne haslo !! [Wpisal: %s][Aktualne haslo: %s]",szArg, userPassword[id]);
+			
 			chatPrint(id, PREFIX_NORMAL, "Podales zle haslo:^3 %s", szArg );
 		}
 	} else {
 		userLogged[id]=true;	
 		chatPrint(id, PREFIX_NORMAL, "Ustawiles haslo:^4 %s", szArg );		
 
-		logType[id] = LOG_LOGIN;
-		if(logType[id] == LOG_LOGIN){
-			format(gText, sizeof(gText), "ustawil [Haslo: %s]", szArg);
-			logBB(id, gText);
-		}
+		logBB(id, LOG_ACCOUNT, "change", "ustawil [Haslo: %s]", szArg);
+		
 		copy(userPassword[id], sizeof(userPassword[]), szArg);
 		mainMenuAccount(id);
 	}

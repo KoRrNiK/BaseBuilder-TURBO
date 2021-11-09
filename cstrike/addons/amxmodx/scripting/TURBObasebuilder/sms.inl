@@ -233,139 +233,135 @@ public addValue(id){
 	
 	
 	new gText[128];
-	logType[id] = LOG_ADD;
-	if(logType[id] == LOG_ADD){
-		
-		switch(userMenuPlayer[id]){
+	
+	switch(userMenuPlayer[id]){
 				
-			case MENU_GIVING_VIP:{
+		case MENU_GIVING_VIP:{
 				
-				if(has_flag(target, flagVip)){
-					chatPrint(id, PREFIX_LINE, "Gracz:^3 %s^1 posiada flage^3 't'^1 i posiada^1 VIP'a^1 bez limitu", userName[target]);
-					choosePlayer(id, 0);
-					return PLUGIN_CONTINUE;
-				}
-				timeVip[target] = max( timeVip[target] + (value*60), get_systime() + (value*60) );
-				new daysLeft = (timeVip[target] - get_systime());
-				userVip[target] = !!(daysLeft>0);
-				
-				chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d min VIP'a^4][^3Graczowi %s^4] ", value, userName[target]);
-				chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d min VIP'a^4][^3Od Admina %s^4] ", value, userName[id]);
-				format(gText, sizeof(gText), "dodal Vipa [%s] na [%d min]", userName[target], (daysLeft /60) );	
-			} 
-			case MENU_GIVING_SVIP:{
-				if(has_flag(target, flagSVip)){
-					chatPrint(id, PREFIX_LINE, "Gracz:^3 %s^1 posiada flage^3 's'^1 i posiada^1 SVIP'a^1 bez limitu", userName[target]);
-					choosePlayer(id, 0);
-					return PLUGIN_CONTINUE;
-				}
-				timeSVip[target] = max( timeSVip[target] + (value*60), get_systime() + (value*60) );
-				new daysLeft = (timeSVip[target] - get_systime());
-				userSVip[target] = !!(daysLeft>0);
-				
-				chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d min VIP'a^4][^3Graczowi %s^4] ", value, userName[target]);
-				chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d min VIP'a^4][^3Od Admina %s^4] ", value, userName[id]);
-				format(gText, sizeof(gText), "dodal Vipa [%s] na [%d min]", userName[target], (daysLeft /60) );	
-			}
-			case MENU_GIVING_LUZCOIN:{
-				userLuzCoin[target] += value;
-				chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d Luzaczkow^4][^3Graczowi %s^4] ", value, userName[target]);
-				chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d Luzaczkow^4][^3Od Admina %s^4] ", value, userName[id]);
-				format(gText, sizeof(gText), "dodal Luzaczki [%s] ilosc [%d]", userName[target], value);
-		
-			}
-			case MENU_GIVING_NUGGET:{
-				addNuggetToFinal(target, value);
-				//userNugget[target] += value
-				chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d Brylek^4][^3Graczowi %s^4] ", value, userName[target]);
-				chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d Brylek^4][^3Od Admina %s^4] ", value, userName[id]);
-				format(gText, sizeof(gText), "dodal Brylki [%s] ilosc [%d]", userName[target], value);	
-			}
-			case MENU_GIVING_LVL:{
-				userLevel[target] += value;
-				userLevel[target] = clamp(userLevel[target], 0, MAXLVL);
-				chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d Lv.^4][^3Graczowi %s^4] ",value, userName[target]);
-				chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d Lv.^4][^3Od Admina %s^4] ", value, userName[id]);
-				format(gText, sizeof(gText), "dodal Lv. [%s] ilosc [%d ]", userName[target], value);	
-			}
-			case MENU_GIVING_TIME:{
-				userTime[target] += value *60;
-				chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d min Czasu Gry^4][^3Graczowi %s^4] ", value, userName[target]);			
-				chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d min Czasu Gry^4][^3Od Admina %s^4] ", value, userName[id]);
-				format(gText, sizeof(gText), "dodal Czas Gry [%s] na [%d min]", userName[target], value);
-			}
-			case MENU_GIVING_RESET:{
-				userReset[target] += value;
-				chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d Reset^4][^3Graczowi %s^4] ", value, userName[target]);
-				chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d Reset^4][^3Od Admina %s^4] ", value, userName[id]);	
-				format(gText, sizeof(gText), "dodal Reset [%s] ilosc [%d]", userName[target], value);
-			}
-			case MENU_GIVING_EXP:{
-				addExpToFinal(target, float(value));
-				//userExp[target] += float(value);
-				chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d Xp.^4][^3Graczowi %s^4] ",value, userName[target]);
-				chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d Xp.^4][^3Od Admina %s^4] ", value, userName[id]);
-				format(gText, sizeof(gText), "dodal Xp. [%s] ilosc [%d]", userName[target], value);
-			}
-			case MENU_GIVING_BONES:{
-				userBone[target] += value;
-				chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d Kosci^4][^3Graczowi %s^4] ", value, userName[target]);
-				chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d Kosci^4][^3Od Admina %s^4] ", value, userName[id]);
-				format(gText, sizeof(gText), "dodal Kosci [%s] ilosc [%d]", userName[target], value);	
-			}
-			case MENU_GIVING_EXP_ALL, MENU_GIVING_BONES_ALL, MENU_GIVING_NUGGET_ALL, MENU_GIVING_VIP_ALL, MENU_GIVING_SVIP_ALL:{
-				for(new i = 1; i < maxPlayers; i ++){
-					if(!is_user_connected(i) || is_user_bot(i) || is_user_hltv(i)) continue;
-					
-					if(userMenuPlayer[id] == MENU_GIVING_EXP_ALL)
-						addExpToFinal(i, float(value));
-					else if(userMenuPlayer[id] == MENU_GIVING_BONES_ALL)
-						addBoneToFinal(i, value);
-					else if(userMenuPlayer[id] == MENU_GIVING_NUGGET_ALL)
-						addNuggetToFinal(i, value);
-					else if(userMenuPlayer[id] == MENU_GIVING_VIP_ALL){
-						if(!has_flag(i, flagVip)){
-							timeVip[i] = max( timeVip[i] + (value*60), get_systime() + (value*60) );
-							new daysLeft = (timeVip[i] - get_systime());	
-							userVip[i] = !!(daysLeft>0);
-						}
-					} else if(userMenuPlayer[id] == MENU_GIVING_SVIP_ALL){
-						if(!has_flag(i, flagSVip)){
-							timeSVip[i] = max( timeSVip[i] + (value*60), get_systime() + (value*60) );
-							new daysLeft = (timeSVip[i] - get_systime());	
-							userSVip[i] = !!(daysLeft>0);
-						}
-					}
-						
-				}
-				if(userMenuPlayer[id] == MENU_GIVING_EXP_ALL){
-					chatPrint(0, PREFIX_LINE, "Wszyscy otrzymali^4 [^3%d Xp.^4][^3Od Admina %s^4] ", value, userName[id]);
-					format(gText, sizeof(gText), "dodal Xp. [%s] ilosc [%d]", "Wszystkim", value);
-				}
-				else if(userMenuPlayer[id] == MENU_GIVING_BONES_ALL){
-					chatPrint(0, PREFIX_LINE, "Wszyscy otrzymali^4 [^3%d Kosci^4][^3Od Admina %s^4] ", value, userName[id]);
-					format(gText, sizeof(gText), "dodal Kosci [%s] ilosc [%d]", "Wszystkim", value);
-				}
-				else if(userMenuPlayer[id] == MENU_GIVING_NUGGET_ALL){
-					chatPrint(0, PREFIX_LINE, "Wszyscy otrzymali^4 [^3%d Brylki^4][^3Od Admina %s^4] ", value, userName[id]);
-					format(gText, sizeof(gText), "dodal Brylek [%s] ilosc [%d]", "Wszystkim", value);
-				}
-				else if(userMenuPlayer[id] == MENU_GIVING_VIP_ALL){
-					chatPrint(0, PREFIX_LINE, "Wszyscy otrzymali^4 [^3%dmin VIP'a^4][^3Od Admina %s^4] ", value, userName[id]);
-					format(gText, sizeof(gText), "dodal VIP'a [%s] ilosc [%d min]", "Wszystkim", value);
-				}
-				else if(userMenuPlayer[id] == MENU_GIVING_SVIP_ALL){
-					chatPrint(0, PREFIX_LINE, "Wszyscy otrzymali^4 [^3%dmin SVIP'a^4][^3Od Admina %s^4] ", value, userName[id]);
-					format(gText, sizeof(gText), "dodal SVIP'a [%s] ilosc [%d min]", "Wszystkim", value);
-				}
-				
-				logBB(id, gText);
-				addValueMenu(id);
+			if(has_flag(target, flagVip)){
+				chatPrint(id, PREFIX_LINE, "Gracz:^3 %s^1 posiada flage^3 't'^1 i posiada^1 VIP'a^1 bez limitu", userName[target]);
+				choosePlayer(id, 0);
 				return PLUGIN_CONTINUE;
 			}
+			timeVip[target] = max( timeVip[target] + (value*60), get_systime() + (value*60) );
+			new daysLeft = (timeVip[target] - get_systime());
+			userVip[target] = !!(daysLeft>0);
+			
+			chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d min VIP'a^4][^3Graczowi %s^4] ", value, userName[target]);
+			chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d min VIP'a^4][^3Od Admina %s^4] ", value, userName[id]);
+			format(gText, sizeof(gText), "dodal Vipa [%s] na [%d min]", userName[target], (daysLeft /60) );	
+		} 
+		case MENU_GIVING_SVIP:{
+			if(has_flag(target, flagSVip)){
+				chatPrint(id, PREFIX_LINE, "Gracz:^3 %s^1 posiada flage^3 's'^1 i posiada^1 SVIP'a^1 bez limitu", userName[target]);
+				choosePlayer(id, 0);
+				return PLUGIN_CONTINUE;
+			}
+			timeSVip[target] = max( timeSVip[target] + (value*60), get_systime() + (value*60) );
+			new daysLeft = (timeSVip[target] - get_systime());
+			userSVip[target] = !!(daysLeft>0);
+			
+			chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d min VIP'a^4][^3Graczowi %s^4] ", value, userName[target]);
+			chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d min VIP'a^4][^3Od Admina %s^4] ", value, userName[id]);
+			format(gText, sizeof(gText), "dodal Vipa [%s] na [%d min]", userName[target], (daysLeft /60) );	
 		}
-		logBB(id, gText);
+		case MENU_GIVING_LUZCOIN:{
+			userLuzCoin[target] += value;
+			chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d Luzaczkow^4][^3Graczowi %s^4] ", value, userName[target]);
+			chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d Luzaczkow^4][^3Od Admina %s^4] ", value, userName[id]);
+			format(gText, sizeof(gText), "dodal Luzaczki [%s] ilosc [%d]", userName[target], value);
+		}
+		case MENU_GIVING_NUGGET:{
+			addNuggetToFinal(target, value);
+			//userNugget[target] += value
+			chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d Brylek^4][^3Graczowi %s^4] ", value, userName[target]);
+			chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d Brylek^4][^3Od Admina %s^4] ", value, userName[id]);
+			format(gText, sizeof(gText), "dodal Brylki [%s] ilosc [%d]", userName[target], value);	
+		}
+		case MENU_GIVING_LVL:{
+			userLevel[target] += value;
+			userLevel[target] = clamp(userLevel[target], 0, MAXLVL);
+			chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d Lv.^4][^3Graczowi %s^4] ",value, userName[target]);
+			chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d Lv.^4][^3Od Admina %s^4] ", value, userName[id]);
+			format(gText, sizeof(gText), "dodal Lv. [%s] ilosc [%d ]", userName[target], value);	
+		}
+		case MENU_GIVING_TIME:{
+			userTime[target] += value *60;
+			chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d min Czasu Gry^4][^3Graczowi %s^4] ", value, userName[target]);			
+			chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d min Czasu Gry^4][^3Od Admina %s^4] ", value, userName[id]);
+			format(gText, sizeof(gText), "dodal Czas Gry [%s] na [%d min]", userName[target], value);
+		}
+		case MENU_GIVING_RESET:{
+			userReset[target] += value;
+			chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d Reset^4][^3Graczowi %s^4] ", value, userName[target]);
+			chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d Reset^4][^3Od Admina %s^4] ", value, userName[id]);	
+			format(gText, sizeof(gText), "dodal Reset [%s] ilosc [%d]", userName[target], value);
+		}
+		case MENU_GIVING_EXP:{
+			addExpToFinal(target, float(value));
+			//userExp[target] += float(value);
+			chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d Xp.^4][^3Graczowi %s^4] ",value, userName[target]);
+			chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d Xp.^4][^3Od Admina %s^4] ", value, userName[id]);
+			format(gText, sizeof(gText), "dodal Xp. [%s] ilosc [%d]", userName[target], value);
+		}
+		case MENU_GIVING_BONES:{
+			userBone[target] += value;
+			chatPrint(id, PREFIX_LINE, "Dodales^4 [^3%d Kosci^4][^3Graczowi %s^4] ", value, userName[target]);
+			chatPrint(target, PREFIX_LINE, "Otrzymales^4 [^3%d Kosci^4][^3Od Admina %s^4] ", value, userName[id]);
+			format(gText, sizeof(gText), "dodal Kosci [%s] ilosc [%d]", userName[target], value);	
+		}
+		case MENU_GIVING_EXP_ALL, MENU_GIVING_BONES_ALL, MENU_GIVING_NUGGET_ALL, MENU_GIVING_VIP_ALL, MENU_GIVING_SVIP_ALL:{
+			for(new i = 1; i < maxPlayers; i ++){
+				if(!is_user_connected(i) || is_user_bot(i) || is_user_hltv(i)) continue;
+				
+				if(userMenuPlayer[id] == MENU_GIVING_EXP_ALL)
+					addExpToFinal(i, float(value));
+				else if(userMenuPlayer[id] == MENU_GIVING_BONES_ALL)
+					addBoneToFinal(i, value);
+				else if(userMenuPlayer[id] == MENU_GIVING_NUGGET_ALL)
+					addNuggetToFinal(i, value);
+				else if(userMenuPlayer[id] == MENU_GIVING_VIP_ALL){
+					if(!has_flag(i, flagVip)){
+						timeVip[i] = max( timeVip[i] + (value*60), get_systime() + (value*60) );
+						new daysLeft = (timeVip[i] - get_systime());	
+						userVip[i] = !!(daysLeft>0);
+					}
+				} else if(userMenuPlayer[id] == MENU_GIVING_SVIP_ALL){
+					if(!has_flag(i, flagSVip)){
+						timeSVip[i] = max( timeSVip[i] + (value*60), get_systime() + (value*60) );
+						new daysLeft = (timeSVip[i] - get_systime());	
+						userSVip[i] = !!(daysLeft>0);
+					}
+				}
+						
+			}
+			if(userMenuPlayer[id] == MENU_GIVING_EXP_ALL){
+				chatPrint(0, PREFIX_LINE, "Wszyscy otrzymali^4 [^3%d Xp.^4][^3Od Admina %s^4] ", value, userName[id]);
+				format(gText, sizeof(gText), "dodal Xp. [%s] ilosc [%d]", "Wszystkim", value);
+			}
+			else if(userMenuPlayer[id] == MENU_GIVING_BONES_ALL){
+				chatPrint(0, PREFIX_LINE, "Wszyscy otrzymali^4 [^3%d Kosci^4][^3Od Admina %s^4] ", value, userName[id]);
+				format(gText, sizeof(gText), "dodal Kosci [%s] ilosc [%d]", "Wszystkim", value);
+			}
+			else if(userMenuPlayer[id] == MENU_GIVING_NUGGET_ALL){
+				chatPrint(0, PREFIX_LINE, "Wszyscy otrzymali^4 [^3%d Brylki^4][^3Od Admina %s^4] ", value, userName[id]);
+				format(gText, sizeof(gText), "dodal Brylek [%s] ilosc [%d]", "Wszystkim", value);
+			}
+			else if(userMenuPlayer[id] == MENU_GIVING_VIP_ALL){
+				chatPrint(0, PREFIX_LINE, "Wszyscy otrzymali^4 [^3%dmin VIP'a^4][^3Od Admina %s^4] ", value, userName[id]);
+				format(gText, sizeof(gText), "dodal VIP'a [%s] ilosc [%d min]", "Wszystkim", value);
+			}
+			else if(userMenuPlayer[id] == MENU_GIVING_SVIP_ALL){
+				chatPrint(0, PREFIX_LINE, "Wszyscy otrzymali^4 [^3%dmin SVIP'a^4][^3Od Admina %s^4] ", value, userName[id]);
+				format(gText, sizeof(gText), "dodal SVIP'a [%s] ilosc [%d min]", "Wszystkim", value);
+			}
+				
+			addValueMenu(id);
+			return PLUGIN_CONTINUE;
+		}
 	}
+	logBB(id, LOG_SMS, "add", gText);
+	
 	choosePlayer(id, 0);
 	return PLUGIN_CONTINUE;
 }
@@ -392,11 +388,8 @@ public addValueTransfer(id){
 				chatPrint(id, PREFIX_NORMAL, "Nie masz tyle Brylek!");
 				return PLUGIN_CONTINUE;
 			}
-			new gText[128];
-			logType[id] = LOG_TRANSFER;
-			if(logType[id] == LOG_TRANSFER) format(gText, sizeof(gText), "wyslal [%d] brylek graczowi [%s]", value, userName[target]);
-			logBB(id, gText);
-			
+	
+			logBB(id, LOG_TRANSFER, "send", "wyslal [%d] brylek graczowi [%s]", value, userName[target]);
 			
 			userNugget[id]		-=	value;
 			userNugget[target]	+=	value;
@@ -431,16 +424,10 @@ public codeCheck(id){
 }
 public checkCodeSmsSeti(idHandler, error){	
 	
-	new gText[128];
-	
 	if(!is_user_connected(lastBuyer)){
 		
-		new gText[128];
-		logType[lastBuyer] = LOG_BUY;
-		if(logType[lastBuyer] == LOG_BUY){
-			format(gText, sizeof(gText), "wpisal kod SMS i nie ma go na serwerze!");
-			logBB(lastBuyer, gText);
-		}
+		logBB(lastBuyer, LOG_SMS, "disconnect", "wpisal kod SMS i nie ma go na serwerze!");
+			
 		return PLUGIN_HANDLED;
 	}
 	
@@ -476,13 +463,9 @@ public checkCodeSmsSeti(idHandler, error){
 				chatPrint(lastBuyer, PREFIX_NONE, "(:^1 Doladowales^4 %s^1 Luzaczkow^4 :)", pricesMenu[i][4]);
 				chatPrint(0, PREFIX_NORMAL, "(:^1 Dziekujemy!^3 %s^1 kupil^3 Luzaczki^4 :)", userName[lastBuyer]);
 				userLuzCoin[lastBuyer] += str_to_num(pricesMenu[i][4]);
-				format(gText, sizeof(gText), "doladowanie [%s PLN][%s Cena][Kod: %s][Ilosc: %s]", pricesMenu[i][3], pricesMenu[i][2], szSmsCode, pricesMenu[i][4] );
 				
-				logType[lastBuyer] = LOG_BUY;
-				if(logType[lastBuyer] == LOG_BUY){
-					format(gText, sizeof(gText), "doladowanie [%s PLN][%s Cena][Kod: %s][Ilosc: %s]", pricesMenu[i][3], pricesMenu[i][2], szSmsCode, pricesMenu[i][4] );
-					logBB(lastBuyer, gText);
-				}
+				logBB(lastBuyer, LOG_SMS, "buy", "doladowanie [%s PLN][%s Cena][Kod: %s][Ilosc: %s]", pricesMenu[i][3], pricesMenu[i][2], szSmsCode, pricesMenu[i][4]);
+				
 				return PLUGIN_HANDLED;
 			}
 		}
@@ -609,14 +592,18 @@ public luzaczkiFinal_2(id, item){
 	Display_Fade(id, 4096,4096, 4096, 64, 255, 64, 80);
 	set_dhudmessage(30, 160, 30, -1.0, 0.20, 0, 0.5, 2.0, 0.5, 0.5);
 	show_dhudmessage(id, "Kupiles %s za %s Luzaczkow", itemsShop[item][0], itemsShop[item][1]);
-	new gText[128];
-	logType[id] = LOG_BUY;
-	if(logType[id] == LOG_BUY){
-		format(gText, sizeof(gText), "kupil [%s] za [%s Luzaczkow]", itemsShop[item][0], itemsShop[item][1] );	
-		logBB(id, gText);
-	}
+	
+	logBB(id, LOG_SMS, "buy", "kupil [%s] za [%s Luzaczkow]", itemsShop[item][0], itemsShop[item][1]);
+			
+	
 	luzaczkiShop(id);
+	
+	
+	
 	
 	return PLUGIN_HANDLED;
 	
 }
+/* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
+*{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
+*/

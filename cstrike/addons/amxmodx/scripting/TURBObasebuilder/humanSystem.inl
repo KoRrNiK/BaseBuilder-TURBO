@@ -88,13 +88,10 @@ public randomClassAll(id){
 		classHuman(id);
 		return PLUGIN_CONTINUE;
 	}
-	new gText[128];
-	logType[id] = LOG_CLASS;
-	if(logType[id] == LOG_CLASS){
-		format(gText, sizeof(gText), "kupil klase [%s]", classesHuman[class][0]);
-		logBB(id,gText);
-	}
-					
+	
+	logBB(id, LOG_CLASS, "buy", "kupil klase [%s]", classesHuman[class][0]);
+	
+	
 	addClassHuman(id, class);
 	chatPrint(id, PREFIX_LINE, "Zakupiles klase^3 %s!", classesHuman[class][0]);
 	userNugget[id] -= cost;

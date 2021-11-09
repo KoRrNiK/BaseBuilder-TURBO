@@ -876,10 +876,27 @@ new const teamNames[4][2][]={
 	{"\wBudowniczy\r",	"Budowniczych"},
 	{"Spect",		"Spect"}
 };
-new logType[33];
-enum { 	LOG_BUY,LOG_ADD, LOG_LOGOUT, LOG_LOGIN, LOG_REGISTER, LOG_ERROR, LOG_TRANSFER, LOG_ROULETTE, LOG_DELETEACCOUNT, LOG_AWARD,LOG_MISSION,LOG_CLASS,LOG_MUTE, LOG_AFK, LOG_CAVE, LOG_CONNECT,
-	LOG_CHAT, LOG_CLAN_ADD,LOG_CLAN_PROMOTION, LOG_CLAN_CREATE, LOG_CLAN_DELETE,LOG_CLAN_UPGRADE , LOG_CLAN_DEPOSIT, LOG_CLAN_RESET, LOG_CLAN_LEAVE, LOG_CLAN_MANAGE, LOG_HAT_REMOVE, LOG_HAT_ADD, LOG_WARNING_ADD, LOG_WARNING_REMOVE, LOG_WARNING_CHANGE, LOG_TOTAL 
+
+enum _:enumLogs { LOG_ERROR, LOG_SMS, LOG_TRANSFER, LOG_AWARD, LOG_ACCOUNT, LOG_MISSION, LOG_CLASS, LOG_MUTE, LOG_AFK, LOG_CAVE, LOG_CONNECT, LOG_CHAT, LOG_COSTUME, LOG_WARNING, LOG_CLAN }
+
+new foldersLogs[enumLogs][] = {
+	  "error"
+	,"shopSmsLog"
+	,"transferLog"
+	,"awardLog"
+	,"accountLog"
+	,"missionLog"
+	,"classLog"
+	,"muteLog"
+	,"afkLog"
+	,"caveLog"
+	,"conLog"
+	,"chatLog"
+	,"costume"
+	,"warnings"
+	,"clan"
 };
+
 
 new userLastDay[33];
 

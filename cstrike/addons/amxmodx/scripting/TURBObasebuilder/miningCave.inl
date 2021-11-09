@@ -53,12 +53,7 @@ public buyCave_2(id, item){
 				userLastStaminaTime[id] 	= playedTime(id);
 				unlockCave[id] = 1;
 				
-				new gText[128];
-				logType[id] = LOG_CAVE;
-				if(logType[id] == LOG_CAVE) {
-					format(gText, sizeof(gText), "odblokowal kopalnie");
-					logBB(id, gText);
-				}
+				logBB(id, LOG_CAVE, "unlock", "odblokowal kopalnie");
 				
 				chatPrint(id, PREFIX_NORMAL, "Odblokowales Kopalnie!");
 				return PLUGIN_CONTINUE;
@@ -232,13 +227,10 @@ public viewUpgradeMine_2(id, item){
 			userUpgradeMine[id][target] += 1;
 			userNugget[id] -= str_to_num(upgradeMine[target][3]);
 			chatPrint(id, PREFIX_NORMAL, "Ulepszyles^3 %s^1 na poziom:^3 %d/%s",  upgradeMine[target][0], userUpgradeMine[id][target],  upgradeMine[target][2]);
-			new gText[128];
-			logType[id] = LOG_CAVE;
-			if(logType[id] == LOG_CAVE){
-				format(gText, sizeof(gText), "ulepszyl [%s] na poziom [%d/%d] ",upgradeMine[target][0], userUpgradeMine[id][target],  upgradeMine[target][2]);
-				logBB(id, gText);
-			}
-
+			
+			logBB(id, LOG_CAVE, "upgrade", "ulepszyl [%s] na poziom [%d/%d] ",upgradeMine[target][0], userUpgradeMine[id][target],  upgradeMine[target][2]);
+				
+			
 			viewUpgradeMine(id, target);
 		}
 		case 1: miningMenu(id);
@@ -323,13 +315,9 @@ public removePointCave(id){
 				case 6:chatPrint(id, PREFIX_NORMAL, "Goblin wywrocil wozek^4 |^3 ( -1poziom 'Wozek' )");	
 			}
 		}
-		new gText[128];
-		logType[id] = LOG_CAVE;
-		if(logType[id] == LOG_CAVE){
-			format(gText, sizeof(gText), "stracil [1 poziom] z ulepszenia [%s]",upgradeMine[randomRemove][0]);
-			logBB(id, gText);
-		}
-	
+		
+		logBB(id, LOG_CAVE, "lose", "stracil [1 poziom] z ulepszenia [%s]",upgradeMine[randomRemove][0]);	
+		
 		userUpgradeMine[id][randomRemove] --;
 					
 	}

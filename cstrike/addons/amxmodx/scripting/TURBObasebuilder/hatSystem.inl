@@ -24,27 +24,16 @@ stock addCostumes(id, hat){
 	new type = typeHat(hat);
 	userHat[id][type] |= (1<< ( hat - 32 * type));
 	
-	new gText[128];
-	logType[id] = LOG_HAT_ADD;
-	if(logType[id] == LOG_HAT_ADD){
-		if(is_user_connected(id) || !is_user_bot(id) || !is_user_hltv(id)){
-			format(gText, sizeof(gText), "otrzymal kostium: %s od: %s", costumesNames[hat][0], userName[id]);
-			logBB(id,gText);
-		}
-	}
+	logBB(id, LOG_COSTUME, "add", "otrzymal kostium: %s od: %s", costumesNames[hat][0], userName[id]);
+	
+	
 }
 stock removeCostumes(id, hat){
 	new type = typeHat(hat);
 	userHat[id][type]  &= ~(1<< ( hat - 32 * type));
 	
-	new gText[128];
-	logType[id] = LOG_HAT_REMOVE;
-	if(logType[id] == LOG_HAT_REMOVE){
-		if(is_user_connected(id) || !is_user_bot(id) || !is_user_hltv(id)){
-			format(gText, sizeof(gText), "usunal kostium: %s garczowi: %s", costumesNames[hat][0], userName[id]);
-			logBB(id,gText);
-		}
-	}
+	logBB(id, LOG_COSTUME, "delete", "otrzymal kostium: %s od: %s", costumesNames[hat][0], userName[id]);
+	
 }
 stock typeHat(i) return i >= 96 ? 3 : i >= 64 ? 2 : i >= 32 ? 1 : 0;
 public allunlockHat(id){

@@ -255,12 +255,10 @@ public missionMenuDesc_2(id, item){
 					return PLUGIN_CONTINUE;
 					
 				}
-				new gText[128];
-				logType[id] = LOG_MISSION;
-				if(logType[id] == LOG_MISSION){
-					format(gText, sizeof(gText), "odebral  profesjonalna misje [%s]", proDesc[target][0]);
-					logBB(id,gText);
-				}
+				
+				
+				logBB(id, LOG_MISSION, "award", "odebral profesjonalna misje [%s]", proDesc[target][0]);
+			
 				
 				userPro[id][target] = -1;
 				userProSelected[id] = -1;
@@ -315,23 +313,15 @@ public missionGiveAward(id){
 	new type 	= ( missionMenu[id] == MISSION_MENU_BASIC ) ? missionAward[item][0] : missionSecretAward[item][0];
 
 	if(missionMenu[id] == MISSION_MENU_BASIC){
-		new gText[128];
-		logType[id] = LOG_MISSION;
-		if(logType[id] == LOG_MISSION){
-			format(gText, sizeof(gText), "odebral podstawowa misje [%s]", missionDesc[item][0]);
-			logBB(id,gText);
-		}
-						
+		
+		logBB(id, LOG_MISSION, "award", "odebral podstawowa misje [%s]", missionDesc[item][0]);
+		
 		chatPrint(id, PREFIX_NORMAL, "Gracz:^4 %s^1 odebral misje -^3 %s", userName[id], missionDesc[item][0]);
 		userMission[id][item] = -1;
 		
 	}  else if(missionMenu[id] == MISSION_MENU_SECRET){
-		new gText[128];
-		logType[id] = LOG_MISSION;
-		if(logType[id] == LOG_MISSION){
-			format(gText, sizeof(gText), "odebral sekretna misje [%c] (%s)", missionDescSecret[item][0], missionDescSecret[item][0] );
-			logBB(id,gText);
-		}
+		
+		logBB(id, LOG_MISSION, "award", "odebral sekretna misje [%c] (%s)", missionDescSecret[item][0], missionDescSecret[item][0]);
 
 		chatPrint(id, PREFIX_NORMAL, "Gracz:^4 %s^1 odebral sekretna misje -^3 %c", userName[id], missionDescSecret[item][0]);
 		userMissionSecret[id][item] = -1;

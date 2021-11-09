@@ -510,17 +510,11 @@ public avansClanMenu_2(id, item){
 			ArraySetArray(bbClans, get_clan_id(clan[id]), bbClan);
 			save_clan(get_clan_id(clan[id]));
 					
-			new logText[128];
-			logType[id] = LOG_CLAN_PROMOTION;
-			if(logType[id] == LOG_CLAN_PROMOTION){
-				new clanName[64];
-						
-				get_clan_info(clan[id], CLAN_NAME, clanName, sizeof(clanName));	
-				format(logText, sizeof(logText), "awansowal na poziom: %d | klan: %s", bbClan[CLAN_LEVEL], clanName);
-									
-				logBB(id, logText);
-			}		
-					
+			
+			new clanName[64];
+			get_clan_info(clan[id], CLAN_NAME, clanName, sizeof(clanName));		
+			logBB(id, LOG_CLAN, "promotion", "awansowal na poziom: %d | klan: %s", bbClan[CLAN_LEVEL], clanName);
+		
 			chatPrint(0, PREFIX_NORMAL, "^4^3 %s^1 ulepszyl klan^4 %s^1 na poziom^3 %d", userName[id],bbClan[CLAN_NAME], bbClan[CLAN_LEVEL]);
 			avansClanMenu(id);
 			return;
@@ -628,13 +622,8 @@ public createClanHandle(id){
 	}
 
 	createClan(id, clanName);
-	new logText[128];	
-	logType[id] = LOG_CLAN_CREATE;
-	if(logType[id] == LOG_CLAN_CREATE){
-		
-		format(logText, sizeof(logText), "stworzyl klan %s", clanName);
-		logBB(id, logText);
-	}
+	
+	logBB(id, LOG_CLAN, "create", "stworzyl klan %s", clanName);
 
 	chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 zalozyl klan:^4 [^3 %s^4 ] ", userName[id], clanName);
 	
@@ -675,15 +664,10 @@ public leaveConfimMenu_2(id, menu, item){
 			}
 			chatPrint(id, PREFIX_NORMAL, "Opusciles swoj klan");
 			
-			new logText[128];
-			logType[id] = LOG_CLAN_LEAVE;
-			if(logType[id] == LOG_CLAN_LEAVE){
-				new clanName[64];
-						
-				get_clan_info(clan[id], CLAN_NAME, clanName, sizeof(clanName));	
-				format(logText, sizeof(logText), "opuscil klan %s",  clanName);
-				logBB(id, logText);
-			}
+			new clanName[64];
+			get_clan_info(clan[id], CLAN_NAME, clanName, sizeof(clanName));	
+			logBB(id, LOG_CLAN, "leave", "opuscil klan %s",  clanName);
+	
 			set_user_clan(id);
 			globalClanMenu(id);
 		}
@@ -802,14 +786,11 @@ public leaderMenu_2(id, menu, item){
 					save_clan(get_clan_id(clan[id]));
 					userAcceptRestore[id] = false;
 					
-					new logText[128];
 					new clanName[64];
-					logType[id] = LOG_CLAN_RESET;
-					if(logType[id] == LOG_CLAN_RESET){
-						get_clan_info(clan[id], CLAN_NAME, clanName, sizeof(clanName));	
-						format(logText, sizeof(logText), "zresetowal statystyki | klan: %s",  clanName);
-						logBB(id, logText);
-					}
+					get_clan_info(clan[id], CLAN_NAME, clanName, sizeof(clanName));	
+					logBB(id, LOG_CLAN, "reset", "zresetowal statystyki | klan: %s",  clanName);
+	
+					
 					return;
 				}
 				userAcceptRestore[id] = true;
@@ -970,16 +951,11 @@ public checkNameClan(id){
 				
 	if(equal(nameClan, bbClan[CLAN_NAME])){
 		chatPrint(id, PREFIX_NORMAL, "Rozwiazales swoj klan!");
+	
+		new clanName[64];
+		get_clan_info(clan[id], CLAN_NAME, clanName, sizeof(clanName));	
+		logBB(id, LOG_CLAN, "delete", "usunal klan: %s",  clanName);
 		
-		new logText[128];
-		logType[id] = LOG_CLAN_DELETE;
-		if(logType[id] == LOG_CLAN_DELETE){
-			new clanName[64];
-		
-			get_clan_info(clan[id], CLAN_NAME, clanName, sizeof(clanName));	
-			format(logText, sizeof(logText), "usunal klan: %s",  clanName);
-			logBB(id, logText);		
-		}
 		removeClan(id);
 	} else  chatPrint(id, PREFIX_NORMAL, "Wpisz poprawna nazwe klanu!");
 }
@@ -1124,15 +1100,11 @@ public upgradeClanMenu_2(id, item){
 		chatPrint(i,PREFIX_NORMAL, "%s^1 ulepszyl %s na^3 %d Poziom^1!", userName[id], upgradedSkillName, bbClan[upgradedSkill]);
 	}
 	
-	new logText[128];
-	logType[id] = LOG_CLAN_UPGRADE;
-	if(logType[id] == LOG_CLAN_UPGRADE){
-		new clanName[64];
-		
-		get_clan_info(clan[id], CLAN_NAME, clanName, sizeof(clanName));	
-		format(logText, sizeof(logText), "ulepszyl %s na poziom %d | klan: %s", upgradedSkillName, bbClan[upgradedSkill], clanName);	
-		logBB(id, logText);
-	}
+	
+	new clanName[64];
+	get_clan_info(clan[id], CLAN_NAME, clanName, sizeof(clanName));	
+	logBB(id, LOG_CLAN, "upgrade", "ulepszyl %s na poziom %d | klan: %s", upgradedSkillName, bbClan[upgradedSkill], clanName);
+	
 	upgradeClanMenu(id);
 	
 	return;
@@ -1225,15 +1197,10 @@ public inviteConfirmMenu_2(id, menu, item){
 			set_user_clan(id, clan[target]);
 			
 			chatPrint(id, PREFIX_NORMAL, "Dolaczyles do klanu^3 %s^01.", clanName);
-			new logText[128];
-			logType[target] = LOG_CLAN_ADD;
-			if(logType[target] == LOG_CLAN_ADD){
-				
-				
-				format(logText, sizeof(logText), "dodal: %s | klan: %s", userName[id],  clanName);
-				
-				logBB(target, logText);
-			}
+			
+			logBB(id, LOG_CLAN, "add", "dodal: %s | klan: %s", userName[id],  clanName);
+	
+			
 		}
 		default:{}
 	}
@@ -1333,72 +1300,72 @@ public member_options_menu_handle(id, menu, item){
 public update_member(id, status){
 	new bool:playerOnline;
 	new logText[128];
-	logType[id] = LOG_CLAN_MANAGE;
-	if(logType[id] == LOG_CLAN_MANAGE){
-		new clanName[64];
-		get_clan_info(clan[id], CLAN_NAME, clanName, sizeof(clanName));
+
+	new clanName[64];
+	get_clan_info(clan[id], CLAN_NAME, clanName, sizeof(clanName));
 	
 	
-		for (new i = 1; i <= maxPlayers; i++) {
-			if (!is_user_connected(i) || clan[i] != clan[id]) continue;
-		
-			if (get_user_userid(i) == chosenId[id]) {
-				switch (status) {
-					case STATUS_LEADER: {
-						set_user_status(id, STATUS_DEPUTY);
-						set_user_status(i, STATUS_LEADER);
+	for (new i = 1; i <= maxPlayers; i++) {
+		if (!is_user_connected(i) || clan[i] != clan[id]) continue;
 	
-						chatPrint(i, PREFIX_NORMAL, "Zostales mianowany przywodca klanu.");
-						
-						format(logText, sizeof(logText), "mianowal nowego przywodce klanu: %s |  klan: %s", userName[i],  clanName);
-						
-					}
-					case STATUS_DEPUTY: {
-						set_user_status(i, STATUS_DEPUTY);
-	
-						chatPrint(i, PREFIX_NORMAL, "Zostales zastepca przywodcy klanu!");		
-						
-						format(logText, sizeof(logText), "mianowal nowego zastepce klanu: %s |  klan: %s", userName[i],  clanName);
-						
-					}
-					case STATUS_MEMBER: {
-						set_user_status(i, STATUS_MEMBER);
-	
-						chatPrint(i, PREFIX_NORMAL, "Zostales zdegradowany do rangi czlonka klanu.");
-			
-						format(logText, sizeof(logText), "zdegradowal: %s do czlonka klanu | klan: %s", userName[i],  clanName);	
-					}
-					case STATUS_NONE: {
-						set_user_clan(i);
-	
-						chatPrint(i, PREFIX_NORMAL, "Zostales wyrzucony z klanu.");
-						
-						format(logText, sizeof(logText), "usunal gracza: %s | klan: %s", userName[i],  clanName);
-					}
-				}
-	
-				playerOnline = true;
-	
-				continue;
-			}
-			
+		if (get_user_userid(i) == chosenId[id]) {
 			switch (status) {
-				case STATUS_LEADER: chatPrint(i, PREFIX_NORMAL, "%s^01 zostal nowym przywodca klanu.", chosenName[id]);
-				case STATUS_DEPUTY: chatPrint(i, PREFIX_NORMAL, "%s^1 zostal zastepca przywodcy klanu.",  chosenName[id]);
-				case STATUS_MEMBER: chatPrint(i, PREFIX_NORMAL, "%s^1 zostal zdegradowany do rangi czlonka klanu.", chosenName[id]);
-				case STATUS_NONE: chatPrint(i, PREFIX_NORMAL, "%s^01 zostal wyrzucony z klanu.", chosenName[id]);
-			}
-		}
-	
-		if (!playerOnline) {
-			save_member(id, status, _, chosenName[id]);
+				case STATUS_LEADER: {
+					set_user_status(id, STATUS_DEPUTY);
+					set_user_status(i, STATUS_LEADER);
 			
-			if (status == STATUS_NONE) set_clan_info(clan[id], CLAN_MEMBERS, get_clan_info(clan[id], CLAN_MEMBERS) - 1);
+					chatPrint(i, PREFIX_NORMAL, "Zostales mianowany przywodca klanu.");
+					
+					format(logText, sizeof(logText), "mianowal nowego przywodce klanu: %s |  klan: %s", userName[i],  clanName);
+					
+				}
+				case STATUS_DEPUTY: {
+					set_user_status(i, STATUS_DEPUTY);
 	
-			if (status == STATUS_LEADER) set_user_status(id, STATUS_DEPUTY);
+					chatPrint(i, PREFIX_NORMAL, "Zostales zastepca przywodcy klanu!");		
+						
+					format(logText, sizeof(logText), "mianowal nowego zastepce klanu: %s |  klan: %s", userName[i],  clanName);
+						
+				}
+				case STATUS_MEMBER: {
+					set_user_status(i, STATUS_MEMBER);
+	
+					chatPrint(i, PREFIX_NORMAL, "Zostales zdegradowany do rangi czlonka klanu.");
+			
+					format(logText, sizeof(logText), "zdegradowal: %s do czlonka klanu | klan: %s", userName[i],  clanName);	
+				}
+				case STATUS_NONE: {
+					set_user_clan(i);
+	
+					chatPrint(i, PREFIX_NORMAL, "Zostales wyrzucony z klanu.");
+						
+					format(logText, sizeof(logText), "usunal gracza: %s | klan: %s", userName[i],  clanName);
+				}
+			}
+	
+			playerOnline = true;
+	
+			continue;
 		}
-		logBB(id, logText);
+			
+		switch (status) {
+			case STATUS_LEADER: chatPrint(i, PREFIX_NORMAL, "%s^01 zostal nowym przywodca klanu.", chosenName[id]);
+			case STATUS_DEPUTY: chatPrint(i, PREFIX_NORMAL, "%s^1 zostal zastepca przywodcy klanu.",  chosenName[id]);
+			case STATUS_MEMBER: chatPrint(i, PREFIX_NORMAL, "%s^1 zostal zdegradowany do rangi czlonka klanu.", chosenName[id]);
+			case STATUS_NONE: chatPrint(i, PREFIX_NORMAL, "%s^01 zostal wyrzucony z klanu.", chosenName[id]);
+		}
 	}
+	
+	if (!playerOnline) {
+		save_member(id, status, _, chosenName[id]);
+		
+		if (status == STATUS_NONE) set_clan_info(clan[id], CLAN_MEMBERS, get_clan_info(clan[id], CLAN_MEMBERS) - 1);
+
+		if (status == STATUS_LEADER) set_user_status(id, STATUS_DEPUTY);
+	}
+
+	logBB(id, LOG_CLAN, "manage", logText);
+	
 	globalClanMenu(id);
 	
 	return PLUGIN_HANDLED;
@@ -1433,16 +1400,11 @@ public depositNuggetHandle(id){
 	chatPrint(id, PREFIX_NORMAL, "Wplaciles^3 %s^1 Brylek do klanu.", formatNumber(nuggetAmount));
 	chatPrint(id, PREFIX_NORMAL, "Aktualnie twoj klan ma^3 %s^1 Brylek.", formatNumber(get_clan_info(clan[id], CLAN_NUGGET)));
 	
-	
-	new logText[128];
+
 	new clanName[64];	
-	logType[id] = LOG_CLAN_DEPOSIT;
-	if(logType[id] == LOG_CLAN_DEPOSIT){
-		
-		get_clan_info(clan[id], CLAN_NAME, clanName, sizeof(clanName));	
-		format(logText, sizeof(logText), "wplacil [ %d Brylek ( Aktualnie: %d ) ] | klan: %s", nuggetAmount, get_clan_info(clan[id], CLAN_NUGGET), clanName);	
-		logBB(id, logText);
-	}
+
+	logBB(id, LOG_CLAN, "deposit", "wplacil [ %d Brylek ( Aktualnie: %d ) ] | klan: %s", nuggetAmount, get_clan_info(clan[id], CLAN_NUGGET), clanName);
+	
 	return PLUGIN_HANDLED;
 }
 
