@@ -868,6 +868,9 @@ public motdClanMenu_2(id, menu, item){
 			
 			save_clan(get_clan_id(clan[id]));
 			
+			logBB(id, LOG_CLAN, "motd", "zresetowal motd klanu");
+		
+			
 			motdClanMenu(id);
 		}
 	}
@@ -900,6 +903,9 @@ public checkCodeMotd(id){
 	ArraySetArray(bbClans, get_clan_id(clan[id]), bbClan);
 	
 	save_clan(get_clan_id(clan[id]));
+	
+	logBB(id, LOG_CLAN, "motd", "ustawil motd klanu: [%s]", codeMotd);
+		
 	
 	motdClanMenu(id);
 	
@@ -1437,6 +1443,9 @@ public  updateInfo(id){
 
 	ArraySetArray(bbClans, get_clan_id(clan[id]), bbClan);
 	save_clan(get_clan_id(clan[id]));
+	
+	logBB(id, LOG_CLAN, "info", "nowe ogloszenie: [%s]", szArg);
+		
 	
 	chatPrint(id, PREFIX_LINE, "Nowe ogloszenie:^3 %s", szArg);
 	
