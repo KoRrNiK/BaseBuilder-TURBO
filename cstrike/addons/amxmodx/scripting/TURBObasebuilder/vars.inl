@@ -877,24 +877,25 @@ new const teamNames[4][2][]={
 	{"Spect",		"Spect"}
 };
 
-enum _:enumLogs { LOG_ERROR, LOG_SMS, LOG_TRANSFER, LOG_AWARD, LOG_ACCOUNT, LOG_MISSION, LOG_CLASS, LOG_MUTE, LOG_AFK, LOG_CAVE, LOG_CONNECT, LOG_CHAT, LOG_COSTUME, LOG_WARNING, LOG_CLAN }
+enum _:enumLogs { LOG_ERROR, LOG_SMS, LOG_TRANSFER, LOG_AWARD, LOG_ACCOUNT, LOG_MISSION, LOG_CLASS, LOG_MUTE, LOG_AFK, LOG_CAVE, LOG_CONNECT, LOG_CHAT, LOG_COSTUME, LOG_WARNING, LOG_CLAN, LOG_ADMIN }
 
 new foldersLogs[enumLogs][] = {
 	  "error"
-	,"shopSmsLog"
-	,"transferLog"
-	,"awardLog"
-	,"accountLog"
-	,"missionLog"
-	,"classLog"
-	,"muteLog"
-	,"afkLog"
-	,"caveLog"
-	,"conLog"
-	,"chatLog"
+	,"sms"
+	,"transfer"
+	,"award"
+	,"account"
+	,"mission"
+	,"class"
+	,"mute"
+	,"afk"
+	,"cave"
+	,"connect"
+	,"chat"
 	,"costume"
 	,"warnings"
 	,"clan"
+	,"admin"
 };
 
 
