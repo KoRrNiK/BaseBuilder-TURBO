@@ -654,7 +654,7 @@ public choosePlayer_2(id, menu, item){
 			userLastAwardTime[target]		=	playedTime(target);
 			chatPrint(id, PREFIX_NORMAL, "Zresetowales nagrode gracza^4 %s!", userName[target] ) ;
 			chatPrint(target, PREFIX_NORMAL, "Twoja nagroda zostala zresetowana przez Admina^4 %s!", userName[id] ) ;
-			logBB(id, LOG_SMS, "add", "zresetowal nagrode [%s]", userName[target]);
+			logBB(id, LOG_SMS, "reset", "zresetowal nagrode [%s]", userName[target]);
 	
 			
 		}
@@ -667,7 +667,7 @@ public choosePlayer_2(id, menu, item){
 			userLastStaminaTime[target] 	= playedTime(target);
 			chatPrint(id, PREFIX_NORMAL, "Zresetowales wyczerpanie gracza^4 %s!", userName[target] ) ;
 			chatPrint(target, PREFIX_NORMAL, "Twoje wyczerpanie zostala zresetowana przez Admina^4 %s!", userName[id] ) ;
-			logBB(id, LOG_SMS, "add", "zresetowal wyczerpanie [%s]", userName[target]);
+			logBB(id, LOG_SMS, "reset", "zresetowal wyczerpanie [%s]", userName[target]);
 	
 			
 		}
@@ -717,6 +717,7 @@ public choosePlayer_2(id, menu, item){
 	
 			SQL_ThreadQuery(sql, "saveStatsHandlerSql", queryData, tempId, sizeof(tempId));
 			
+			logBB(id, LOG_MUTE, "unmute_player", "odmutowal sobie gracza [%s]", userName[target]);
 			
 			chatPrint(id, PREFIX_LINE,  "Odmutowales gracza^3 %s^1.", userName[target]);
 			
@@ -845,6 +846,9 @@ public adminCommands(id, szMessage[]){
 			}
 			set_user_health(target, get_user_health(target) + gValue);			
 			chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 dostal^4 %dHP^1 od^3 %s", userName[target], gValue, userName[id]);
+			
+			logBB(id, LOG_ADMIN, "health", "dodal [+%dHP] graczowi [%s] | Aktualnie posiada [%dHP]", gValue, userName[target], get_user_health(target));
+			
 			return PLUGIN_HANDLED;
 		}
 		if( 0 <= contain(szMessage, "/tp")){
@@ -866,6 +870,9 @@ public adminCommands(id, szMessage[]){
 			new Float:fOrigin[3] = 0.0;
 			pev(target, pev_origin, fOrigin);
 			set_pev(id, pev_origin, fOrigin);
+			
+			logBB(id, LOG_ADMIN, "teleport", "teleportuje sie do gracza [%s]", userName[target]);
+			
 			return PLUGIN_HANDLED;
 		}
 		if( 0 <= contain(szMessage, "/tome")){
@@ -884,6 +891,7 @@ public adminCommands(id, szMessage[]){
 					set_pev(i, pev_origin, fOrigin);	
 					
 				}
+				logBB(id, LOG_ADMIN, "teleport", "teleportuje do siebie gracza [@ALL]");
 				return PLUGIN_CONTINUE;
 			} else if(equal(szName, "#tt")){
 				for(new i = 1; i < maxPlayers; i++){
@@ -897,6 +905,7 @@ public adminCommands(id, szMessage[]){
 					set_pev(i, pev_origin, fOrigin);	
 						
 				}
+				logBB(id, LOG_ADMIN, "teleport", "teleportuje do siebie gracza [@TT]");
 				return PLUGIN_CONTINUE;
 			} else if(equal(szName, "#ct")){
 				for(new i = 1; i < maxPlayers; i++){
@@ -908,6 +917,10 @@ public adminCommands(id, szMessage[]){
 					pev(id, pev_origin, fOrigin);
 					set_pev(i, pev_origin, fOrigin);		
 				}
+				
+				logBB(id, LOG_ADMIN, "teleport", "teleportuje do siebie gracza [@CT]");
+	
+				
 				return PLUGIN_CONTINUE;
 			} 
 			new target = cmd_target(id, szName, 0);
@@ -925,6 +938,10 @@ public adminCommands(id, szMessage[]){
 				new Float:fOrigin[3] = 0.0;
 				pev(id, pev_origin, fOrigin);
 				set_pev(target, pev_origin, fOrigin);
+				
+				logBB(id, LOG_ADMIN, "teleport", "teleportuje do siebie gracza [%s]", userName[target]);
+	
+				
 			}
 			return PLUGIN_HANDLED;
 		}
@@ -944,6 +961,7 @@ public adminCommands(id, szMessage[]){
 		if( buildTime || prepTime ){
 			Release_Zombies();	
 			chatPrint(0, PREFIX_LINE, "Admin^3 %s^1 rozpoczal runde przed czasem^4  ", userName[id]);
+			logBB(id, LOG_ADMIN, "release", "rozpoczal runde przed czasem");
 		}else chatPrint(id, PREFIX_LINE, "Runda juz zostala rozpoczeta^4  ");
 		return PLUGIN_HANDLED;
 	}
@@ -962,6 +980,10 @@ public adminCommands(id, szMessage[]){
 		
 		respawnPlayerAdmin(target);
 		chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 zostal ozywiony przez^3 %s", userName[target], userName[id]);
+		
+		logBB(id, LOG_ADMIN, "revive", "ozywil: [%s]", userName[target]);
+		
+		
 		return PLUGIN_HANDLED;
 	}
 	if(equal(szMessage, "/swap", 5)){	
@@ -981,6 +1003,9 @@ public adminCommands(id, szMessage[]){
 		respawnPlayerAdmin(target);
 		userRoundTeam[target] = get_user_team(target);				
 		chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 zostal przeniesiony do^4 %s^1 przez^3 %s", userName[target], teamNames[get_user_team(target)][1], userName[id]);
+		
+		logBB(id, LOG_ADMIN, "swap", "przeniosl gracza [%s] do [%s]", userName[target], teamNames[get_user_team(target)][1]);
+		
 		return PLUGIN_HANDLED;
 	}
 	if(equal(szMessage, "/mute", 5)){	
@@ -1070,6 +1095,9 @@ public menuSpecifyUser_2(id, menu, item){
 		case 0:{
 			respawnPlayerAdmin(target);
 			chatPrint(0, PREFIX_LINE, "Gracz^3 %s^1 zostal ozywiony przez^3 %s", userName[target], userName[id]);
+			
+			logBB(id, LOG_ADMIN, "respawn", "ozywil gracza [%s] ", userName[target]);
+		
 		}
 		case 1:{
 			userNoClip[id] = true;
@@ -1201,6 +1229,9 @@ public menuAdminHelp_2(id,menu,item){
 	set_user_godmode(id, userGodMod[id]);
 		
 	chatPrint(0, PREFIX_LINE, "Admin^3 %s^1 pomaga graczowi^3 %s", userName[id], userName[target]);
+	logBB(id, LOG_ADMIN, "help", "pomaga graczowi [%s]", userName[target]);
+		
+	
 	menuPerrmissions(id);
 	
 	return;
