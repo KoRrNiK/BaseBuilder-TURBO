@@ -65,6 +65,8 @@ public muteMenuType_2(id, menu, item){
 				TrieSetCell(userMutes[id], userName[target], 0);
 
 				chatPrint(id, PREFIX_LINE, "Zmutowales^4 na mape^1 gracza^3 %s^1.", userName[target]);
+				
+				logBB(id, LOG_MUTE, "mute_player", "zmutowales sobie gracza [%s] na MAPE", userName[target]);
 			}
 			case 1:{
 				new queryData[128], tempId[2];
@@ -78,6 +80,8 @@ public muteMenuType_2(id, menu, item){
 				TrieSetCell(userMutes[id], userName[target], 1);
 	
 				chatPrint(id, PREFIX_LINE,  "Zmutowales^4 na zawsze^1 gracza^3 %s^1.", userName[target]);
+				
+				logBB(id, LOG_MUTE, "mute_player", "zmutowales sobie gracza [%s] na ZAWSZE", userName[target]);
 			}
 		}
 			
