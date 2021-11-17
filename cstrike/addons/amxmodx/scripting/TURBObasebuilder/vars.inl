@@ -22,6 +22,7 @@ new const accentColorHud[]	=	{ 120, 250, 50 };
 #define USER_ZOMBIE 			1
 #define USER_HUMAN			2
 #define USER_SPEC			3
+#define USER_ALL			-5
 
 #define OFFSET_CLIPAMMO        		51
 #define OFFSET_LINUX_WEAPONS   		4
@@ -48,7 +49,7 @@ new const accentColorHud[]	=	{ 120, 250, 50 };
 #define forArray(%1,%2) 		for(new %1 = 0; %1 < sizeof(%2); %1++)
 
 #pragma semicolon 	1
-//#pragma dynamic 	65536
+#pragma dynamic 	65536
 
 native bb_set_in_fire(id, victim, duration);
 native bb_set_in_ice(id, victim, duration);
