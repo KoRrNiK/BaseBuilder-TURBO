@@ -262,7 +262,35 @@ public rotateBlock(id){
 }
 public autoLoadCloneBlock(){
 	loadCloneBlock();
+	
 }
+
+public cloneBlockFolder(){
+	new szDir[128];
+
+	get_configsdir(szDir, sizeof(szDir));	
+	
+	new cloneBlock[][][] = {
+		{ "Offsetu", 	"CloneOffset" },
+		{ "Klonowania", "CloneBlock" }
+		
+	};
+	
+	new firstFolder[64];
+	
+	for(new i = 0; i < sizeof(cloneBlock); i ++){
+	
+		format(firstFolder, sizeof(firstFolder) - 1, "%s/%s", szDir, cloneBlock[i][1]);
+	
+		if(!dir_exists(firstFolder)){
+			log_amx("=== Stworzono glowny folder %s: %s ===", cloneBlock[i][0], cloneBlock[i][1]);
+			mkdir(firstFolder);
+		}
+	}
+	
+}
+
+
 public readOffsetBlock(){	
 	new szOffsetFile[128];
 	new szFolder[32];
@@ -303,7 +331,7 @@ public loadCloneBlock(){
 		new szVec[3][17];
 		new szRotate[6];
 		new Float:fOrigin[3], Float:fVec[3];
-		new szClass[10], szTarget[7];
+		new szClass[10], szTarget[8];
 		while( !feof(file) ){	
 			
 			fgets(file, szData, sizeof(szData));
@@ -324,8 +352,8 @@ public loadCloneBlock(){
 			if( !pev_valid(ent) || ent == 0 ) continue;
 			if( ent == gBarrier ) continue;
 				
-			entity_get_string(ent, EV_SZ_classname, szClass, 9);
-			entity_get_string(ent, EV_SZ_targetname, szTarget, 6);
+			entity_get_string(ent, EV_SZ_classname, szClass, sizeof(szClass) - 1);
+			entity_get_string(ent, EV_SZ_targetname, szTarget, sizeof(szTarget) - 1);
 				
 				
 			if( !equal(szClass, "func_wall")) continue;
@@ -359,7 +387,7 @@ public saveCloneBlock(){
 	new szData[128];
 	new file = fopen(szFile, "wt");
 	
-	new szClass[10], szTarget[7];
+	new szClass[10], szTarget[8];
 	new Float:fOrigin[3], Float:fVec[3];
 	
 	if( file ){
@@ -368,8 +396,8 @@ public saveCloneBlock(){
 			if(!pev_valid(ent)) continue;
 			if( ent == gBarrier ) continue;
 
-			entity_get_string(ent, EV_SZ_classname, szClass, sizeof(szClass));
-			entity_get_string(ent, EV_SZ_targetname, szTarget, sizeof(szTarget));
+			entity_get_string(ent, EV_SZ_classname, szClass, sizeof(szClass) - 1);
+			entity_get_string(ent, EV_SZ_targetname, szTarget, sizeof(szTarget) - 1);
 			
 			if(!equal(szClass, "func_wall")) continue;
 			if(equal(szTarget, "ignore")) continue;
