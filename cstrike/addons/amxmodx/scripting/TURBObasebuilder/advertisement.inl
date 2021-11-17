@@ -61,8 +61,8 @@ public adsInfo(id){
 	get_mapname(map, sizeof(map) -1);
 	get_user_name(id, name, sizeof(name) - 1 );
 	
-	new tt = numPlayers(1, false);
-	new ct = numPlayers(2, false);
+	new online = numPlayers(USER_ALL, false);
+
 	
 	replace_all(advertisement,sizeof(advertisement) - 1,"[green]",	"^4");
 	replace_all(advertisement,sizeof(advertisement) - 1,"[team]",	"^3");
@@ -71,7 +71,7 @@ public adsInfo(id){
 	replace_all(advertisement,sizeof(advertisement) - 1,"[time]",	globalTime);
 	replace_all(advertisement,sizeof(advertisement) - 1,"[date]",	globalDate);
 	replace_all(advertisement,sizeof(advertisement) - 1,"[map]",	map);
-	replace_all(advertisement,sizeof(advertisement) - 1,"[online]",	formatm("%d", ct + tt));
+	replace_all(advertisement,sizeof(advertisement) - 1,"[online]",	formatm("%d", online));
 	
 	format(advertisement, sizeof(advertisement) - 1, "%s", advertisement);
 	
