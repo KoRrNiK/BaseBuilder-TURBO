@@ -469,9 +469,10 @@ public ham_UseButtonEnt(this, id, idactivator, use_type, Float:value){
 				chatPrint(id, PREFIX_LINE, "Teraz nie wolno strzelac do grzybkow");
 				return PLUGIN_CONTINUE;
 			}
-			new tt	= 	numPlayers(USER_ZOMBIE, false);
-			new ct	= 	numPlayers(USER_HUMAN, false);
-			if( ct + tt < bbCvar[cvarSchroomPlayers] ){        
+			
+			new all  = numPlayers(USER_ALL, false);
+			
+			if( all < bbCvar[cvarSchroomPlayers] ){        
 				chatPrint(id, PREFIX_LINE, "Za malo graczy na grzybki");
 				return PLUGIN_CONTINUE;
 			    
@@ -570,6 +571,13 @@ public plugin_cfg(){
 	cfgClan();
 	logCreate();
 	advertisementLoad();
+	
+	#if defined CHRISTMAS_ADDON
+		createChristmasFolder();
+	#endif
+	
+	cloneBlockFolder();
+	
 	plugin_init_sql();
 	
 }
@@ -686,12 +694,12 @@ public fw_TraceHull(Float:start[3], Float:end[3], conditions, hull, id, trace){
 }
 public ham_ItemC4Deploy(wpn){
 	static id;
-	id = pev(wpn, 18);
+	id = pev(wpn, pev_owner);
 	if (!is_user_alive(id) || !is_user_connected(id) || get_user_team(id) == USER_ZOMBIE){
 		return PLUGIN_CONTINUE;
 	}
 	new wpnID = cs_get_weapon_id(wpn);
-	if (wpnID == 6){
+	if (wpnID == CSW_C4){
 		strip_user_weapons(id);
 		give_item(id, "weapon_knife");
 	}
@@ -1645,8 +1653,8 @@ public killPlayerRespawn(attacker, victim, headShot){
 	
 	new szWeapon[33];
 	new weapon = get_user_weapon(attacker);
-	get_weaponname(weapon, szWeapon, sizeof(szWeapon));
-	replace_all(szWeapon, sizeof(szWeapon), "weapon_", "");
+	get_weaponname(weapon, szWeapon, sizeof(szWeapon) - 1);
+	replace_all(szWeapon, sizeof(szWeapon) - 1, "weapon_", "");
 	
 	make_deathmsg(attacker, victim, headShot, szWeapon);	
 	
@@ -1691,9 +1699,8 @@ public killPlayerRespawn(attacker, victim, headShot){
 		addPro(attacker, pro_TRUPOSZ, 1);
 	}
 
-	new tt	= 	numPlayers(USER_ZOMBIE, false);
+	new all  = 	numPlayers(USER_ALL, false);
 	new ct	= 	numPlayers(USER_HUMAN, false);
-	new all = ct + tt;
 			
 	if(get_user_team(victim) == USER_ZOMBIE) addNuggetToFinal(victim, ( (all - ct) * 2 ) + userDeathNum[victim] );
 	
@@ -2027,7 +2034,10 @@ public numPlayers(team, bool:alive ){
 		if( alive ){
 			if( !is_user_alive(i)) continue;
 		}
-		if( get_user_team(i) != team ) continue;
+		if(team != USER_ALL){
+			if( get_user_team(i) != team ) continue;
+		} 
+
 		iNum++;
 	}
 	return iNum;
@@ -2954,7 +2964,7 @@ public showVipsOnline(id, type) {
 
 	new gText[1536];
 
-	format(gText, sizeof(gText), "\r[BaseBuilder]\y Lista Graczy co posiadaja %sVIP'a", type == 0 ? "" : "S");
+	format(gText, sizeof(gText) - 1, "\r[BaseBuilder]\y Lista Graczy co posiadaja %sVIP'a", type == 0 ? "" : "S");
 	new menu = menu_create(gText, "showVipsOnline_2");
 	for(new i = 1; i < maxPlayers; i ++){
 	
@@ -3131,3 +3141,6 @@ public messageBlood() {
 }
 
 
+/* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
+*{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1045\\ f0\\ fs16 \n\\ par }
+*/
