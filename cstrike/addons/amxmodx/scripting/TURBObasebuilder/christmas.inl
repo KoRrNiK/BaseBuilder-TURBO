@@ -630,6 +630,26 @@ saveChristmas( ) {
 		fclose(file);
 	}
 }
+
+public createChristmasFolder(){
+	new szDir[128];
+
+	get_configsdir(szDir, sizeof(szDir));	
+	
+	new const christmasFolder[] = "christmas";
+	
+	new firstFolder[64];
+
+	format(firstFolder, sizeof(firstFolder) - 1, "%s/%s", szDir, christmasFolder);
+	
+	if(!dir_exists(firstFolder)){
+		log_amx("=== Stworzono glowny folder swiateczny: %s ===", christmasFolder);
+		mkdir(firstFolder);
+	}
+	
+	
+}
+
 loadChristmas(){
 	
 	new map[ 33 ];
