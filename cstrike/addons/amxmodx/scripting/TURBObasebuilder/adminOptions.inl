@@ -500,6 +500,13 @@ public choosePlayer(id, item){
 				else if( daysLeft <= 0)	format(gText, sizeof(gText), "\d%s - [Brak Vipa]", userName[i]);
 				else 			format(gText, sizeof(gText), "\y%s -\d [Pozostalo\r %d:%s%d:%s%d\d]", userName[i],  (daysLeft / HOUR ), ( daysLeft / MINUTE % MINUTE )<10?"0":"", ( daysLeft / MINUTE % MINUTE ), (daysLeft%MINUTE)<10?"0":"", ( daysLeft %MINUTE ));	
 			}
+			case MENU_GIVING_SVIP:{
+				daysLeft = (timeSVip[i] - get_systime());
+			
+				if(has_flag(i, flagSVip))	format(gText, sizeof(gText), "\y%s -\w [Bez Limitu]", userName[i]);
+				else if( daysLeft <= 0)	format(gText, sizeof(gText), "\d%s - [Brak SVipa]", userName[i]);
+				else 			format(gText, sizeof(gText), "\y%s -\d [Pozostalo\r %d:%s%d:%s%d\d]", userName[i],  (daysLeft / HOUR ), ( daysLeft / MINUTE % MINUTE )<10?"0":"", ( daysLeft / MINUTE % MINUTE ), (daysLeft%MINUTE)<10?"0":"", ( daysLeft %MINUTE ));	
+			}
 			case MENU_GIVING_LUZCOIN:{
 				format(gText, sizeof(gText), "\w%s -\d [\r%d Luzaczkow\d]", userName[i], userLuzCoin[i] );
 			}
