@@ -2560,8 +2560,7 @@ public cmdSay(id){
 
 		format(chatPrefix, sizeof(chatPrefix), "^3[^1%s^3] ", chatPrefix);	
 		
-		chatPrint(0, PREFIX_NONE, "%s%s^3 %s%s^1:^1 %s",clan[id] ? chatPrefix : "",isSVip(id) ? "^4[SVip]" : isVip(id) ? "^4[Vip]" : "",  userName[id], isSuperAdmin(id) ? "^4*" : "", szMessage);
-		
+		client_print_color(0, id, "%s%s^3 %s%s^1:^1 %s",clan[id] ? chatPrefix : "",isSVip(id) ? "^4[SVip]" : isVip(id) ? "^4[Vip]" : "",  userName[id], isSuperAdmin(id) ? "^4*" : "", szMessage);
 		if(userFPS[id] < 30) addSecretMission(id, mission_secret_CHEATER, 1);
 		
 		logBB(id, LOG_CHAT, "global", "%s", szMessage);
