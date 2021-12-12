@@ -112,6 +112,7 @@ public menuOX_2(id, menu, item){
 					if( !is_user_connected(i) || is_user_hltv(i)) continue;
 					tutorMake(i, TUTOR_BLUE, 2.0, "Prawidlowa odpowiedz: Anulowana");
 				}
+				changeSpritesCounter(999);
 			} else chatPrint(id, PREFIX_NORMAL, "Aktualnie nie ma odpalonego pytania!");
 		}
 		case 3:{
@@ -230,6 +231,7 @@ public askQuestion(id){
 	client_print(id, print_console, "Schemat: bb_ox ^"Pytanie^" odpowiedz czas");
 	client_print(id, print_console, "Przyklad: bb_ox ^"Tak/Nie^" 2 15");
 	client_print(id, print_console, "Odpowiedz: 0 - falsz | 1 - prawda | 2> - losowe");
+	client_print(id, print_console, "Jesli nie wpiszesz odpowiedzi zostanie ona wylosowana");
 	client_print(id, print_console, "Jesli nie wpiszesz czasu defaultowa liczba jest: 15");
 	client_print(id, print_console, "______________________________________________________^n");
 	
@@ -248,7 +250,7 @@ public askQuestion(id){
 	read_argv(2, szAnswer, sizeof(szAnswer));
 
 	OX[OX_ANSWER] = str_to_num(szAnswer);
-	if(OX[OX_ANSWER] > 1) OX[OX_ANSWER] = random(2);
+	if(OX[OX_ANSWER] > 1 || equal(szAnswer, "")) OX[OX_ANSWER] = random(2);
 	
 	new szTime[4];
 	read_argv(3, szTime, sizeof(szTime));		
