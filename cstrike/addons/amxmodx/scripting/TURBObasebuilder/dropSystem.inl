@@ -191,7 +191,7 @@ public addKillBone(id, value){
 	
 	if(hourTime){
 		if(bb_happy_hour() == happy_BONES || bb_happy_hour() == happy_ALL_EXP_NUGGET)
-			value *= 2.0;
+			value *= 2;
 	}
 	
 	addBoneToFinal(id, value);
